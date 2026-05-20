@@ -113,12 +113,19 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 			.update-head h3 a {
 				color: rgb(var(--text));
 				text-decoration: none;
+				transition:
+					background-color 0.15s ease,
+					box-shadow 0.15s ease;
+				border-radius: 1px;
 			}
 			.update-head h3 a:hover {
-				text-decoration: underline;
-				text-decoration-color: var(--accent);
-				text-decoration-thickness: 2px;
-				text-underline-offset: 3px;
+				background-color: var(--accent);
+				box-shadow: 0 0 0 2px var(--accent);
+			}
+			@media (prefers-reduced-motion: reduce) {
+				.update-head h3 a {
+					transition: none;
+				}
 			}
 			.update-meta {
 				color: rgb(var(--text-muted));
