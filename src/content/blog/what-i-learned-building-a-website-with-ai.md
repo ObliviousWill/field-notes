@@ -1,17 +1,17 @@
 ---
 title: 'What I learned building a website with AI'
-description: 'Two hours, a blank repo, and Claude Code as the only collaborator. What looking under the bonnet revealed about AI, marketing, and the work.'
+description: 'One hour, a blank repo, and Claude Code as the only collaborator. What looking under the bonnet revealed about AI, marketing, and the work.'
 pubDate: 'May 20 2026'
 tags: ['building', 'ai']
 ---
 
-Three pages, two hours one morning this week, no builder, no agency, no developer. Just me and Claude — chat for the thinking, Claude Code for the building — and a GitHub integration that took ten minutes to set up. This site is the result. All in, it'll cost about £10 a year for a domain; hosting is free on GitHub Pages.
+Three pages, one hour one morning this week, no builder, no agency, no developer. Just me and Claude — chat for the thinking, Claude Code for the building — and a GitHub integration that took ten minutes to set up. This site is the result. All in, it'll cost about £10 a year for a domain; hosting is free on GitHub Pages.
 
 I've been on all sides of the fence with websites. I've commissioned them, designed them in Figma and Sketch, briefed them to UX designers, been the page builder doing the content pop, then the admin keeping the lights on. I've used WordPress for years and Joomla before that (sorry). I've built pages in Elementor and WP Bakery and the rest. What I'd never done, until this week, is sit down with a blank repo and make a website exist.
 
 I should be honest about what I'd have done otherwise. For a personal site like this, I wasn't going to commission anyone — I'd have reached for Wix or Squarespace, picked a template, and called it done. That's the alternative I'm comparing this to. And the comparison is interesting, because while Squarespace would have been a bit faster to have something live, I'd have learned almost nothing in the process, and I'd be locked into a platform's idea of what a website is.
 
-The point of this post isn't you should do this too. The point is what two hours of looking under the bonnet revealed about the art of the possible with AI — and what it might mean for the marketing teams I run.
+The point of this post isn't you should do this too. The point is what one hour of looking under the bonnet revealed about the art of the possible with AI — and what it might mean for the marketing teams I run.
 
 ## What the builder was hiding
 
@@ -41,7 +41,7 @@ On the basis of one morning, with appropriate humility.
 
 **The hard part isn't the building, it's the deciding.** Most of my morning wasn't spent making things. It was spent answering questions: what do you want, who is this for, what should be on it, what shouldn't, what's the URL, what's the tone. The AI was very fast at the building. The decisions were still mine. That's the right division of labour, and I suspect it's the right one for most marketing work in these early parts of the AI era.
 
-**Start with something real.** I learned more from two hours on a real project than I would have from a week of YouTube tutorials (but I do love them too). The thing I was building was small enough to finish and serious enough to teach me. If you're trying to figure out where AI fits in your work, my honest advice is: find a project you've been putting off, and try it.
+**Start with something real.** I learned more from one hour on a real project than I would have from a week of YouTube tutorials (but I do love them too). The thing I was building was small enough to finish and serious enough to teach me. If you're trying to figure out where AI fits in your work, my honest advice is: find a project you've been putting off, and try it.
 
 ## Where this site goes next
 
