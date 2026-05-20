@@ -26,6 +26,7 @@
 html {
 	scroll-behavior: smooth;
 	scroll-padding-top: 1.5rem;
+	overflow-x: hidden;
 }
 @media (prefers-reduced-motion: reduce) {
 	html {
@@ -42,6 +43,7 @@ body {
 	background-size: 100% 600px;
 	word-wrap: break-word;
 	overflow-wrap: break-word;
+	overflow-x: hidden;
 	color: rgb(var(--text));
 	font-size: 19px;
 	line-height: 1.65;
@@ -191,12 +193,16 @@ code {
 	background-color: var(--bg-tint);
 	border-radius: 2px;
 	font-size: 0.9em;
+	overflow-wrap: anywhere;
+	word-break: break-word;
 }
 pre {
 	padding: 18px 22px;
 	border-radius: 6px;
 	background-color: var(--bg-tint);
 	font-size: 16px;
+	overflow-x: auto;
+	max-width: 100%;
 }
 pre > code {
 	all: unset;
