@@ -1,72 +1,239 @@
 ---
-import Layout from '../layouts/BlogPost.astro';
+import BaseHead from '../components/BaseHead.astro';
+import CategoryChip from '../components/CategoryChip.astro';
+import Footer from '../components/Footer.astro';
+import Header from '../components/Header.astro';
+import NewsletterBlock from '../components/NewsletterBlock.astro';
+import { SITE_TITLE } from '../consts';
 
-const rssUrl = `${import.meta.env.BASE_URL.replace(/\/$/, '')}/rss.xml`;
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const description =
+	'Field notes from Will, Head of Marketing & Customer Experience at a UK education business, on building, marketing, and using AI in practice.';
 ---
 
-<Layout
-	title="About"
-	description="Field notes from Will, Head of Marketing & Customer Experience at a UK education business, on building, marketing, and using AI in practice."
-	pubDate={new Date()}
->
-	<p>
-		I'm Will, Head of Marketing &amp; Customer Experience at a UK education business, where I look
-		after a marketing team, a lead generation function, and a customer solutions team.
-	</p>
+<!doctype html>
+<html lang="en">
+	<head>
+		<BaseHead title={`About · ${SITE_TITLE}`} description={description} />
+	</head>
+	<body>
+		<Header current="about" />
+		<main>
+			<header class="hero">
+				<h1>About</h1>
+				<div class="byline">
+					<strong>Will</strong>
+					<span class="sep" aria-hidden="true">·</span>
+					<span>Head of Marketing &amp; CX</span>
+					<span class="sep" aria-hidden="true">·</span>
+					<span>UK</span>
+				</div>
+				<p class="dek">{description}</p>
+			</header>
 
-	<p>
-		Most of what I do day-to-day sits at the intersection of three things: building an integrated
-		acquisition and retention model, figuring out how AI actually changes marketing (rather than
-		how it's supposed to), and helping a team of seven do their best work.
-	</p>
+			<section class="prose intro">
+				<p>
+					I'm Will, Head of Marketing &amp; Customer Experience at a UK education business,
+					where I look after a marketing team, a lead generation function, and a customer
+					solutions team.
+				</p>
+				<p>
+					Most of what I do day-to-day sits at the intersection of three things: building
+					an integrated acquisition and retention model, figuring out how AI actually
+					changes marketing (rather than how it's supposed to), and helping a team of
+					seven do their best work.
+				</p>
+				<p>This site is where I write about what I'm learning in the open.</p>
+			</section>
 
-	<p>This site is where I write about what I'm learning in the open.</p>
+			<h2>What you'll find here</h2>
+			<p class="prose lead">
+				Field Notes is a working notebook, not a thought-leadership outlet. Posts tend to
+				fall into three categories:
+			</p>
 
-	<h2>What you'll find here</h2>
+			<div class="categories">
+				<div class="cat-block">
+					<div class="cat-left">
+						<CategoryChip tag="building" size="lg" />
+						<a class="fn-link browse" href={`${base}/blog/`}>Browse →</a>
+					</div>
+					<div class="cat-right">
+						<p class="cat-title">Things I'm building</p>
+						<p class="cat-body">
+							AI tools, internal systems, websites, side projects. I show the work: what I
+							tried, what broke, what I'd do differently. Most recently, an AI chatbot for
+							our customer-facing site, a weekly meal-planning app built on the Claude API,
+							and the site you're reading now.
+						</p>
+					</div>
+				</div>
+				<div class="cat-block">
+					<div class="cat-left">
+						<CategoryChip tag="marketing" size="lg" />
+						<a class="fn-link browse" href={`${base}/blog/`}>Browse →</a>
+					</div>
+					<div class="cat-right">
+						<p class="cat-title">Marketing thinking</p>
+						<p class="cat-body">
+							How I'm approaching the work: campaigns, team structure, customer experience,
+							the retention/acquisition handoff, the awkward bits no one writes about. Less
+							framework-shopping, more "here's what we tried and what happened."
+						</p>
+					</div>
+				</div>
+				<div class="cat-block">
+					<div class="cat-left">
+						<CategoryChip tag="ai" size="lg" />
+						<a class="fn-link browse" href={`${base}/blog/`}>Browse →</a>
+					</div>
+					<div class="cat-right">
+						<p class="cat-title">AI, practically</p>
+						<p class="cat-body">
+							Where it earns its keep in real organisations, where it doesn't, and the gap
+							between the demos and the day job. Written for colleagues and peers who are
+							bored of the hype and want to know what's actually useful on a Tuesday
+							morning.
+						</p>
+					</div>
+				</div>
+			</div>
 
-	<p>
-		Field Notes is a working notebook, not a thought-leadership outlet. Posts tend to fall into
-		three categories:
-	</p>
+			<h2>Who I'm writing for</h2>
+			<p class="prose">
+				People doing the work, not watching it. Marketers, operators, team leads, anyone
+				trying to integrate AI into a real organisation with real constraints. If you're
+				senior enough that no one above you knows the answer either, you'll probably find
+				something useful here.
+			</p>
 
-	<p>
-		<strong>Things I'm building.</strong> AI tools, internal systems, websites, side projects. I show
-		the work: what I tried, what broke, what I'd do differently. Most recently, an AI chatbot for
-		our customer-facing site, a weekly meal-planning app built on the Claude API, and the site
-		you're reading now.
-	</p>
+			<h2>A note on what this isn't</h2>
+			<p class="prose">
+				I'm not selling anything. I'm not a consultant. I don't have a course. I'm a
+				practitioner figuring it out in public, which means I'll be wrong sometimes, and
+				I'd rather be wrong out loud than vague in private.
+			</p>
 
-	<p>
-		<strong>Marketing thinking.</strong> How I'm approaching the work: campaigns, team structure,
-		customer experience, the retention/acquisition handoff, the awkward bits no one writes about.
-		Less framework-shopping, more "here's what we tried and what happened."
-	</p>
-
-	<p>
-		<strong>AI, practically.</strong> Where it earns its keep in real organisations, where it doesn't,
-		and the gap between the demos and the day job. Written for colleagues and peers who are bored
-		of the hype and want to know what's actually useful on a Tuesday morning.
-	</p>
-
-	<h2>Who I'm writing for</h2>
-
-	<p>
-		People doing the work, not watching it. Marketers, operators, team leads, anyone trying to
-		integrate AI into a real organisation with real constraints. If you're senior enough that no
-		one above you knows the answer either, you'll probably find something useful here.
-	</p>
-
-	<h2>A note on what this isn't</h2>
-
-	<p>
-		I'm not selling anything. I'm not a consultant. I don't have a course. I'm a practitioner
-		figuring it out in public, which means I'll be wrong sometimes, and I'd rather be wrong out
-		loud than vague in private.
-	</p>
-
-	<p>
-		New posts roughly weekly. The easiest way to keep tabs is
-		<a href="https://www.linkedin.com/in/williambaker7/" target="_blank" rel="noopener">LinkedIn</a>
-		or <a href={rssUrl}>RSS</a>.
-	</p>
-</Layout>
+			<NewsletterBlock />
+		</main>
+		<Footer />
+	</body>
+</html>
+<style>
+	.hero {
+		margin-bottom: 44px;
+	}
+	.hero h1 {
+		font-family: var(--font-display);
+		font-size: 88px;
+		margin: 0;
+		line-height: 0.95;
+		letter-spacing: -0.01em;
+	}
+	.byline {
+		display: flex;
+		align-items: center;
+		flex-wrap: wrap;
+		gap: 10px;
+		margin-top: 24px;
+		font-size: 14px;
+		color: rgb(var(--text-muted));
+		padding-bottom: 22px;
+		border-bottom: 1px solid var(--hairline-soft);
+	}
+	.byline strong {
+		color: rgb(var(--text));
+		font-weight: 700;
+	}
+	.byline .sep {
+		opacity: 0.4;
+	}
+	.dek {
+		font-style: italic;
+		color: rgb(var(--text-muted));
+		font-size: 22px;
+		line-height: 1.45;
+		margin: 28px 0 0;
+		max-width: 620px;
+	}
+	.intro {
+		max-width: 680px;
+	}
+	main h2 {
+		font-family: var(--font-display);
+		font-size: 36px;
+		line-height: 1.15;
+		margin: 52px 0 22px;
+		letter-spacing: -0.01em;
+	}
+	.prose.lead {
+		max-width: 680px;
+	}
+	.categories {
+		display: flex;
+		flex-direction: column;
+		gap: 20px;
+		margin: 20px 0 24px;
+	}
+	.cat-block {
+		display: grid;
+		grid-template-columns: 180px 1fr;
+		gap: 24px;
+		padding: 20px 0;
+		border-top: 1px solid var(--hairline-soft);
+	}
+	.cat-left {
+		display: flex;
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 10px;
+	}
+	.browse {
+		font-size: 13px;
+	}
+	.cat-title {
+		font-family: var(--font-display);
+		font-size: 22px;
+		color: rgb(var(--text));
+		margin: 0 0 8px;
+		line-height: 1.2;
+	}
+	.cat-body {
+		color: rgb(var(--text-muted));
+		font-size: 17px;
+		margin: 0;
+		line-height: 1.55;
+		max-width: 560px;
+	}
+	@media (max-width: 720px) {
+		.hero {
+			margin-bottom: 32px;
+		}
+		.hero h1 {
+			font-size: 56px;
+		}
+		.dek {
+			font-size: 19px;
+			margin-top: 22px;
+		}
+		main h2 {
+			font-size: 28px;
+			margin: 36px 0 18px;
+		}
+		.categories {
+			gap: 16px;
+			margin: 16px 0;
+		}
+		.cat-block {
+			grid-template-columns: 1fr;
+			gap: 10px;
+			padding: 16px 0;
+		}
+		.cat-title {
+			font-size: 20px;
+		}
+		.cat-body {
+			font-size: 16px;
+		}
+	}
+</style>
