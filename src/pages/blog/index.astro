@@ -75,15 +75,13 @@ const posts = (await getCollection('blog'))
 				background-position: 0 100%;
 				background-repeat: no-repeat;
 				background-size: 100% 0;
-				box-shadow: 0 0 0 0 transparent;
+				-webkit-box-decoration-break: clone;
+				box-decoration-break: clone;
 				border-radius: 1px;
-				transition:
-					background-size 0.2s ease,
-					box-shadow 0.2s ease;
+				transition: background-size 0.2s ease;
 			}
 			ul li a:hover .title-text {
 				background-size: 100% 100%;
-				box-shadow: 0 0 0 2px var(--accent);
 			}
 			@media (prefers-reduced-motion: reduce) {
 				.title-text {

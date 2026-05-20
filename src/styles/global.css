@@ -97,14 +97,14 @@ p a,
 	background-position: 0 100%;
 	background-repeat: no-repeat;
 	background-size: 100% 0;
-	box-shadow: 0 0 0 0 transparent;
+	-webkit-box-decoration-break: clone;
+	box-decoration-break: clone;
 	border-radius: 1px;
 }
 .prose a:hover,
 p a:hover,
 .section-heading a:hover {
 	background-size: 100% 100%;
-	box-shadow: 0 0 0 2px var(--accent);
 	text-decoration-color: transparent;
 }
 a:focus-visible {

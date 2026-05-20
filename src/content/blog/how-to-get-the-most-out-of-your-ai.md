@@ -5,7 +5,7 @@ pubDate: 'May 20 2026'
 tags: ['ai', 'marketing']
 ---
 
-I use AI every day, across just about everything. Claude is the one I reach for most — writing, thinking, design, code. I'm in ChatGPT every day too. I've put serious hours into Gemini. I've used Perplexity. And I've used the AI now baked into more or less every piece of software I touch. I'm not listing that to show off. I'm listing it because it's why I trust what I'm about to tell you. When you've used enough of these tools, you stop noticing the differences between them and start noticing the one thing that decides whether you get brilliant work or mediocre work out of any of them.
+I use AI every day, across just about everything. Claude is the one I reach for most — writing, thinking, design, code. I used ChatGPT every day for 3 years. I've put serious hours into Gemini. I've used Perplexity. And I've used the AI now baked into more or less every piece of software I touch. I'm not listing that to show off. I'm listing it because it's why I trust what I'm about to tell you. When you've used enough of these tools, you stop noticing the differences between them and start noticing the one thing that decides whether you get brilliant work or mediocre work out of any of them.
 
 And it's not the tool. It's how you use it.
 

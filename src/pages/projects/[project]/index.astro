@@ -117,15 +117,13 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 				background-position: 0 100%;
 				background-repeat: no-repeat;
 				background-size: 100% 0;
-				box-shadow: 0 0 0 0 transparent;
+				-webkit-box-decoration-break: clone;
+				box-decoration-break: clone;
 				border-radius: 1px;
-				transition:
-					background-size 0.2s ease,
-					box-shadow 0.2s ease;
+				transition: background-size 0.2s ease;
 			}
 			.update-head h3 a:hover {
 				background-size: 100% 100%;
-				box-shadow: 0 0 0 2px var(--accent);
 			}
 			@media (prefers-reduced-motion: reduce) {
 				.update-head h3 a {
