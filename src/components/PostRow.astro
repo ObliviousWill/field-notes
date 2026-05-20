@@ -1,0 +1,167 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import CategoryChip from './CategoryChip.astro';
+import FormattedDate from './FormattedDate.astro';
+import UnreadDot from './UnreadDot.astro';
+import { readingTimeMinutes } from '../utils/readingTime';
+
+interface Props {
+	post: CollectionEntry<'blog'>;
+	compact?: boolean;
+	showExcerpt?: boolean;
+}
+
+const { post, compact = false, showExcerpt = true } = Astro.props;
+const readingTime = readingTimeMinutes(post.body);
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const href = `${base}/blog/${post.id}/`;
+const tags = post.data.tags ?? [];
+---
+
+<li class:list={['post-row', { compact }]}>
+	<div class="hover-slab" aria-hidden="true"></div>
+	<div class="content">
+		<UnreadDot slug={post.id} />
+		<div>
+			<div class="meta">
+				{tags.map((tag) => <CategoryChip tag={tag} />)}
+				{tags.length > 0 && <span class="sep" aria-hidden="true">·</span>}
+				<FormattedDate date={post.data.pubDate} />
+				<span class="sep" aria-hidden="true">·</span>
+				<span>{readingTime} min read</span>
+				{
+					post.data.updatedDate && (
+						<>
+							<span class="sep" aria-hidden="true">·</span>
+							<span class="updated" title={`Updated ${post.data.updatedDate.toLocaleDateString('en-GB')}`}>
+								<span class="updated-icon">↻</span>
+								<span class="updated-text">updated</span>
+							</span>
+						</>
+					)
+				}
+			</div>
+			<a class="title" href={href}>{post.data.title}</a>
+			{
+				showExcerpt && post.data.description && (
+					<p class="excerpt">{post.data.description}</p>
+				)
+			}
+		</div>
+	</div>
+</li>
+<style>
+	.post-row {
+		position: relative;
+		padding: 32px 0;
+		border-top: 1px solid var(--hairline-soft);
+		list-style: none;
+	}
+	.post-row.compact {
+		padding: 22px 0;
+	}
+	.hover-slab {
+		position: absolute;
+		inset: 0 -24px;
+		background: var(--bg-soft);
+		opacity: 0;
+		transition: opacity 200ms ease;
+		border-radius: 6px;
+		pointer-events: none;
+	}
+	.post-row:hover .hover-slab {
+		opacity: 0.7;
+	}
+	.content {
+		position: relative;
+		display: grid;
+		grid-template-columns: 24px 1fr;
+		gap: 14px;
+		align-items: start;
+	}
+	.meta {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 10px;
+		font-size: 13px;
+		color: rgb(var(--text-muted));
+		margin-bottom: 8px;
+		font-family: var(--font-atkinson);
+	}
+	.sep {
+		opacity: 0.4;
+	}
+	.updated {
+		display: inline-flex;
+		align-items: center;
+		gap: 4px;
+		color: var(--accent-ink);
+	}
+	.updated-icon {
+		font-size: 11px;
+	}
+	.updated-text {
+		font-size: 12px;
+	}
+	.title {
+		display: inline-block;
+		font-family: var(--font-display);
+		font-size: 28px;
+		line-height: 1.12;
+		color: rgb(var(--text));
+		text-decoration: none;
+		margin-bottom: 10px;
+		background-image: linear-gradient(var(--accent), var(--accent));
+		background-position: 0 100%;
+		background-repeat: no-repeat;
+		background-size: 0 6px;
+		transition: background-size 280ms cubic-bezier(0.6, 0, 0.2, 1);
+		padding-bottom: 2px;
+		-webkit-box-decoration-break: clone;
+		box-decoration-break: clone;
+		border-radius: 1px;
+	}
+	.post-row:hover .title {
+		background-size: 100% 6px;
+	}
+	.post-row.compact .title {
+		font-size: 22px;
+	}
+	.excerpt {
+		color: rgb(var(--text-muted));
+		margin: 4px 0 0;
+		font-size: 17px;
+		line-height: 1.55;
+		max-width: 620px;
+	}
+	@media (max-width: 720px) {
+		.post-row {
+			padding: 26px 0;
+		}
+		.post-row.compact {
+			padding: 18px 0;
+		}
+		.hover-slab {
+			inset: 0 -12px;
+		}
+		.content {
+			gap: 10px;
+		}
+		.title {
+			font-size: 22px;
+		}
+		.post-row.compact .title {
+			font-size: 20px;
+		}
+		.excerpt {
+			font-size: 16px;
+		}
+	}
+	@media (prefers-reduced-motion: reduce) {
+		.hover-slab,
+		.title {
+			transition: none;
+		}
+	}
+</style>

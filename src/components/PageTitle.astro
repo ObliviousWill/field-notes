@@ -1,0 +1,84 @@
+---
+interface Props {
+	title: string;
+	count?: number;
+	countLabel?: string;
+	subtitle?: string;
+}
+
+const { title, count, countLabel, subtitle } = Astro.props;
+const showMeta = count != null || Astro.slots.has('side-link');
+---
+
+<div class="page-title">
+	<div class="row">
+		<h1>{title}</h1>
+		{
+			showMeta && (
+				<div class="meta">
+					{count != null && (
+						<span class="count">
+							{count} {countLabel}
+						</span>
+					)}
+					{count != null && Astro.slots.has('side-link') && (
+						<span class="sep" aria-hidden="true">·</span>
+					)}
+					<slot name="side-link" />
+				</div>
+			)
+		}
+	</div>
+	{subtitle && <p class="subtitle">{subtitle}</p>}
+</div>
+<style>
+	.page-title {
+		margin-bottom: 8px;
+	}
+	.row {
+		display: flex;
+		align-items: baseline;
+		justify-content: space-between;
+		flex-wrap: wrap;
+		gap: 12px;
+		margin-bottom: 8px;
+	}
+	h1 {
+		font-family: var(--font-display);
+		font-size: 64px;
+		margin: 0;
+		line-height: 1;
+		color: rgb(var(--text));
+		letter-spacing: -0.01em;
+	}
+	.meta {
+		display: flex;
+		gap: 12px;
+		align-items: center;
+		font-size: 13px;
+		color: rgb(var(--text-muted));
+	}
+	.count {
+		letter-spacing: 0.06em;
+		text-transform: uppercase;
+		font-weight: 700;
+	}
+	.sep {
+		opacity: 0.4;
+	}
+	.subtitle {
+		color: rgb(var(--text-muted));
+		font-size: 19px;
+		margin: 0 0 8px;
+		max-width: 620px;
+		line-height: 1.5;
+	}
+	@media (max-width: 720px) {
+		h1 {
+			font-size: 44px;
+		}
+		.subtitle {
+			font-size: 17px;
+		}
+	}
+</style>

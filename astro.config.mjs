@@ -32,5 +32,21 @@ export default defineConfig({
 				],
 			},
 		},
+		{
+			provider: fontProviders.local(),
+			name: 'Bowlby One',
+			cssVariable: '--font-display',
+			fallbacks: ['Alfa Slab One', 'Georgia', 'serif'],
+			options: {
+				variants: [
+					{
+						src: ['./src/assets/fonts/bowlby-one-regular.ttf'],
+						weight: 400,
+						style: 'normal',
+						display: 'swap',
+					},
+				],
+			},
+		},
 	],
 });

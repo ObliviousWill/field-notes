@@ -1,16 +1,18 @@
 ---
-import { SITE_TITLE } from '../consts';
 import HeaderLink from './HeaderLink.astro';
+import { SITE_TITLE } from '../consts';
+
+interface Props {
+	current?: 'home' | 'blog' | 'projects' | 'about';
+}
+
+const { current } = Astro.props;
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 ---
 
 <header>
 	<nav>
-		<h2 class="brand">
-			<a href={`${import.meta.env.BASE_URL}/`} class="logo-link">
-				<img src={`${import.meta.env.BASE_URL}/logo.svg`} alt={SITE_TITLE} class="logo" />
-				<span class="sr-only">{SITE_TITLE}</span>
-			</a>
-		</h2>
+		<a class="wordmark" href={`${base}/`} aria-label={SITE_TITLE}>FIELD NOTES</a>
 		<button
 			type="button"
 			class="burger"
@@ -18,7 +20,7 @@ import HeaderLink from './HeaderLink.astro';
 			aria-controls="primary-menu"
 			aria-label="Open menu"
 		>
-			<svg viewBox="0 0 24 24" aria-hidden="true" width="28" height="28">
+			<svg viewBox="0 0 24 24" aria-hidden="true" width="26" height="26">
 				<path
 					fill="none"
 					stroke="currentColor"
@@ -28,15 +30,20 @@ import HeaderLink from './HeaderLink.astro';
 			</svg>
 		</button>
 		<div id="primary-menu" class="internal-links">
-			<HeaderLink href="/">Home</HeaderLink>
-			<HeaderLink href="/blog">Blog</HeaderLink>
-			<HeaderLink href="/projects">Projects</HeaderLink>
-			<HeaderLink href="/about">About</HeaderLink>
+			<HeaderLink href="/" active={current === 'home'}>Home</HeaderLink>
+			<HeaderLink href="/blog" active={current === 'blog'}>Blog</HeaderLink>
+			<HeaderLink href="/projects" active={current === 'projects'}>Projects</HeaderLink>
+			<HeaderLink href="/about" active={current === 'about'}>About</HeaderLink>
 		</div>
 		<div class="social-links">
-			<a href="https://www.linkedin.com/in/williambaker7/" target="_blank" rel="noopener">
-				<span class="sr-only">Connect on LinkedIn</span>
-				<svg viewBox="0 0 16 16" aria-hidden="true" width="24" height="24"
+			<a
+				class="linkedin"
+				href="https://www.linkedin.com/in/williambaker7/"
+				target="_blank"
+				rel="noopener"
+				aria-label="Connect on LinkedIn"
+			>
+				<svg viewBox="0 0 16 16" aria-hidden="true" width="14" height="14"
 					><path
 						fill="currentColor"
 						d="M13.632 13.635h-2.37V9.922c0-.886-.018-2.025-1.234-2.025-1.235 0-1.424.964-1.424 1.96v3.778h-2.37V6h2.275v1.04h.032c.317-.6 1.091-1.233 2.246-1.233 2.4 0 2.845 1.58 2.845 3.637v4.191zM3.558 4.957a1.375 1.375 0 1 1 0-2.75 1.375 1.375 0 0 1 0 2.75zm1.187 8.678H2.37V6h2.375v7.635zM14.816 0H1.18C.528 0 0 .516 0 1.153v13.694C0 15.484.528 16 1.18 16h13.635c.652 0 1.185-.516 1.185-1.153V1.153C16 .516 15.467 0 14.815 0h.001z"
@@ -58,46 +65,42 @@ import HeaderLink from './HeaderLink.astro';
 		burger.setAttribute('aria-expanded', String(!isOpen));
 		nav?.classList.toggle('menu-open', !isOpen);
 	});
-	nav?.querySelectorAll('a').forEach((link) => link.addEventListener('click', closeMenu));
+	nav?.querySelectorAll('.internal-links a, .wordmark, .linkedin').forEach((link) =>
+		link.addEventListener('click', closeMenu),
+	);
 </script>
 <style>
 	header {
-		margin: 0;
-		padding: 0 1em;
 		background: var(--bg-soft);
-		box-shadow: 0 1px 0 rgba(var(--text), 8%);
+		border-bottom: 1px solid var(--hairline);
+		padding: 18px 40px;
 	}
 	nav {
 		display: flex;
 		align-items: center;
-		flex-wrap: wrap;
 		justify-content: space-between;
+		flex-wrap: wrap;
+		gap: 12px;
 	}
-	.brand {
-		margin: 0;
-		font-size: 1em;
-	}
-	.logo-link {
-		display: inline-flex;
-		align-items: center;
-		padding: 0.5em 0;
+	.wordmark {
+		font-family: var(--font-display);
+		color: var(--accent);
+		font-size: 20px;
+		letter-spacing: 0.02em;
+		line-height: 1;
 		text-decoration: none;
-		color: rgb(var(--text));
+		background-image: none;
 	}
-	.logo {
-		height: 36px;
-		width: auto;
-		display: block;
-		border-radius: 0;
+	.wordmark:hover {
+		background-size: 0;
 	}
 	.burger {
 		display: none;
 		background: none;
 		border: 0;
-		padding: 0.5em;
+		padding: 4px;
 		cursor: pointer;
 		color: rgb(var(--text));
-		align-items: center;
 	}
 	.burger:focus-visible {
 		outline: 2px solid var(--accent-ink);
@@ -106,46 +109,36 @@ import HeaderLink from './HeaderLink.astro';
 	}
 	.internal-links {
 		display: flex;
-		gap: 0.25em;
+		gap: 36px;
 	}
-	nav a {
-		padding: 1em 0.5em;
-		color: rgb(var(--text));
-		border-bottom: 4px solid transparent;
-		text-decoration: none;
-	}
-	nav a.active {
-		text-decoration: none;
-		border-bottom-color: var(--accent);
-	}
-	.social-links,
-	.social-links a {
-		display: flex;
+	.linkedin {
+		width: 22px;
+		height: 22px;
+		background: #4b5b73;
+		color: var(--bg-soft);
+		display: inline-flex;
 		align-items: center;
+		justify-content: center;
+		border-radius: 3px;
+		text-decoration: none;
+		background-image: none;
 	}
-	.social-links a {
-		padding: 0.5em;
-		border-bottom: none;
-	}
-	@media (min-width: 721px) {
-		nav {
-			display: grid;
-			grid-template-columns: 1fr auto 1fr;
-			align-items: center;
-		}
-		.brand {
-			justify-self: start;
-		}
-		.internal-links {
-			justify-self: center;
-		}
-		.social-links {
-			justify-self: end;
-		}
+	.linkedin:hover {
+		background-size: 0;
+		background: #3b4a61;
 	}
 	@media (max-width: 720px) {
+		header {
+			padding: 14px 20px;
+		}
+		.wordmark {
+			font-size: 18px;
+		}
 		.burger {
 			display: inline-flex;
+		}
+		.linkedin {
+			display: none;
 		}
 		.internal-links,
 		.social-links {
@@ -153,22 +146,24 @@ import HeaderLink from './HeaderLink.astro';
 			display: none;
 			flex-direction: column;
 			align-items: stretch;
-			padding-bottom: 0.5em;
+			padding-bottom: 8px;
+			gap: 0;
 		}
 		nav.menu-open .internal-links,
 		nav.menu-open .social-links {
 			display: flex;
 		}
-		.internal-links a {
-			padding: 0.6em 0;
-			border-bottom: 1px solid rgba(var(--text), 8%);
-		}
-		.internal-links a.active {
-			border-bottom-color: var(--accent);
-		}
-		.social-links a {
-			padding: 0.6em 0;
+		nav.menu-open .linkedin {
+			display: inline-flex;
+			width: auto;
+			height: auto;
+			background: transparent;
+			color: rgb(var(--text));
+			padding: 12px 0;
 			justify-content: flex-start;
+			gap: 8px;
+			border-radius: 0;
+			border-top: 1px solid var(--hairline-soft);
 		}
 	}
 </style>

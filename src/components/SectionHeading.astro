@@ -1,0 +1,45 @@
+---
+interface Props {
+	title: string;
+	top?: boolean;
+}
+
+const { title, top = true } = Astro.props;
+---
+
+<div class:list={['section-heading', { 'top-margin': top }]}>
+	<h2>{title}</h2>
+	<slot name="side-link" />
+</div>
+<style>
+	.section-heading {
+		display: flex;
+		align-items: baseline;
+		justify-content: space-between;
+		gap: 12px;
+		flex-wrap: wrap;
+		margin-bottom: 20px;
+	}
+	.section-heading.top-margin {
+		margin-top: 56px;
+	}
+	h2 {
+		font-family: var(--font-display);
+		font-size: 30px;
+		margin: 0;
+		color: rgb(var(--text));
+		line-height: 1;
+		letter-spacing: -0.005em;
+	}
+	@media (max-width: 720px) {
+		.section-heading {
+			margin-bottom: 14px;
+		}
+		.section-heading.top-margin {
+			margin-top: 36px;
+		}
+		h2 {
+			font-size: 24px;
+		}
+	}
+</style>

@@ -1,13 +1,17 @@
 ---
 import type { HTMLAttributes } from 'astro/types';
 
-type Props = HTMLAttributes<'a'>;
+type Props = HTMLAttributes<'a'> & { active?: boolean };
 
-const { href, class: className, ...props } = Astro.props;
+const { href, class: className, active, ...props } = Astro.props;
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const prefixedHref = base + (typeof href === 'string' ? href : '');
 const pathname = Astro.url.pathname.replace(import.meta.env.BASE_URL, '');
 const subpath = pathname.match(/[^\/]+/g);
-const isActive = href === pathname || href === '/' + (subpath?.[0] || '');
-const prefixedHref = import.meta.env.BASE_URL.replace(/\/$/, '') + href;
+const isActive =
+	active === true ||
+	(active === undefined &&
+		(href === pathname || href === '/' + (subpath?.[0] || '')));
 ---
 
 <a href={prefixedHref} class:list={[className, { active: isActive }]} {...props}>
@@ -16,10 +20,29 @@ const prefixedHref = import.meta.env.BASE_URL.replace(/\/$/, '') + href;
 <style>
 	a {
 		display: inline-block;
+		color: rgb(var(--text));
+		font-family: var(--font-atkinson);
+		font-size: 17px;
+		padding: 6px 2px;
 		text-decoration: none;
+		border-bottom: 2px solid transparent;
+		background-image: none;
+	}
+	a:hover {
+		background-size: 0;
 	}
 	a.active {
-		font-weight: bolder;
-		text-decoration: underline;
+		font-weight: 700;
+		border-bottom-color: var(--accent);
+	}
+	@media (max-width: 720px) {
+		a {
+			padding: 12px 0;
+			border-bottom: 1px solid var(--hairline-soft);
+			width: 100%;
+		}
+		a.active {
+			border-bottom-color: var(--accent);
+		}
 	}
 </style>

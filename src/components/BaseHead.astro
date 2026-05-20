@@ -3,6 +3,8 @@ import '../styles/global.css';
 import { SITE_TITLE } from '../consts';
 import { Font } from 'astro:assets';
 
+const READ_KEY = 'fn:read-posts';
+
 interface Props {
 	title: string;
 	description: string;
@@ -37,6 +39,7 @@ const ogImage = new URL(resolvedOgPath, Astro.site);
 <meta name="generator" content={Astro.generator} />
 
 <Font cssVariable="--font-atkinson" preload />
+<Font cssVariable="--font-display" preload />
 
 <!-- Canonical URL -->
 <link rel="canonical" href={canonicalURL} />
@@ -61,3 +64,50 @@ const ogImage = new URL(resolvedOgPath, Astro.site);
 <meta property="twitter:title" content={title} />
 <meta property="twitter:description" content={description} />
 <meta property="twitter:image" content={ogImage} />
+
+<script is:inline define:vars={{ READ_KEY }}>
+	const hydrateUnread = () => {
+		let read = [];
+		try {
+			read = JSON.parse(localStorage.getItem(READ_KEY) || '[]');
+		} catch {
+			read = [];
+		}
+		const dots = document.querySelectorAll('[data-slug][data-unread]');
+		dots.forEach((dot) => {
+			const slug = dot.getAttribute('data-slug');
+			const isRead = read.includes(slug);
+			dot.setAttribute('data-unread', String(!isRead));
+			dot.setAttribute('aria-label', isRead ? 'Mark as unread' : 'Mark as read');
+			dot.setAttribute('title', isRead ? 'Read — click to mark unread' : 'Unread — click to mark read');
+		});
+	};
+	const handleToggle = (event) => {
+		const target = event.target.closest('[data-slug][data-unread]');
+		if (!target) return;
+		event.preventDefault();
+		event.stopPropagation();
+		const slug = target.getAttribute('data-slug');
+		let read = [];
+		try {
+			read = JSON.parse(localStorage.getItem(READ_KEY) || '[]');
+		} catch {
+			read = [];
+		}
+		if (read.includes(slug)) {
+			read = read.filter((s) => s !== slug);
+		} else {
+			read.push(slug);
+		}
+		localStorage.setItem(READ_KEY, JSON.stringify(read));
+		hydrateUnread();
+	};
+	document.addEventListener('DOMContentLoaded', () => {
+		hydrateUnread();
+		document.addEventListener('click', handleToggle);
+	});
+	if (document.readyState !== 'loading') {
+		hydrateUnread();
+		document.addEventListener('click', handleToggle);
+	}
+</script>

@@ -1,0 +1,54 @@
+---
+interface Props {
+	slug: string;
+}
+
+const { slug } = Astro.props;
+---
+
+<button
+	type="button"
+	class="unread-dot"
+	data-slug={slug}
+	data-unread="true"
+	aria-label="Mark as read"
+	title="Unread — click to mark read"
+>
+	<span class="dot"></span>
+</button>
+<style>
+	.unread-dot {
+		appearance: none;
+		border: 0;
+		cursor: pointer;
+		background: transparent;
+		padding: 0;
+		width: 16px;
+		height: 16px;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		flex-shrink: 0;
+		background-image: none;
+	}
+	.unread-dot:hover {
+		background-size: 0;
+	}
+	.unread-dot:focus-visible {
+		outline: 2px solid var(--accent-ink);
+		outline-offset: 2px;
+		border-radius: 50%;
+	}
+	.dot {
+		width: 8px;
+		height: 8px;
+		border-radius: 50%;
+		background: var(--accent);
+		box-shadow: 0 0 0 1px var(--accent);
+		transition: all 200ms ease;
+	}
+	.unread-dot[data-unread='false'] .dot {
+		background: transparent;
+		box-shadow: inset 0 0 0 1.5px var(--hairline);
+	}
+</style>

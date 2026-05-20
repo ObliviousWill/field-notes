@@ -1,0 +1,9 @@
+---
+interface Props {
+	status: 'building' | 'shipped' | 'paused';
+}
+
+const { status } = Astro.props;
+---
+
+<span class:list={['status', `status-${status}`]}>{status}</span>

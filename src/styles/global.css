@@ -1,9 +1,3 @@
-/*
-  The CSS in this style tag is based off of Bear Blog's default CSS.
-  https://github.com/HermanMartinus/bearblog/blob/297026a877bc2ab2b3bdfbd6b9f7961c350917dd/templates/styles/blog/default.css
-  License MIT: https://github.com/HermanMartinus/bearblog/blob/master/LICENSE.md
- */
-
 :root {
 	--bg: #eee9df;
 	--bg-tint: #e3ddd0;
@@ -12,6 +6,18 @@
 	--text-muted: 79, 93, 111;
 	--accent: #ffb162;
 	--accent-ink: #8a4509;
+	--hairline: rgba(44, 59, 77, 0.15);
+	--hairline-soft: rgba(44, 59, 77, 0.08);
+	--muted-soft: rgba(44, 59, 77, 0.55);
+	--cat-ai-solid: #ffb162;
+	--cat-ai-soft: rgba(255, 177, 98, 0.22);
+	--cat-ai-ink: #8a4509;
+	--cat-building-solid: #9ccaa6;
+	--cat-building-soft: rgba(156, 202, 166, 0.32);
+	--cat-building-ink: #23533a;
+	--cat-marketing-solid: #d7aedb;
+	--cat-marketing-soft: rgba(215, 174, 219, 0.3);
+	--cat-marketing-ink: #5e2a64;
 	--bg-gradient: var(--bg-soft), var(--bg);
 	--box-shadow:
 		0 2px 6px rgba(var(--text), 12%), 0 8px 24px rgba(var(--text), 16%),
@@ -37,14 +43,14 @@ body {
 	word-wrap: break-word;
 	overflow-wrap: break-word;
 	color: rgb(var(--text));
-	font-size: 20px;
-	line-height: 1.7;
+	font-size: 19px;
+	line-height: 1.65;
 }
 main {
 	width: 720px;
 	max-width: calc(100% - 2em);
 	margin: auto;
-	padding: 3em 1em;
+	padding: 64px 40px 80px;
 }
 h1,
 h2,
@@ -54,22 +60,26 @@ h5,
 h6 {
 	margin: 0 0 0.5rem 0;
 	color: rgb(var(--text));
-	line-height: 1.2;
+	line-height: 1.15;
+	font-family: var(--font-display);
+	font-weight: 400;
+	letter-spacing: -0.005em;
 }
 h1 {
-	font-size: 3.052em;
+	font-size: 56px;
 }
 h2 {
-	font-size: 2.441em;
+	font-size: 36px;
+	letter-spacing: -0.01em;
 }
 h3 {
-	font-size: 1.953em;
+	font-size: 28px;
 }
 h4 {
-	font-size: 1.563em;
+	font-size: 22px;
 }
 h5 {
-	font-size: 1.25em;
+	font-size: 19px;
 }
 strong,
 b {
@@ -83,7 +93,6 @@ a {
 	text-underline-offset: 2px;
 	transition:
 		background-size 0.2s ease,
-		box-shadow 0.2s ease,
 		text-decoration-color 0.2s ease;
 }
 a:hover {
@@ -92,18 +101,23 @@ a:hover {
 }
 .prose a,
 p a,
-.section-heading a {
+.section-heading a,
+.fn-link {
+	color: var(--accent-ink);
+	text-decoration: none;
 	background-image: linear-gradient(var(--accent), var(--accent));
 	background-position: 0 100%;
 	background-repeat: no-repeat;
-	background-size: 100% 0;
+	background-size: 100% 2px;
 	-webkit-box-decoration-break: clone;
 	box-decoration-break: clone;
 	border-radius: 1px;
+	padding-bottom: 1px;
 }
 .prose a:hover,
 p a:hover,
-.section-heading a:hover {
+.section-heading a:hover,
+.fn-link:hover {
 	background-size: 100% 100%;
 	text-decoration-color: transparent;
 }
@@ -115,8 +129,47 @@ a:focus-visible {
 p {
 	margin-bottom: 1em;
 }
+.prose {
+	font-size: 19px;
+	line-height: 1.65;
+}
 .prose p {
-	margin-bottom: 2em;
+	margin: 0 0 1.4em;
+}
+.prose h2 {
+	font-size: 36px;
+	margin: 56px 0 22px;
+	letter-spacing: -0.01em;
+}
+.prose h3 {
+	font-size: 26px;
+	margin: 40px 0 16px;
+}
+.prose h4 {
+	font-size: 20px;
+	margin: 32px 0 12px;
+}
+.prose ul,
+.prose ol {
+	padding-left: 22px;
+	margin: 0 0 1.4em;
+}
+.prose li {
+	margin-bottom: 14px;
+}
+.prose blockquote {
+	border-left: 4px solid var(--accent);
+	padding: 6px 0 6px 22px;
+	margin: 40px 0;
+	font-family: var(--font-display);
+	font-weight: 400;
+	font-style: normal;
+	font-size: 26px;
+	line-height: 1.3;
+	color: rgb(var(--text));
+}
+.prose blockquote p {
+	margin: 0;
 }
 textarea {
 	width: 100%;
@@ -137,43 +190,33 @@ code {
 	padding: 2px 5px;
 	background-color: var(--bg-tint);
 	border-radius: 2px;
+	font-size: 0.9em;
 }
 pre {
-	padding: 1.5em;
-	border-radius: 8px;
+	padding: 18px 22px;
+	border-radius: 6px;
 	background-color: var(--bg-tint);
+	font-size: 16px;
 }
 pre > code {
 	all: unset;
 }
-blockquote {
-	border-left: 4px solid var(--accent);
-	padding: 0 0 0 20px;
-	margin: 0;
-	font-size: 1.333em;
-}
 hr {
 	border: none;
-	border-top: 1px solid rgba(var(--text), 15%);
-}
-@media (max-width: 720px) {
-	body {
-		font-size: 18px;
-	}
-	main {
-		padding: 1em;
-	}
+	border-top: 1px solid var(--hairline);
+	margin: 36px 0;
 }
 
 .status {
 	display: inline-block;
 	padding: 0.15em 0.6em;
 	border-radius: 999px;
-	font-size: 0.75em;
+	font-size: 12px;
 	font-weight: 700;
 	text-transform: uppercase;
 	letter-spacing: 0.06em;
 	white-space: nowrap;
+	font-family: var(--font-atkinson);
 }
 .status-building {
 	background: var(--accent);
@@ -189,6 +232,51 @@ hr {
 	border: 1px solid rgba(var(--text), 20%);
 }
 
+.kicker {
+	font-size: 11px;
+	letter-spacing: 0.18em;
+	text-transform: uppercase;
+	color: rgb(var(--text-muted));
+	font-weight: 700;
+	font-family: var(--font-atkinson);
+}
+
+@media (max-width: 720px) {
+	body {
+		font-size: 17px;
+		line-height: 1.65;
+	}
+	main {
+		padding: 32px 20px 48px;
+	}
+	h1 {
+		font-size: 36px;
+	}
+	h2 {
+		font-size: 28px;
+	}
+	h3 {
+		font-size: 22px;
+	}
+	.prose {
+		font-size: 17px;
+	}
+	.prose h2 {
+		font-size: 28px;
+		margin: 40px 0 18px;
+	}
+	.prose h3 {
+		font-size: 22px;
+	}
+	.prose blockquote {
+		font-size: 21px;
+		margin: 32px 0;
+	}
+	hr {
+		margin: 24px 0;
+	}
+}
+
 .sr-only {
 	border: 0;
 	padding: 0;
@@ -197,12 +285,8 @@ hr {
 	height: 1px;
 	width: 1px;
 	overflow: hidden;
-	/* IE6, IE7 - a 0 height clip, off to the bottom right of the visible 1px box */
 	clip: rect(1px 1px 1px 1px);
-	/* maybe deprecated but we need to support legacy browsers */
 	clip: rect(1px, 1px, 1px, 1px);
-	/* modern browsers, clip-path works inwards from each corner */
 	clip-path: inset(50%);
-	/* added line to stop words getting smushed together (as they go onto separate lines and some screen readers do not understand line feeds as a space */
 	white-space: nowrap;
 }

@@ -1,0 +1,55 @@
+---
+interface Props {
+	tag: 'ai' | 'building' | 'marketing';
+	size?: 'sm' | 'lg';
+	colored?: boolean;
+}
+
+const labels: Record<Props['tag'], string> = {
+	ai: 'AI',
+	building: 'Building',
+	marketing: 'Marketing',
+};
+
+const { tag, size = 'sm', colored = true } = Astro.props;
+---
+
+<span class:list={['chip', `chip-${tag}`, `chip-${size}`, { 'chip-neutral': !colored }]}>
+	{labels[tag]}
+</span>
+<style>
+	.chip {
+		display: inline-block;
+		border-radius: 999px;
+		font-weight: 700;
+		letter-spacing: 0.1em;
+		text-transform: uppercase;
+		font-family: var(--font-atkinson);
+		white-space: nowrap;
+		background-image: none;
+	}
+	.chip-sm {
+		padding: 3px 8px;
+		font-size: 10px;
+	}
+	.chip-lg {
+		padding: 4px 10px;
+		font-size: 11px;
+	}
+	.chip-ai {
+		background: var(--cat-ai-soft);
+		color: var(--cat-ai-ink);
+	}
+	.chip-building {
+		background: var(--cat-building-soft);
+		color: var(--cat-building-ink);
+	}
+	.chip-marketing {
+		background: var(--cat-marketing-soft);
+		color: var(--cat-marketing-ink);
+	}
+	.chip-neutral {
+		background: rgba(var(--text), 8%);
+		color: rgb(var(--text));
+	}
+</style>
