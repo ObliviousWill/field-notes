@@ -11,20 +11,18 @@ export async function getStaticPaths() {
 		params: { slug: post.id },
 		props: {
 			post,
-			newerPost: i > 0 ? posts[i - 1] : null,
-			olderPost: i < posts.length - 1 ? posts[i + 1] : null,
+			nextPost: i > 0 ? posts[i - 1] : i < posts.length - 1 ? posts[i + 1] : null,
 		},
 	}));
 }
 
 interface Props {
 	post: CollectionEntry<'blog'>;
-	newerPost: CollectionEntry<'blog'> | null;
-	olderPost: CollectionEntry<'blog'> | null;
+	nextPost: CollectionEntry<'blog'> | null;
 }
 
-const { post, newerPost, olderPost } = Astro.props;
-const { Content, headings } = await render(post);
+const { post, nextPost } = Astro.props;
+const { Content } = await render(post);
 const readingTime = readingTimeMinutes(post.body);
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 const ogImageUrl = `${base}/og/${post.id}.png`;
@@ -32,10 +30,8 @@ const ogImageUrl = `${base}/og/${post.id}.png`;
 
 <BlogPost
 	{...post.data}
-	headings={headings}
 	readingTime={readingTime}
-	newerPost={newerPost}
-	olderPost={olderPost}
+	nextPost={nextPost}
 	ogImageUrl={ogImageUrl}
 >
 	<Content />

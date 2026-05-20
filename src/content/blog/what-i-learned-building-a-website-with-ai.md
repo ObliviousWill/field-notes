@@ -3,6 +3,8 @@ title: 'What I learned building a website with AI'
 description: 'One hour, a blank repo, and Claude Code as the only collaborator. What looking under the bonnet revealed about AI, marketing, and the work.'
 pubDate: 'May 20 2026'
 tags: ['building', 'ai']
+mentions:
+  - field-notes
 ---
 
 Three pages, one hour one morning this week, no builder, no agency, no developer. Just me and Claude (chat for the thinking, Claude Code for the building) and a GitHub integration that took ten minutes to set up. This site is the result. All in, it'll cost about £10 a year for a domain; hosting is free on GitHub Pages.

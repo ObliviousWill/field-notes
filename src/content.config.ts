@@ -13,6 +13,7 @@ const blog = defineCollection({
 			heroImage: z.optional(image()),
 			tags: z.array(z.enum(['building', 'marketing', 'ai'])).optional(),
 			author: z.string().optional(),
+			mentions: z.array(reference('projects')).optional(),
 		}),
 });
 
