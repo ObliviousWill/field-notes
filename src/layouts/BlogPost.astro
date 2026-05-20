@@ -5,11 +5,17 @@ import BaseHead from '../components/BaseHead.astro';
 import Footer from '../components/Footer.astro';
 import FormattedDate from '../components/FormattedDate.astro';
 import Header from '../components/Header.astro';
+import { SITE_AUTHOR } from '../consts';
 
-type Props = CollectionEntry<'blog'>['data'] & { headings?: MarkdownHeading[] };
+type Props = CollectionEntry<'blog'>['data'] & {
+	headings?: MarkdownHeading[];
+	readingTime?: number;
+};
 
-const { title, description, pubDate, updatedDate, heroImage, tags, headings } = Astro.props;
+const { title, description, pubDate, updatedDate, heroImage, tags, headings, author, readingTime } =
+	Astro.props;
 const tocHeadings = (headings ?? []).filter((h) => h.depth === 2);
+const byline = author ?? SITE_AUTHOR;
 ---
 
 <html lang="en">
@@ -121,12 +127,28 @@ const tocHeadings = (headings ?? []).filter((h) => h.depth === 2);
 				font-size: 1.125em;
 				line-height: 1.4;
 			}
-			.date {
+			.byline {
+				display: flex;
+				flex-wrap: wrap;
+				justify-content: center;
+				align-items: center;
+				gap: 0.5em;
 				margin-bottom: 0.5em;
 				color: rgb(var(--text-muted));
+				font-size: 0.95em;
+			}
+			.byline .sep {
+				opacity: 0.5;
+			}
+			.byline .author {
+				color: rgb(var(--text));
+				font-weight: 600;
 			}
 			.last-updated-on {
 				font-style: italic;
+				width: 100%;
+				flex-basis: 100%;
+				text-align: center;
 			}
 			.tags {
 				display: flex;
@@ -160,8 +182,19 @@ const tocHeadings = (headings ?? []).filter((h) => h.depth === 2);
 				<div class="post-body">
 					<div class="prose">
 						<div class="title">
-							<div class="date">
+							<h1>{title}</h1>
+							<div class="byline">
+								<span class="author">{byline}</span>
+								<span class="sep">·</span>
 								<FormattedDate date={pubDate} />
+								{
+									readingTime && (
+										<>
+											<span class="sep">·</span>
+											<span>{readingTime} min read</span>
+										</>
+									)
+								}
 								{
 									updatedDate && (
 										<div class="last-updated-on">
@@ -170,7 +203,6 @@ const tocHeadings = (headings ?? []).filter((h) => h.depth === 2);
 									)
 								}
 							</div>
-							<h1>{title}</h1>
 							{description && <p class="description">{description}</p>}
 							{
 								tags && tags.length > 0 && (
