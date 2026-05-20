@@ -34,7 +34,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 <html lang="en">
 	<head>
 		<BaseHead
-			title={`${update.data.title} — ${project?.data.title ?? 'Update'}`}
+			title={`${update.data.title} · ${project?.data.title ?? 'Update'}`}
 			description={project?.data.summary ?? ''}
 		/>
 		<style>

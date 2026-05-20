@@ -7,7 +7,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 export async function GET(context) {
 	const updates = await getAllUpdates();
 	return rss({
-		title: `${SITE_TITLE} — Project updates`,
+		title: `${SITE_TITLE} · Project updates`,
 		description: 'Progress updates from projects on Field Notes.',
 		site: context.site,
 		items: updates.map((update) => ({

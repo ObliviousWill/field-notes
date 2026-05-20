@@ -16,10 +16,10 @@ Most of the scaffolding is done. The site is live on GitHub Pages, three pages r
 
 ## What's next
 
-- This project page and its update feed — the bit you're reading.
+- This project page and its update feed: the bit you're reading.
 - **Write more.** A handful more posts before promoting widely, so the site reads lived-in rather than just-launched.
 - **Add more projects.** Other artefacts in flight (the AI chatbot, the meal-planning app) get their own project pages with the same update-log pattern.
 - **Get feedback from colleagues.** Soft-launch to a small circle, see what lands, what's confusing, what they wish was here.
 - A real typography pass: line length, code-block styling, blockquote treatment.
 - Open Graph image generation so links share well.
-- **Maybe** a custom domain at some point — purely to move off the `obliviouswill.github.io/field-notes` URL. It's a nice-to-have, not a blocker.
+- **Maybe** a custom domain at some point, purely to move off the `obliviouswill.github.io/field-notes` URL. It's a nice-to-have, not a blocker.

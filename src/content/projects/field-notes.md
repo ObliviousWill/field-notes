@@ -10,4 +10,4 @@ links:
 
 This is the site you're on. Built from a blank repo, deployed via GitHub Pages, no builder and no agency.
 
-Every change ships through a commit, so the project's progress is visible in the git history as well as in the updates below. The goal isn't a portfolio piece — it's a record of decisions: what I tried, what I changed my mind about, what worked.
+Every change ships through a commit, so the project's progress is visible in the git history as well as in the updates below. The goal isn't a portfolio piece. It's a record of decisions: what I tried, what I changed my mind about, what worked.
