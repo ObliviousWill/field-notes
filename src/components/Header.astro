@@ -5,13 +5,29 @@ import HeaderLink from './HeaderLink.astro';
 
 <header>
 	<nav>
-		<h2>
-			<a href={`${import.meta.env.BASE_URL}/`}>
+		<h2 class="brand">
+			<a href={`${import.meta.env.BASE_URL}/`} class="logo-link">
 				<img src={`${import.meta.env.BASE_URL}/logo.svg`} alt={SITE_TITLE} class="logo" />
 				<span class="sr-only">{SITE_TITLE}</span>
 			</a>
 		</h2>
-		<div class="internal-links">
+		<button
+			type="button"
+			class="burger"
+			aria-expanded="false"
+			aria-controls="primary-menu"
+			aria-label="Open menu"
+		>
+			<svg viewBox="0 0 24 24" aria-hidden="true" width="28" height="28">
+				<path
+					fill="none"
+					stroke="currentColor"
+					stroke-width="2"
+					stroke-linecap="round"
+					d="M4 7h16M4 12h16M4 17h16"></path>
+			</svg>
+		</button>
+		<div id="primary-menu" class="internal-links">
 			<HeaderLink href="/">Home</HeaderLink>
 			<HeaderLink href="/blog">Blog</HeaderLink>
 			<HeaderLink href="/about">About</HeaderLink>
@@ -29,6 +45,20 @@ import HeaderLink from './HeaderLink.astro';
 		</div>
 	</nav>
 </header>
+<script>
+	const burger = document.querySelector<HTMLButtonElement>('.burger');
+	const nav = burger?.closest('nav');
+	const closeMenu = () => {
+		burger?.setAttribute('aria-expanded', 'false');
+		nav?.classList.remove('menu-open');
+	};
+	burger?.addEventListener('click', () => {
+		const isOpen = burger.getAttribute('aria-expanded') === 'true';
+		burger.setAttribute('aria-expanded', String(!isOpen));
+		nav?.classList.toggle('menu-open', !isOpen);
+	});
+	nav?.querySelectorAll('a').forEach((link) => link.addEventListener('click', closeMenu));
+</script>
 <style>
 	header {
 		margin: 0;
@@ -36,18 +66,22 @@ import HeaderLink from './HeaderLink.astro';
 		background: var(--bg-soft);
 		box-shadow: 0 1px 0 rgba(var(--text), 8%);
 	}
-	h2 {
+	nav {
+		display: flex;
+		align-items: center;
+		flex-wrap: wrap;
+		justify-content: space-between;
+	}
+	.brand {
 		margin: 0;
 		font-size: 1em;
 	}
-
-	h2 a,
-	h2 a.active {
-		text-decoration: none;
-		color: rgb(var(--text));
+	.logo-link {
 		display: inline-flex;
 		align-items: center;
 		padding: 0.5em 0;
+		text-decoration: none;
+		color: rgb(var(--text));
 	}
 	.logo {
 		height: 36px;
@@ -55,10 +89,23 @@ import HeaderLink from './HeaderLink.astro';
 		display: block;
 		border-radius: 0;
 	}
-	nav {
-		display: flex;
+	.burger {
+		display: none;
+		background: none;
+		border: 0;
+		padding: 0.5em;
+		cursor: pointer;
+		color: rgb(var(--text));
 		align-items: center;
-		justify-content: space-between;
+	}
+	.burger:focus-visible {
+		outline: 2px solid var(--accent-ink);
+		outline-offset: 2px;
+		border-radius: 2px;
+	}
+	.internal-links {
+		display: flex;
+		gap: 0.25em;
 	}
 	nav a {
 		padding: 1em 0.5em;
@@ -73,10 +120,54 @@ import HeaderLink from './HeaderLink.astro';
 	.social-links,
 	.social-links a {
 		display: flex;
+		align-items: center;
+	}
+	.social-links a {
+		padding: 0.5em;
+		border-bottom: none;
+	}
+	@media (min-width: 721px) {
+		nav {
+			display: grid;
+			grid-template-columns: 1fr auto 1fr;
+			align-items: center;
+		}
+		.brand {
+			justify-self: start;
+		}
+		.internal-links {
+			justify-self: center;
+		}
+		.social-links {
+			justify-self: end;
+		}
 	}
 	@media (max-width: 720px) {
+		.burger {
+			display: inline-flex;
+		}
+		.internal-links,
 		.social-links {
+			flex-basis: 100%;
 			display: none;
+			flex-direction: column;
+			align-items: stretch;
+			padding-bottom: 0.5em;
+		}
+		nav.menu-open .internal-links,
+		nav.menu-open .social-links {
+			display: flex;
+		}
+		.internal-links a {
+			padding: 0.6em 0;
+			border-bottom: 1px solid rgba(var(--text), 8%);
+		}
+		.internal-links a.active {
+			border-bottom-color: var(--accent);
+		}
+		.social-links a {
+			padding: 0.6em 0;
+			justify-content: flex-start;
 		}
 	}
 </style>
