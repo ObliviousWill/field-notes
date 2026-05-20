@@ -2,7 +2,7 @@
 title: 'Field Notes (this site)'
 summary: 'A personal site built in the open with Claude Code as the only collaborator. The brief: see how far a non-developer can take a website end to end, and show the work as I go.'
 status: 'building'
-startDate: 'May 19 2026'
+startDate: 'May 20 2026'
 links:
   - label: 'GitHub repo'
     url: 'https://github.com/ObliviousWill/field-notes'
