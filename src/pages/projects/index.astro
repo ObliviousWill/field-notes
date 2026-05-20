@@ -1,0 +1,149 @@
+---
+import { getCollection } from 'astro:content';
+import BaseHead from '../../components/BaseHead.astro';
+import Footer from '../../components/Footer.astro';
+import FormattedDate from '../../components/FormattedDate.astro';
+import Header from '../../components/Header.astro';
+import { SITE_TITLE } from '../../consts';
+import { getUpdatesForProject } from '../../utils/projects';
+
+const projects = (await getCollection('projects')).sort(
+	(a, b) => b.data.startDate.valueOf() - a.data.startDate.valueOf(),
+);
+
+const projectsWithLatest = await Promise.all(
+	projects.map(async (p) => {
+		const updates = await getUpdatesForProject(p.id);
+		return { project: p, latestUpdate: updates[0] };
+	}),
+);
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<BaseHead
+			title={`Projects — ${SITE_TITLE}`}
+			description="What I'm building in the open — and what I've learned doing it."
+		/>
+		<style>
+			.intro {
+				padding: 3em 0 2em;
+				border-bottom: 1px solid rgba(var(--text), 12%);
+				margin-bottom: 2em;
+			}
+			.intro h1 {
+				margin: 0 0 0.4em;
+				font-size: 2.441em;
+				line-height: 1.1;
+			}
+			.intro p {
+				margin: 0;
+				color: rgb(var(--text-muted));
+				max-width: 38em;
+			}
+			.projects {
+				list-style: none;
+				margin: 0 0 3em;
+				padding: 0;
+				display: flex;
+				flex-direction: column;
+				gap: 1.5em;
+			}
+			.card {
+				display: block;
+				padding: 1.5em;
+				background: var(--bg-soft);
+				border: 1px solid rgba(var(--text), 8%);
+				border-radius: 12px;
+				text-decoration: none;
+				color: inherit;
+				transition: border-color 0.15s ease, transform 0.15s ease;
+			}
+			.card:hover {
+				border-color: var(--accent);
+			}
+			.card-head {
+				display: flex;
+				align-items: baseline;
+				justify-content: space-between;
+				gap: 1em;
+				flex-wrap: wrap;
+				margin-bottom: 0.4em;
+			}
+			.card-title {
+				margin: 0;
+				font-size: 1.5em;
+				color: rgb(var(--text));
+			}
+			.summary {
+				margin: 0.4em 0 0.8em;
+				color: rgb(var(--text));
+			}
+			.meta {
+				color: rgb(var(--text-muted));
+				font-size: 0.9em;
+				margin: 0;
+				display: flex;
+				flex-wrap: wrap;
+				gap: 0.4em;
+			}
+			.meta .sep {
+				opacity: 0.5;
+			}
+			.empty {
+				color: rgb(var(--text-muted));
+				font-style: italic;
+				padding: 1em 0;
+			}
+		</style>
+	</head>
+	<body>
+		<Header />
+		<main>
+			<section class="intro">
+				<h1>Projects</h1>
+				<p>
+					What I'm building, with the work shown — decisions, dead ends, screenshots, and what I'd
+					do differently. Each project has its own page with a running log of updates.
+				</p>
+			</section>
+
+			{
+				projectsWithLatest.length === 0 ? (
+					<p class="empty">No projects yet.</p>
+				) : (
+					<ul class="projects">
+						{projectsWithLatest.map(({ project, latestUpdate }) => (
+							<li>
+								<a class="card" href={`${base}/projects/${project.id}/`}>
+									<div class="card-head">
+										<h2 class="card-title">{project.data.title}</h2>
+										<span class={`status status-${project.data.status}`}>
+											{project.data.status}
+										</span>
+									</div>
+									<p class="summary">{project.data.summary}</p>
+									<p class="meta">
+										<span>Started <FormattedDate date={project.data.startDate} /></span>
+										{latestUpdate && (
+											<>
+												<span class="sep">·</span>
+												<span>
+													Last update <FormattedDate date={latestUpdate.data.pubDate} />
+												</span>
+											</>
+										)}
+									</p>
+								</a>
+							</li>
+						))}
+					</ul>
+				)
+			}
+		</main>
+		<Footer />
+	</body>
+</html>

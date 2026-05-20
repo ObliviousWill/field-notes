@@ -144,6 +144,30 @@ hr {
 	}
 }
 
+.status {
+	display: inline-block;
+	padding: 0.15em 0.6em;
+	border-radius: 999px;
+	font-size: 0.75em;
+	font-weight: 700;
+	text-transform: uppercase;
+	letter-spacing: 0.06em;
+	white-space: nowrap;
+}
+.status-building {
+	background: var(--accent);
+	color: rgb(var(--text));
+}
+.status-shipped {
+	background: rgba(var(--text), 10%);
+	color: rgb(var(--text));
+}
+.status-paused {
+	background: transparent;
+	color: rgb(var(--text-muted));
+	border: 1px solid rgba(var(--text), 20%);
+}
+
 .sr-only {
 	border: 0;
 	padding: 0;

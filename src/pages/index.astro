@@ -5,12 +5,26 @@ import Footer from '../components/Footer.astro';
 import FormattedDate from '../components/FormattedDate.astro';
 import Header from '../components/Header.astro';
 import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
+import { getUpdatesForProject, updateSlug } from '../utils/projects';
 import { readingTimeMinutes } from '../utils/readingTime';
 
 const recentPosts = (await getCollection('blog'))
 	.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
 	.slice(0, 5)
 	.map((post) => ({ ...post, readingTime: readingTimeMinutes(post.body) }));
+
+const buildingProjects = (await getCollection('projects'))
+	.filter((p) => p.data.status === 'building')
+	.sort((a, b) => b.data.startDate.valueOf() - a.data.startDate.valueOf());
+
+const building = (
+	await Promise.all(
+		buildingProjects.map(async (project) => {
+			const updates = await getUpdatesForProject(project.id);
+			return { project, latestUpdate: updates[0] };
+		}),
+	)
+).slice(0, 2);
 
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 ---
@@ -101,6 +115,53 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 				font-style: italic;
 				padding: 1em 0;
 			}
+			.building {
+				list-style: none;
+				margin: 0 0 3em;
+				padding: 0;
+				display: flex;
+				flex-direction: column;
+				gap: 1em;
+			}
+			.building-card {
+				display: block;
+				padding: 1.25em 1.25em;
+				background: var(--bg-soft);
+				border: 1px solid rgba(var(--text), 8%);
+				border-radius: 12px;
+				text-decoration: none;
+				color: inherit;
+			}
+			.building-card:hover {
+				border-color: var(--accent);
+			}
+			.building-head {
+				display: flex;
+				align-items: baseline;
+				justify-content: space-between;
+				gap: 1em;
+				flex-wrap: wrap;
+				margin-bottom: 0.3em;
+			}
+			.building-title {
+				margin: 0;
+				font-size: 1.25em;
+				font-weight: 700;
+				color: rgb(var(--text));
+			}
+			.building-summary {
+				margin: 0.2em 0 0.6em;
+				color: rgb(var(--text));
+			}
+			.building-update {
+				margin: 0;
+				font-size: 0.9em;
+				color: rgb(var(--text-muted));
+			}
+			.building-update strong {
+				color: rgb(var(--text));
+				font-weight: 600;
+			}
 			@media (max-width: 720px) {
 				.hero h1 {
 					font-size: 1.953em;
@@ -121,6 +182,40 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 					New posts roughly weekly. <a href={`${base}/about/`}>More about this site →</a>
 				</p>
 			</section>
+
+			{
+				building.length > 0 && (
+					<section>
+						<div class="section-heading">
+							<h2>Currently building</h2>
+							<a href={`${base}/projects/`}>All projects →</a>
+						</div>
+						<ul class="building">
+							{building.map(({ project, latestUpdate }) => (
+								<li>
+									<a class="building-card" href={`${base}/projects/${project.id}/`}>
+										<div class="building-head">
+											<p class="building-title">{project.data.title}</p>
+											<span class={`status status-${project.data.status}`}>
+												{project.data.status}
+											</span>
+										</div>
+										<p class="building-summary">{project.data.summary}</p>
+										{latestUpdate && (
+											<p class="building-update">
+												Latest: <strong>{latestUpdate.data.title}</strong>{' '}
+												<span>
+													(<FormattedDate date={latestUpdate.data.pubDate} />)
+												</span>
+											</p>
+										)}
+									</a>
+								</li>
+							))}
+						</ul>
+					</section>
+				)
+			}
 
 			<section>
 				<div class="section-heading">

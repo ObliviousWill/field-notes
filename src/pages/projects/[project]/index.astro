@@ -1,0 +1,213 @@
+---
+import { Image } from 'astro:assets';
+import { getCollection, render, type CollectionEntry } from 'astro:content';
+import BaseHead from '../../../components/BaseHead.astro';
+import Footer from '../../../components/Footer.astro';
+import FormattedDate from '../../../components/FormattedDate.astro';
+import Header from '../../../components/Header.astro';
+import { getUpdatesForProject, updateSlug } from '../../../utils/projects';
+import { readingTimeMinutes } from '../../../utils/readingTime';
+
+export async function getStaticPaths() {
+	const projects = await getCollection('projects');
+	return projects.map((project) => ({
+		params: { project: project.id },
+		props: { project },
+	}));
+}
+
+interface Props {
+	project: CollectionEntry<'projects'>;
+}
+
+const { project } = Astro.props;
+const { Content: ProjectBody } = await render(project);
+
+const updates = await getUpdatesForProject(project.id);
+const renderedUpdates = await Promise.all(
+	updates.map(async (u) => {
+		const { Content } = await render(u);
+		return {
+			update: u,
+			Content,
+			slug: updateSlug(u),
+			readingTime: readingTimeMinutes(u.body),
+		};
+	}),
+);
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<BaseHead title={project.data.title} description={project.data.summary} />
+		<style>
+			.project-head {
+				padding: 2.5em 0 1em;
+				margin-bottom: 1em;
+				border-bottom: 1px solid rgba(var(--text), 12%);
+			}
+			.project-head h1 {
+				margin: 0 0 0.4em;
+				font-size: 2.441em;
+				line-height: 1.1;
+			}
+			.project-head .summary {
+				margin: 0 0 0.8em;
+				color: rgb(var(--text));
+				font-size: 1.125em;
+				max-width: 38em;
+			}
+			.project-meta {
+				display: flex;
+				flex-wrap: wrap;
+				align-items: center;
+				gap: 0.8em;
+				margin: 0 0 0.5em;
+				color: rgb(var(--text-muted));
+				font-size: 0.95em;
+			}
+			.project-meta .sep {
+				opacity: 0.5;
+			}
+			.links {
+				display: flex;
+				flex-wrap: wrap;
+				gap: 1em;
+				margin: 0.5em 0 0;
+			}
+			.brief {
+				margin: 0 0 3em;
+			}
+			.hero-image img {
+				display: block;
+				width: 100%;
+				border-radius: 12px;
+				box-shadow: var(--box-shadow);
+				margin-bottom: 2em;
+			}
+			.updates-heading {
+				font-size: 1.563em;
+				margin: 0 0 1em;
+				padding-bottom: 0.4em;
+				border-bottom: 1px solid rgba(var(--text), 12%);
+			}
+			.update {
+				margin-bottom: 3em;
+				padding-bottom: 2em;
+				border-bottom: 1px solid rgba(var(--text), 8%);
+			}
+			.update:last-child {
+				border-bottom: none;
+			}
+			.update-head {
+				margin-bottom: 1em;
+			}
+			.update-head h3 {
+				margin: 0 0 0.3em;
+				font-size: 1.5em;
+				line-height: 1.2;
+			}
+			.update-head h3 a {
+				color: rgb(var(--text));
+				text-decoration: none;
+			}
+			.update-head h3 a:hover {
+				text-decoration: underline;
+				text-decoration-color: var(--accent);
+				text-decoration-thickness: 2px;
+				text-underline-offset: 3px;
+			}
+			.update-meta {
+				color: rgb(var(--text-muted));
+				font-size: 0.9em;
+				margin: 0;
+				display: flex;
+				gap: 0.4em;
+				flex-wrap: wrap;
+			}
+			.update-meta .sep {
+				opacity: 0.5;
+			}
+			.update-meta .permalink {
+				margin-left: auto;
+				color: var(--accent-ink);
+				text-decoration: none;
+			}
+			.empty {
+				color: rgb(var(--text-muted));
+				font-style: italic;
+			}
+		</style>
+	</head>
+	<body>
+		<Header />
+		<main>
+			<article>
+				{
+					project.data.heroImage && (
+						<div class="hero-image">
+							<Image width={1020} height={510} src={project.data.heroImage} alt="" />
+						</div>
+					)
+				}
+				<header class="project-head">
+					<h1>{project.data.title}</h1>
+					<p class="summary">{project.data.summary}</p>
+					<p class="project-meta">
+						<span class={`status status-${project.data.status}`}>{project.data.status}</span>
+						<span class="sep">·</span>
+						<span>Started <FormattedDate date={project.data.startDate} /></span>
+					</p>
+					{
+						project.data.links && project.data.links.length > 0 && (
+							<p class="links">
+								{project.data.links.map((link) => (
+									<a href={link.url} target="_blank" rel="noopener">
+										{link.label}
+									</a>
+								))}
+							</p>
+						)
+					}
+				</header>
+
+				<div class="brief">
+					<ProjectBody />
+				</div>
+
+				<h2 class="updates-heading">Updates</h2>
+
+				{
+					renderedUpdates.length === 0 ? (
+						<p class="empty">No updates yet.</p>
+					) : (
+						renderedUpdates.map(({ update, Content, slug, readingTime }) => (
+							<section class="update" id={slug}>
+								<header class="update-head">
+									<h3>
+										<a href={`${base}/projects/${project.id}/${slug}/`}>{update.data.title}</a>
+									</h3>
+									<p class="update-meta">
+										<FormattedDate date={update.data.pubDate} />
+										<span class="sep">·</span>
+										<span>{readingTime} min read</span>
+										<a class="permalink" href={`${base}/projects/${project.id}/${slug}/`}>
+											Permalink →
+										</a>
+									</p>
+								</header>
+								<div class="update-body">
+									<Content />
+								</div>
+							</section>
+						))
+					)
+				}
+			</article>
+		</main>
+		<Footer />
+	</body>
+</html>
