@@ -10,17 +10,33 @@ import { SITE_AUTHOR } from '../consts';
 type Props = CollectionEntry<'blog'>['data'] & {
 	headings?: MarkdownHeading[];
 	readingTime?: number;
+	newerPost?: CollectionEntry<'blog'> | null;
+	olderPost?: CollectionEntry<'blog'> | null;
+	ogImageUrl?: string;
 };
 
-const { title, description, pubDate, updatedDate, heroImage, tags, headings, author, readingTime } =
-	Astro.props;
+const {
+	title,
+	description,
+	pubDate,
+	updatedDate,
+	heroImage,
+	tags,
+	headings,
+	author,
+	readingTime,
+	newerPost,
+	olderPost,
+	ogImageUrl,
+} = Astro.props;
 const tocHeadings = (headings ?? []).filter((h) => h.depth === 2);
 const byline = author ?? SITE_AUTHOR;
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 ---
 
 <html lang="en">
 	<head>
-		<BaseHead title={title} description={description} />
+		<BaseHead title={title} description={description} ogImageUrl={ogImageUrl} />
 		<style>
 			main {
 				width: calc(100% - 2em);
@@ -169,6 +185,57 @@ const byline = author ?? SITE_AUTHOR;
 				content: '#';
 				opacity: 0.7;
 			}
+			.post-nav {
+				display: grid;
+				grid-template-columns: 1fr 1fr;
+				gap: 1em;
+				margin: 4em 0 0;
+				padding-top: 2em;
+				border-top: 1px solid rgba(var(--text), 12%);
+			}
+			.post-nav-slot {
+				min-width: 0;
+			}
+			.post-nav-slot-right {
+				text-align: right;
+			}
+			.post-nav-link {
+				display: inline-flex;
+				flex-direction: column;
+				gap: 0.25em;
+				padding: 0.75em 1em;
+				background: var(--bg-soft);
+				border: 1px solid rgba(var(--text), 8%);
+				border-radius: 10px;
+				text-decoration: none;
+				color: rgb(var(--text));
+				max-width: 100%;
+				background-image: none;
+				transition: border-color 0.15s ease;
+			}
+			.post-nav-link:hover {
+				border-color: var(--accent);
+				background-size: 0;
+			}
+			.post-nav-label {
+				font-size: 0.8em;
+				color: rgb(var(--text-muted));
+				text-transform: uppercase;
+				letter-spacing: 0.06em;
+				font-weight: 700;
+			}
+			.post-nav-title {
+				font-weight: 600;
+				line-height: 1.3;
+			}
+			@media (max-width: 720px) {
+				.post-nav {
+					grid-template-columns: 1fr;
+				}
+				.post-nav-slot-right {
+					text-align: left;
+				}
+			}
 		</style>
 	</head>
 
@@ -216,6 +283,28 @@ const byline = author ?? SITE_AUTHOR;
 							<hr />
 						</div>
 						<slot />
+						{
+							(newerPost || olderPost) && (
+								<nav class="post-nav" aria-label="More posts">
+									<div class="post-nav-slot">
+										{olderPost && (
+											<a class="post-nav-link" href={`${base}/blog/${olderPost.id}/`}>
+												<span class="post-nav-label">← Older</span>
+												<span class="post-nav-title">{olderPost.data.title}</span>
+											</a>
+										)}
+									</div>
+									<div class="post-nav-slot post-nav-slot-right">
+										{newerPost && (
+											<a class="post-nav-link" href={`${base}/blog/${newerPost.id}/`}>
+												<span class="post-nav-label">Newer →</span>
+												<span class="post-nav-title">{newerPost.data.title}</span>
+											</a>
+										)}
+									</div>
+								</nav>
+							)
+						}
 					</div>
 					{
 						tocHeadings.length > 1 && (
