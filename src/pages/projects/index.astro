@@ -2,148 +2,219 @@
 import { getCollection } from 'astro:content';
 import BaseHead from '../../components/BaseHead.astro';
 import Footer from '../../components/Footer.astro';
-import FormattedDate from '../../components/FormattedDate.astro';
 import Header from '../../components/Header.astro';
+import NewsletterBlock from '../../components/NewsletterBlock.astro';
+import PageTitle from '../../components/PageTitle.astro';
+import ProjectCard from '../../components/ProjectCard.astro';
+import StatusPill from '../../components/StatusPill.astro';
 import { SITE_TITLE } from '../../consts';
-import { getUpdatesForProject } from '../../utils/projects';
 
 const projects = (await getCollection('projects')).sort(
 	(a, b) => b.data.startDate.valueOf() - a.data.startDate.valueOf(),
 );
 
-const projectsWithLatest = await Promise.all(
-	projects.map(async (p) => {
-		const updates = await getUpdatesForProject(p.id);
-		return { project: p, latestUpdate: updates[0] };
-	}),
-);
+const building = projects.filter((p) => p.data.status === 'building');
+const paused = projects.filter((p) => p.data.status === 'paused');
+const shipped = projects.filter((p) => p.data.status === 'shipped');
 
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const rssUrl = `${base}/projects/rss.xml`;
+const blogUrl = `${base}/blog/`;
+const description =
+	"What I'm building, with the work shown: decisions, dead ends, screenshots, and what I'd do differently. Each project has its own page with a running log of updates.";
 ---
 
 <!doctype html>
 <html lang="en">
 	<head>
-		<BaseHead
-			title={`Projects · ${SITE_TITLE}`}
-			description="What I'm building in the open, and what I've learned doing it."
-		/>
-		<style>
-			.intro {
-				padding: 3em 0 2em;
-				border-bottom: 1px solid rgba(var(--text), 12%);
-				margin-bottom: 2em;
-			}
-			.intro h1 {
-				margin: 0 0 0.4em;
-				font-size: 2.441em;
-				line-height: 1.1;
-			}
-			.intro p {
-				margin: 0;
-				color: rgb(var(--text-muted));
-				max-width: 38em;
-			}
-			.projects {
-				list-style: none;
-				margin: 0 0 3em;
-				padding: 0;
-				display: flex;
-				flex-direction: column;
-				gap: 1.5em;
-			}
-			.card {
-				display: block;
-				padding: 1.5em;
-				background: var(--bg-soft);
-				border: 1px solid rgba(var(--text), 8%);
-				border-radius: 12px;
-				text-decoration: none;
-				color: inherit;
-				transition: border-color 0.15s ease, transform 0.15s ease;
-			}
-			.card:hover {
-				border-color: var(--accent);
-			}
-			.card-head {
-				display: flex;
-				align-items: baseline;
-				justify-content: space-between;
-				gap: 1em;
-				flex-wrap: wrap;
-				margin-bottom: 0.4em;
-			}
-			.card-title {
-				margin: 0;
-				font-size: 1.5em;
-				color: rgb(var(--text));
-			}
-			.summary {
-				margin: 0.4em 0 0.8em;
-				color: rgb(var(--text));
-			}
-			.meta {
-				color: rgb(var(--text-muted));
-				font-size: 0.9em;
-				margin: 0;
-				display: flex;
-				flex-wrap: wrap;
-				gap: 0.4em;
-			}
-			.meta .sep {
-				opacity: 0.5;
-			}
-			.empty {
-				color: rgb(var(--text-muted));
-				font-style: italic;
-				padding: 1em 0;
-			}
-		</style>
+		<BaseHead title={`Projects · ${SITE_TITLE}`} description={description} />
 	</head>
 	<body>
-		<Header />
+		<Header current="projects" />
 		<main>
-			<section class="intro">
-				<h1>Projects</h1>
-				<p>
-					What I'm building, with the work shown: decisions, dead ends, screenshots, and what I'd
-					do differently. Each project has its own page with a running log of updates.
-				</p>
-			</section>
+			<PageTitle
+				title="Projects"
+				count={projects.length}
+				countLabel={projects.length === 1 ? 'project' : 'projects'}
+				subtitle={description}
+			>
+				<a slot="side-link" class="fn-link" href={rssUrl}>RSS ↗</a>
+			</PageTitle>
+
+			<div class="legend">
+				<span class="item"><StatusPill status="building" /> active</span>
+				<span class="item"><StatusPill status="paused" /> on hold</span>
+				<span class="item"><StatusPill status="shipped" /> done</span>
+			</div>
+
+			<hr />
 
 			{
-				projectsWithLatest.length === 0 ? (
-					<p class="empty">No projects yet.</p>
-				) : (
-					<ul class="projects">
-						{projectsWithLatest.map(({ project, latestUpdate }) => (
-							<li>
-								<a class="card" href={`${base}/projects/${project.id}/`}>
-									<div class="card-head">
-										<h2 class="card-title">{project.data.title}</h2>
-										<span class={`status status-${project.data.status}`}>
-											{project.data.status}
-										</span>
-									</div>
-									<p class="summary">{project.data.summary}</p>
-									<p class="meta">
-										<span>Started <FormattedDate date={project.data.startDate} /></span>
-										{latestUpdate && (
-											<>
-												<span class="sep">·</span>
-												<span>
-													Last update <FormattedDate date={latestUpdate.data.pubDate} />
-												</span>
-											</>
-										)}
-									</p>
-								</a>
-							</li>
-						))}
-					</ul>
+				building.length > 0 && (
+					<section class="group">
+						<div class="group-head">
+							<span class="group-label">Active</span>
+							<span class="group-rule" aria-hidden="true" />
+							<span class="group-count">{building.length}</span>
+						</div>
+						<div class="card-stack">
+							{building.map((project) => (
+								<ProjectCard project={project} expanded />
+							))}
+						</div>
+					</section>
 				)
 			}
+
+			{
+				paused.length > 0 && (
+					<section class="group group-spaced">
+						<div class="group-head">
+							<span class="group-label">On hold</span>
+							<span class="group-rule" aria-hidden="true" />
+							<span class="group-count">{paused.length}</span>
+						</div>
+						<div class="card-stack">
+							{paused.map((project) => (
+								<ProjectCard project={project} expanded />
+							))}
+						</div>
+					</section>
+				)
+			}
+
+			{
+				shipped.length > 0 && (
+					<section class="group group-spaced">
+						<div class="group-head">
+							<span class="group-label">Shipped</span>
+							<span class="group-rule" aria-hidden="true" />
+							<span class="group-count">{shipped.length}</span>
+						</div>
+						<div class="card-stack">
+							{shipped.map((project) => (
+								<ProjectCard project={project} expanded />
+							))}
+						</div>
+					</section>
+				)
+			}
+
+			<section class="cross-link">
+				<div>
+					<p class="cl-title">The blog tracks the thinking around these.</p>
+					<p class="cl-body">
+						Posts mention specific projects where they come up — look for the "Mentions"
+						line below the post body.
+					</p>
+				</div>
+				<a class="fn-link" href={blogUrl}>Go to the blog →</a>
+			</section>
+
+			<NewsletterBlock />
 		</main>
 		<Footer />
 	</body>
 </html>
+<style>
+	main {
+		max-width: 760px;
+	}
+	.legend {
+		display: flex;
+		align-items: center;
+		gap: 14px;
+		margin-top: 14px;
+		flex-wrap: wrap;
+		font-size: 12px;
+		color: rgb(var(--text-muted));
+		font-family: var(--font-atkinson);
+	}
+	.legend .item {
+		display: inline-flex;
+		align-items: center;
+		gap: 6px;
+	}
+	.group {
+		margin-top: 0;
+	}
+	.group-spaced {
+		margin-top: 48px;
+	}
+	.group-head {
+		display: flex;
+		align-items: center;
+		gap: 14px;
+		margin-bottom: 18px;
+	}
+	.group-label {
+		font-family: var(--font-display);
+		font-size: 22px;
+		color: rgb(var(--text));
+		line-height: 1;
+		letter-spacing: -0.005em;
+	}
+	.group-rule {
+		flex: 1;
+		height: 1px;
+		background: var(--hairline-soft);
+	}
+	.group-count {
+		font-size: 11px;
+		letter-spacing: 0.1em;
+		text-transform: uppercase;
+		color: rgb(var(--text-muted));
+		font-weight: 700;
+	}
+	.card-stack {
+		display: flex;
+		flex-direction: column;
+		gap: 18px;
+	}
+	.cross-link {
+		margin-top: 56px;
+		padding: 24px;
+		background: var(--bg-soft);
+		border: 1px dashed var(--hairline-soft);
+		border-radius: 8px;
+		display: grid;
+		grid-template-columns: 1fr auto;
+		gap: 12px;
+		align-items: center;
+	}
+	.cl-title {
+		font-family: var(--font-display);
+		font-size: 22px;
+		color: rgb(var(--text));
+		margin: 0 0 6px;
+		line-height: 1.2;
+	}
+	.cl-body {
+		color: rgb(var(--text-muted));
+		margin: 0;
+		font-size: 16px;
+		line-height: 1.5;
+	}
+	@media (max-width: 720px) {
+		.group-spaced {
+			margin-top: 36px;
+		}
+		.group-label {
+			font-size: 20px;
+		}
+		.card-stack {
+			gap: 14px;
+		}
+		.cross-link {
+			margin-top: 36px;
+			padding: 18px;
+			grid-template-columns: 1fr;
+		}
+		.cl-title {
+			font-size: 20px;
+		}
+		.cl-body {
+			font-size: 15px;
+		}
+	}
+</style>

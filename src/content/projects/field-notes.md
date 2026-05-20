@@ -6,6 +6,15 @@ startDate: 'May 20 2026'
 links:
   - label: 'GitHub repo'
     url: 'https://github.com/ObliviousWill/field-notes'
+facts:
+  - label: 'Tech'
+    value: 'Astro · GitHub Pages · Claude Code'
+  - label: 'Status'
+    value: 'Currently building'
+  - label: 'Hosting'
+    value: 'Free (GitHub Pages)'
+  - label: 'Cost'
+    value: '~£10/yr (domain)'
 ---
 
 This is the site you're on. Built from a blank repo, deployed via GitHub Pages, no builder and no agency.

@@ -34,6 +34,14 @@ const projects = defineCollection({
 					}),
 				)
 				.optional(),
+			facts: z
+				.array(
+					z.object({
+						label: z.string(),
+						value: z.string(),
+					}),
+				)
+				.optional(),
 		}),
 });
 

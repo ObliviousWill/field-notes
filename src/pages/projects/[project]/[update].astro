@@ -4,6 +4,8 @@ import BaseHead from '../../../components/BaseHead.astro';
 import Footer from '../../../components/Footer.astro';
 import FormattedDate from '../../../components/FormattedDate.astro';
 import Header from '../../../components/Header.astro';
+import NewsletterBlock from '../../../components/NewsletterBlock.astro';
+import StatusPill from '../../../components/StatusPill.astro';
 import { SITE_AUTHOR } from '../../../consts';
 import { updateSlug } from '../../../utils/projects';
 import { readingTimeMinutes } from '../../../utils/readingTime';
@@ -37,82 +39,133 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 			title={`${update.data.title} · ${project?.data.title ?? 'Update'}`}
 			description={project?.data.summary ?? ''}
 		/>
-		<style>
-			.crumbs {
-				margin: 2.5em 0 1em;
-				color: rgb(var(--text-muted));
-				font-size: 0.95em;
-			}
-			.crumbs a {
-				color: var(--accent-ink);
-			}
-			.update-head {
-				margin-bottom: 1.5em;
-				padding-bottom: 1em;
-				border-bottom: 1px solid rgba(var(--text), 12%);
-			}
-			.update-head h1 {
-				margin: 0 0 0.4em;
-				font-size: 2.441em;
-				line-height: 1.1;
-			}
-			.byline {
-				display: flex;
-				flex-wrap: wrap;
-				gap: 0.5em;
-				color: rgb(var(--text-muted));
-				font-size: 0.95em;
-				margin: 0;
-			}
-			.byline .sep {
-				opacity: 0.5;
-			}
-			.byline .author {
-				color: rgb(var(--text));
-				font-weight: 600;
-			}
-			.back {
-				display: inline-block;
-				margin-top: 2em;
-				color: var(--accent-ink);
-			}
-		</style>
 	</head>
 	<body>
-		<Header />
+		<Header current="projects" />
 		<main>
-			<article>
-				<p class="crumbs">
-					<a href={`${base}/projects/`}>Projects</a>
-					{
-						project && (
-							<>
-								<span> / </span>
-								<a href={`${base}/projects/${project.id}/`}>{project.data.title}</a>
-							</>
-						)
-					}
-				</p>
-				<header class="update-head">
-					<h1>{update.data.title}</h1>
-					<p class="byline">
-						<span class="author">{SITE_AUTHOR}</span>
-						<span class="sep">·</span>
-						<FormattedDate date={update.data.pubDate} />
-						<span class="sep">·</span>
-						<span>{readingTime} min read</span>
-					</p>
-				</header>
-				<Content />
+			<div class="crumbs">
+				<a class="fn-link" href={`${base}/projects/`}>← All projects</a>
 				{
 					project && (
-						<a class="back" href={`${base}/projects/${project.id}/`}>
-							← All updates for {project.data.title}
+						<a class="fn-link" href={`${base}/projects/${project.id}/`}>
+							{project.data.title}
 						</a>
 					)
 				}
+			</div>
+
+			<header class="update-head">
+				{
+					project && (
+						<div class="context">
+							<StatusPill status={project.data.status} />
+							<span class="context-label">Update for</span>
+							<a class="fn-link" href={`${base}/projects/${project.id}/`}>
+								{project.data.title}
+							</a>
+						</div>
+					)
+				}
+				<h1>{update.data.title}</h1>
+				<div class="byline">
+					<strong>{SITE_AUTHOR}</strong>
+					<span class="sep" aria-hidden="true">·</span>
+					<FormattedDate date={update.data.pubDate} />
+					<span class="sep" aria-hidden="true">·</span>
+					<span>{readingTime} min read</span>
+				</div>
+			</header>
+
+			<article class="prose">
+				<Content />
 			</article>
+
+			{
+				project && (
+					<a class="back fn-link" href={`${base}/projects/${project.id}/`}>
+						← All updates for {project.data.title}
+					</a>
+				)
+			}
+
+			<NewsletterBlock />
 		</main>
 		<Footer />
 	</body>
 </html>
+<style>
+	main {
+		max-width: 760px;
+		padding-top: 40px;
+	}
+	.crumbs {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		margin-bottom: 32px;
+		font-size: 13px;
+		color: rgb(var(--text-muted));
+		flex-wrap: wrap;
+		gap: 8px;
+	}
+	.update-head {
+		margin-bottom: 32px;
+	}
+	.context {
+		display: flex;
+		align-items: center;
+		gap: 10px;
+		flex-wrap: wrap;
+		margin-bottom: 16px;
+		font-size: 13px;
+		color: rgb(var(--text-muted));
+	}
+	.context-label {
+		text-transform: uppercase;
+		letter-spacing: 0.06em;
+		font-size: 11px;
+		font-weight: 700;
+	}
+	.update-head h1 {
+		font-family: var(--font-display);
+		font-size: 44px;
+		margin: 0;
+		line-height: 1.1;
+		letter-spacing: -0.005em;
+		color: rgb(var(--text));
+	}
+	.byline {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 10px;
+		align-items: center;
+		font-size: 14px;
+		color: rgb(var(--text-muted));
+		margin: 18px 0 0;
+		padding-top: 18px;
+		border-top: 1px solid var(--hairline-soft);
+	}
+	.byline strong {
+		color: rgb(var(--text));
+		font-weight: 700;
+	}
+	.byline .sep {
+		opacity: 0.4;
+	}
+	.prose {
+		max-width: 680px;
+	}
+	.back {
+		display: inline-block;
+		margin-top: 32px;
+		font-size: 14px;
+	}
+	@media (max-width: 720px) {
+		main {
+			padding-top: 24px;
+		}
+		.update-head h1 {
+			font-size: 32px;
+		}
+	}
+</style>

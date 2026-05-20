@@ -1,12 +1,13 @@
 ---
-import { Image } from 'astro:assets';
 import { getCollection, render, type CollectionEntry } from 'astro:content';
 import BaseHead from '../../../components/BaseHead.astro';
 import Footer from '../../../components/Footer.astro';
-import FormattedDate from '../../../components/FormattedDate.astro';
 import Header from '../../../components/Header.astro';
+import NewsletterBlock from '../../../components/NewsletterBlock.astro';
+import PostRow from '../../../components/PostRow.astro';
+import SectionHeading from '../../../components/SectionHeading.astro';
+import StatusPill from '../../../components/StatusPill.astro';
 import { getUpdatesForProject, updateSlug } from '../../../utils/projects';
-import { readingTimeMinutes } from '../../../utils/readingTime';
 
 export async function getStaticPaths() {
 	const projects = await getCollection('projects');
@@ -27,197 +28,430 @@ const updates = await getUpdatesForProject(project.id);
 const renderedUpdates = await Promise.all(
 	updates.map(async (u) => {
 		const { Content } = await render(u);
+		const d = u.data.pubDate;
 		return {
-			update: u,
-			Content,
+			id: u.id,
 			slug: updateSlug(u),
-			readingTime: readingTimeMinutes(u.body),
+			data: u.data,
+			Content,
+			day: String(d.getDate()).padStart(2, '0'),
+			month: d.toLocaleDateString('en-GB', { month: 'short' }).toUpperCase(),
+			year: d.getFullYear(),
 		};
 	}),
 );
 
+const allPosts = await getCollection('blog');
+const relatedPosts = allPosts
+	.filter((post) => post.data.mentions?.some((m) => m.id === project.id))
+	.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const primaryLink = project.data.links?.[0];
+
+const startDateFormatted = project.data.startDate.toLocaleDateString('en-GB', {
+	year: 'numeric',
+	month: 'long',
+	day: 'numeric',
+});
 ---
 
 <!doctype html>
 <html lang="en">
 	<head>
 		<BaseHead title={project.data.title} description={project.data.summary} />
-		<style>
-			.project-head {
-				padding: 2.5em 0 1em;
-				margin-bottom: 1em;
-				border-bottom: 1px solid rgba(var(--text), 12%);
-			}
-			.project-head h1 {
-				margin: 0 0 0.4em;
-				font-size: 2.441em;
-				line-height: 1.1;
-			}
-			.project-head .summary {
-				margin: 0 0 0.8em;
-				color: rgb(var(--text));
-				font-size: 1.125em;
-				max-width: 38em;
-			}
-			.project-meta {
-				display: flex;
-				flex-wrap: wrap;
-				align-items: center;
-				gap: 0.8em;
-				margin: 0 0 0.5em;
-				color: rgb(var(--text-muted));
-				font-size: 0.95em;
-			}
-			.project-meta .sep {
-				opacity: 0.5;
-			}
-			.links {
-				display: flex;
-				flex-wrap: wrap;
-				gap: 1em;
-				margin: 0.5em 0 0;
-			}
-			.brief {
-				margin: 0 0 3em;
-			}
-			.hero-image img {
-				display: block;
-				width: 100%;
-				border-radius: 12px;
-				box-shadow: var(--box-shadow);
-				margin-bottom: 2em;
-			}
-			.updates-heading {
-				font-size: 1.563em;
-				margin: 0 0 1em;
-				padding-bottom: 0.4em;
-				border-bottom: 1px solid rgba(var(--text), 12%);
-			}
-			.update {
-				margin-bottom: 3em;
-				padding-bottom: 2em;
-				border-bottom: 1px solid rgba(var(--text), 8%);
-			}
-			.update:last-child {
-				border-bottom: none;
-			}
-			.update-head {
-				margin-bottom: 1em;
-			}
-			.update-head h3 {
-				margin: 0 0 0.3em;
-				font-size: 1.5em;
-				line-height: 1.2;
-			}
-			.update-head h3 a {
-				color: rgb(var(--text));
-				text-decoration: none;
-				background-image: linear-gradient(var(--accent), var(--accent));
-				background-position: 0 100%;
-				background-repeat: no-repeat;
-				background-size: 100% 0;
-				-webkit-box-decoration-break: clone;
-				box-decoration-break: clone;
-				border-radius: 1px;
-				transition: background-size 0.2s ease;
-			}
-			.update-head h3 a:hover {
-				background-size: 100% 100%;
-			}
-			@media (prefers-reduced-motion: reduce) {
-				.update-head h3 a {
-					transition: none;
-				}
-			}
-			.update-meta {
-				color: rgb(var(--text-muted));
-				font-size: 0.9em;
-				margin: 0;
-				display: flex;
-				gap: 0.4em;
-				flex-wrap: wrap;
-			}
-			.update-meta .sep {
-				opacity: 0.5;
-			}
-			.update-meta .permalink {
-				margin-left: auto;
-				color: var(--accent-ink);
-				text-decoration: none;
-			}
-			.empty {
-				color: rgb(var(--text-muted));
-				font-style: italic;
-			}
-		</style>
 	</head>
 	<body>
-		<Header />
+		<Header current="projects" />
 		<main>
-			<article>
+			<div class="crumbs">
+				<a class="fn-link" href={`${base}/projects/`}>← All projects</a>
 				{
-					project.data.heroImage && (
-						<div class="hero-image">
-							<Image width={1020} height={510} src={project.data.heroImage} alt="" />
-						</div>
+					primaryLink && (
+						<a class="fn-link" href={primaryLink.url} target="_blank" rel="noopener">
+							↗ {primaryLink.label}
+						</a>
 					)
 				}
-				<header class="project-head">
-					<h1>{project.data.title}</h1>
-					<p class="summary">{project.data.summary}</p>
-					<p class="project-meta">
-						<span class={`status status-${project.data.status}`}>{project.data.status}</span>
-						<span class="sep">·</span>
-						<span>Started <FormattedDate date={project.data.startDate} /></span>
-					</p>
-					{
-						project.data.links && project.data.links.length > 0 && (
-							<p class="links">
-								{project.data.links.map((link) => (
-									<a href={link.url} target="_blank" rel="noopener">
-										{link.label}
-									</a>
-								))}
-							</p>
-						)
-					}
-				</header>
+			</div>
 
-				<div class="brief">
-					<ProjectBody />
+			<header class="project-head">
+				<div class="status-row">
+					<StatusPill status={project.data.status} />
+					<span class="started">Started {startDateFormatted}</span>
 				</div>
+				<h1>{project.data.title}</h1>
+				<p class="summary">{project.data.summary}</p>
+			</header>
 
-				<h2 class="updates-heading">Updates</h2>
+			{
+				project.data.facts && project.data.facts.length > 0 && (
+					<section class="facts">
+						{project.data.facts.map((fact) => (
+							<div class="fact">
+								<p class="fact-label">{fact.label}</p>
+								<p class="fact-value">{fact.value}</p>
+							</div>
+						))}
+					</section>
+				)
+			}
 
-				{
-					renderedUpdates.length === 0 ? (
-						<p class="empty">No updates yet.</p>
-					) : (
-						renderedUpdates.map(({ update, Content, slug, readingTime }) => (
-							<section class="update" id={slug}>
-								<header class="update-head">
-									<h3>
-										<a href={`${base}/projects/${project.id}/${slug}/`}>{update.data.title}</a>
-									</h3>
-									<p class="update-meta">
-										<FormattedDate date={update.data.pubDate} />
-										<span class="sep">·</span>
-										<span>{readingTime} min read</span>
-										<a class="permalink" href={`${base}/projects/${project.id}/${slug}/`}>
-											Permalink →
-										</a>
-									</p>
-								</header>
-								<div class="update-body">
-									<Content />
+			<section class="brief prose">
+				<ProjectBody />
+			</section>
+
+			<SectionHeading title="Updates" top={false}>
+				<span slot="side-link" class="entry-count">
+					<span class="entry-dot" aria-hidden="true"></span>
+					{renderedUpdates.length}{' '}
+					{renderedUpdates.length === 1 ? 'entry' : 'entries'}
+				</span>
+			</SectionHeading>
+
+			{
+				renderedUpdates.length === 0 ? (
+					<p class="empty">No updates yet.</p>
+				) : (
+					<div class="timeline">
+						{renderedUpdates.map((u, i) => (
+							<article class="entry" id={u.slug}>
+								<div class="gutter">
+									<div class="date-day">
+										{u.day} {u.month}
+									</div>
+									<div class="date-year">{u.year}</div>
 								</div>
-							</section>
-						))
-					)
-				}
-			</article>
+								<div class="rail" aria-hidden="true">
+									<div class="rail-line" data-last={i === renderedUpdates.length - 1} />
+									<div class="rail-dot" data-first={i === 0} />
+								</div>
+								<div class="entry-body">
+									<h3>
+										<a href={`${base}/projects/${project.id}/${u.slug}/`}>
+											{u.data.title}
+										</a>
+									</h3>
+									<div class="update-content">
+										<u.Content />
+									</div>
+								</div>
+							</article>
+						))}
+					</div>
+				)
+			}
+
+			{
+				relatedPosts.length > 0 && (
+					<section class="related">
+						<SectionHeading title="Related posts" top={false} />
+						<ol class="related-list">
+							{relatedPosts.map((post) => (
+								<PostRow post={post} compact />
+							))}
+						</ol>
+					</section>
+				)
+			}
+
+			<NewsletterBlock />
 		</main>
 		<Footer />
 	</body>
 </html>
+<style>
+	main {
+		max-width: 760px;
+		padding-top: 40px;
+	}
+	.crumbs {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		margin-bottom: 32px;
+		font-size: 13px;
+		color: rgb(var(--text-muted));
+		flex-wrap: wrap;
+		gap: 8px;
+	}
+	.project-head {
+		margin-bottom: 36px;
+	}
+	.status-row {
+		display: flex;
+		align-items: center;
+		gap: 10px;
+		flex-wrap: wrap;
+		margin-bottom: 16px;
+	}
+	.started {
+		font-size: 13px;
+		color: rgb(var(--text-muted));
+	}
+	.project-head h1 {
+		font-family: var(--font-display);
+		font-size: 60px;
+		margin: 0;
+		line-height: 1.05;
+		letter-spacing: -0.01em;
+		color: rgb(var(--text));
+	}
+	.summary {
+		font-style: italic;
+		color: rgb(var(--text-muted));
+		font-size: 21px;
+		line-height: 1.5;
+		margin: 20px 0 0;
+		max-width: 620px;
+	}
+	.facts {
+		padding: 18px 22px;
+		background: var(--bg-soft);
+		border: 1px solid var(--hairline-soft);
+		border-radius: 8px;
+		margin-bottom: 44px;
+		display: grid;
+		grid-template-columns: repeat(4, 1fr);
+		gap: 16px;
+	}
+	.fact {
+		min-width: 0;
+	}
+	.fact-label {
+		font-size: 11px;
+		letter-spacing: 0.12em;
+		text-transform: uppercase;
+		color: rgb(var(--text-muted));
+		margin: 0 0 4px;
+		font-weight: 700;
+	}
+	.fact-value {
+		font-size: 15px;
+		color: rgb(var(--text));
+		line-height: 1.4;
+		margin: 0;
+	}
+	.brief {
+		max-width: 680px;
+		margin-bottom: 48px;
+	}
+	.brief :global(p) {
+		font-size: 19px;
+		line-height: 1.65;
+	}
+	.entry-count {
+		font-size: 11px;
+		letter-spacing: 0.1em;
+		text-transform: uppercase;
+		color: rgb(var(--text-muted));
+		display: inline-flex;
+		align-items: center;
+		gap: 6px;
+		font-weight: 700;
+	}
+	.entry-dot {
+		width: 6px;
+		height: 6px;
+		border-radius: 50%;
+		background: var(--accent);
+	}
+	.timeline {
+		display: flex;
+		flex-direction: column;
+	}
+	.entry {
+		display: grid;
+		grid-template-columns: 100px 2px 1fr;
+		gap: 28px;
+		position: relative;
+		padding-bottom: 40px;
+	}
+	.gutter {
+		text-align: right;
+		padding-right: 14px;
+	}
+	.date-day {
+		font-size: 13px;
+		letter-spacing: 0.06em;
+		text-transform: uppercase;
+		color: rgb(var(--text-muted));
+		font-family: var(--font-atkinson);
+		line-height: 1.4;
+		font-weight: 700;
+	}
+	.date-year {
+		font-size: 11px;
+		color: var(--muted-soft);
+	}
+	.rail {
+		position: relative;
+	}
+	.rail-line {
+		position: absolute;
+		top: 8px;
+		bottom: 0;
+		left: 50%;
+		width: 2px;
+		background: var(--hairline-soft);
+		transform: translateX(-50%);
+	}
+	.rail-line[data-last='true'] {
+		bottom: 50%;
+	}
+	.rail-dot {
+		position: absolute;
+		top: 6px;
+		left: 50%;
+		width: 10px;
+		height: 10px;
+		border-radius: 50%;
+		background: var(--bg);
+		box-shadow: 0 0 0 2px var(--hairline);
+		transform: translateX(-50%);
+	}
+	.rail-dot[data-first='true'] {
+		background: var(--accent);
+		box-shadow: 0 0 0 2px var(--accent);
+	}
+	.entry-body {
+		padding-left: 4px;
+		min-width: 0;
+	}
+	.entry-body h3 {
+		font-family: var(--font-display);
+		font-size: 28px;
+		margin: 0 0 14px;
+		line-height: 1.15;
+		color: rgb(var(--text));
+		letter-spacing: -0.005em;
+	}
+	.entry-body h3 a {
+		color: inherit;
+		text-decoration: none;
+		background-image: linear-gradient(var(--accent), var(--accent));
+		background-position: 0 100%;
+		background-repeat: no-repeat;
+		background-size: 0 6px;
+		transition: background-size 280ms cubic-bezier(0.6, 0, 0.2, 1);
+		padding-bottom: 2px;
+		-webkit-box-decoration-break: clone;
+		box-decoration-break: clone;
+	}
+	.entry-body h3 a:hover {
+		background-size: 100% 6px;
+	}
+	.update-content :global(p) {
+		color: rgb(var(--text));
+		font-size: 17px;
+		line-height: 1.6;
+		margin: 0 0 14px;
+		max-width: 600px;
+	}
+	.update-content :global(h2) {
+		font-family: var(--font-display);
+		font-size: 19px;
+		margin: 22px 0 12px;
+		color: rgb(var(--text));
+		line-height: 1.2;
+		letter-spacing: 0;
+	}
+	.update-content :global(ul) {
+		margin: 0;
+		padding: 0;
+		list-style: none;
+		display: flex;
+		flex-direction: column;
+		gap: 10px;
+	}
+	.update-content :global(li) {
+		font-size: 16px;
+		line-height: 1.55;
+		color: rgb(var(--text-muted));
+		padding-left: 16px;
+		position: relative;
+		max-width: 600px;
+	}
+	.update-content :global(li::before) {
+		content: '';
+		position: absolute;
+		left: 0;
+		top: 0.65em;
+		width: 6px;
+		height: 6px;
+		background: var(--accent);
+		border-radius: 1px;
+	}
+	.update-content :global(li strong) {
+		color: rgb(var(--text));
+		font-weight: 700;
+	}
+	.related {
+		margin-top: 56px;
+	}
+	.related-list {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+	}
+	.empty {
+		color: rgb(var(--text-muted));
+		font-style: italic;
+	}
+	@media (max-width: 720px) {
+		main {
+			padding-top: 24px;
+		}
+		.project-head {
+			margin-bottom: 28px;
+		}
+		.project-head h1 {
+			font-size: 40px;
+		}
+		.summary {
+			font-size: 18px;
+			margin-top: 16px;
+		}
+		.facts {
+			padding: 14px 16px;
+			grid-template-columns: 1fr;
+			gap: 10px;
+			margin-bottom: 32px;
+		}
+		.brief {
+			margin-bottom: 36px;
+		}
+		.brief :global(p) {
+			font-size: 17px;
+		}
+		.entry {
+			grid-template-columns: 70px 2px 1fr;
+			gap: 14px;
+			padding-bottom: 28px;
+		}
+		.gutter {
+			padding-right: 10px;
+		}
+		.date-day {
+			font-size: 12px;
+		}
+		.entry-body {
+			padding-left: 12px;
+		}
+		.entry-body h3 {
+			font-size: 22px;
+		}
+		.update-content :global(p) {
+			font-size: 16px;
+		}
+		.update-content :global(h2) {
+			font-size: 17px;
+		}
+		.update-content :global(li) {
+			font-size: 15px;
+		}
+		.related {
+			margin-top: 36px;
+		}
+	}
+</style>
