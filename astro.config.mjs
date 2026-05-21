@@ -34,14 +34,20 @@ export default defineConfig({
 		},
 		{
 			provider: fontProviders.local(),
-			name: 'Bowlby One',
+			name: 'Fraunces',
 			cssVariable: '--font-display',
-			fallbacks: ['Alfa Slab One', 'Georgia', 'serif'],
+			fallbacks: ['Georgia', 'serif'],
 			options: {
 				variants: [
 					{
-						src: ['./src/assets/fonts/bowlby-one-regular.ttf'],
-						weight: 400,
+						src: ['./src/assets/fonts/fraunces-500.ttf'],
+						weight: 500,
+						style: 'normal',
+						display: 'swap',
+					},
+					{
+						src: ['./src/assets/fonts/fraunces-700.ttf'],
+						weight: 700,
 						style: 'normal',
 						display: 'swap',
 					},

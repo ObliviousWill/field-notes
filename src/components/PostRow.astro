@@ -106,16 +106,18 @@ const tags = post.data.tags ?? [];
 	}
 	.title {
 		display: inline-block;
-		font-family: var(--font-display);
-		font-size: 28px;
-		line-height: 1.12;
+		font-family: var(--font-atkinson);
+		font-weight: 700;
+		font-size: 22px;
+		line-height: 1.2;
+		letter-spacing: -0.005em;
 		color: rgb(var(--text));
 		text-decoration: none;
 		margin-bottom: 10px;
 		background-image: linear-gradient(var(--accent), var(--accent));
 		background-position: 0 100%;
 		background-repeat: no-repeat;
-		background-size: 0 6px;
+		background-size: 0 4px;
 		transition: background-size 280ms cubic-bezier(0.6, 0, 0.2, 1);
 		padding-bottom: 2px;
 		-webkit-box-decoration-break: clone;
@@ -123,10 +125,10 @@ const tags = post.data.tags ?? [];
 		border-radius: 1px;
 	}
 	.post-row:hover .title {
-		background-size: 100% 6px;
+		background-size: 100% 4px;
 	}
 	.post-row.compact .title {
-		font-size: 22px;
+		font-size: 19px;
 	}
 	.excerpt {
 		color: rgb(var(--text-muted));
@@ -149,10 +151,10 @@ const tags = post.data.tags ?? [];
 			gap: 10px;
 		}
 		.title {
-			font-size: 22px;
+			font-size: 19px;
 		}
 		.post-row.compact .title {
-			font-size: 20px;
+			font-size: 18px;
 		}
 		.excerpt {
 			font-size: 16px;

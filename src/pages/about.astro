@@ -125,10 +125,11 @@ const description =
 	}
 	.hero h1 {
 		font-family: var(--font-display);
-		font-size: 88px;
+		font-weight: 500;
+		font-size: 92px;
 		margin: 0;
-		line-height: 0.95;
-		letter-spacing: -0.01em;
+		line-height: 0.98;
+		letter-spacing: -0.025em;
 	}
 	.byline {
 		display: flex;
@@ -160,11 +161,14 @@ const description =
 		max-width: 680px;
 	}
 	main h2 {
-		font-family: var(--font-display);
-		font-size: 36px;
-		line-height: 1.15;
-		margin: 52px 0 22px;
-		letter-spacing: -0.01em;
+		font-family: var(--font-atkinson);
+		font-weight: 700;
+		font-size: 13px;
+		line-height: 1;
+		margin: 52px 0 18px;
+		letter-spacing: 0.18em;
+		text-transform: uppercase;
+		color: rgb(var(--text-muted));
 	}
 	.prose.lead {
 		max-width: 680px;
@@ -192,11 +196,13 @@ const description =
 		font-size: 13px;
 	}
 	.cat-title {
-		font-family: var(--font-display);
-		font-size: 22px;
+		font-family: var(--font-atkinson);
+		font-weight: 700;
+		font-size: 19px;
 		color: rgb(var(--text));
 		margin: 0 0 8px;
-		line-height: 1.2;
+		line-height: 1.25;
+		letter-spacing: -0.005em;
 	}
 	.cat-body {
 		color: rgb(var(--text-muted));
@@ -210,15 +216,15 @@ const description =
 			margin-bottom: 32px;
 		}
 		.hero h1 {
-			font-size: 56px;
+			font-size: 54px;
 		}
 		.dek {
 			font-size: 19px;
 			margin-top: 22px;
 		}
 		main h2 {
-			font-size: 28px;
-			margin: 36px 0 18px;
+			font-size: 12px;
+			margin: 36px 0 14px;
 		}
 		.categories {
 			gap: 16px;
@@ -230,7 +236,7 @@ const description =
 			padding: 16px 0;
 		}
 		.cat-title {
-			font-size: 20px;
+			font-size: 17px;
 		}
 		.cat-body {
 			font-size: 16px;

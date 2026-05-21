@@ -45,11 +45,12 @@ const showMeta = count != null || Astro.slots.has('side-link');
 	}
 	h1 {
 		font-family: var(--font-display);
+		font-weight: 500;
 		font-size: 64px;
 		margin: 0;
-		line-height: 1;
+		line-height: 1.02;
 		color: rgb(var(--text));
-		letter-spacing: -0.01em;
+		letter-spacing: -0.02em;
 	}
 	.meta {
 		display: flex;
@@ -75,7 +76,7 @@ const showMeta = count != null || Astro.slots.has('side-link');
 	}
 	@media (max-width: 720px) {
 		h1 {
-			font-size: 44px;
+			font-size: 42px;
 		}
 		.subtitle {
 			font-size: 17px;
