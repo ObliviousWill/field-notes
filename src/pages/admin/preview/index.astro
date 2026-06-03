@@ -1,0 +1,150 @@
+---
+import BaseHead from '../../../components/BaseHead.astro';
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<BaseHead title="Preview" description="" noindex />
+	</head>
+	<body class="preview-body">
+		<main>
+			<header class="post-head" id="post-head" hidden>
+				<div class="chips" id="chips"></div>
+				<h1 id="title">Post title preview</h1>
+				<p class="dek" id="dek" hidden></p>
+				<div class="byline">
+					<strong>Will</strong>
+					<span class="sep">·</span>
+					<span id="date"></span>
+				</div>
+			</header>
+
+			<article class="prose" id="prose">
+				<p class="empty">Start typing in the editor to see the preview.</p>
+			</article>
+		</main>
+
+		<script is:inline>
+			const chipColours = {
+				ai: { bg: 'rgba(255, 177, 98, 0.18)', text: '#a25a16' },
+				building: { bg: 'rgba(159, 188, 145, 0.22)', text: '#3f5a35' },
+				marketing: { bg: 'rgba(190, 165, 215, 0.22)', text: '#5c4576' },
+			};
+
+			window.addEventListener('message', (e) => {
+				const d = e.data || {};
+				if (d.type !== 'preview-update') return;
+
+				const head = document.getElementById('post-head');
+				const titleEl = document.getElementById('title');
+				const dekEl = document.getElementById('dek');
+				const dateEl = document.getElementById('date');
+				const chipsEl = document.getElementById('chips');
+				const proseEl = document.getElementById('prose');
+
+				const hasContent = d.title || d.html;
+				head.hidden = !hasContent;
+
+				titleEl.textContent = d.title || 'Untitled';
+				if (d.dek) {
+					dekEl.textContent = d.dek;
+					dekEl.hidden = false;
+				} else {
+					dekEl.hidden = true;
+				}
+				dateEl.textContent = d.date || '';
+
+				chipsEl.innerHTML = '';
+				(d.tags || []).forEach((tag) => {
+					const c = chipColours[tag] || { bg: '#eee', text: '#333' };
+					const span = document.createElement('span');
+					span.className = 'chip';
+					span.style.background = c.bg;
+					span.style.color = c.text;
+					span.textContent = tag.toUpperCase();
+					chipsEl.appendChild(span);
+				});
+
+				proseEl.innerHTML = d.html || '<p class="empty">Start typing to see the preview.</p>';
+			});
+
+			window.parent.postMessage({ type: 'preview-ready' }, '*');
+		</script>
+
+		<style>
+			.preview-body {
+				margin: 0;
+				padding: 40px 28px 80px;
+			}
+			main {
+				max-width: 680px;
+				margin: 0 auto;
+			}
+			.post-head {
+				margin-bottom: 32px;
+			}
+			.chips {
+				display: flex;
+				gap: 8px;
+				margin-bottom: 18px;
+				flex-wrap: wrap;
+			}
+			.chip {
+				font-size: 11px;
+				letter-spacing: 0.14em;
+				text-transform: uppercase;
+				padding: 4px 10px;
+				border-radius: 999px;
+				font-weight: 700;
+			}
+			.post-head h1 {
+				font-family: var(--font-display);
+				font-weight: 500;
+				font-size: 52px;
+				margin: 0;
+				line-height: 1.05;
+				letter-spacing: -0.015em;
+				color: rgb(var(--text));
+			}
+			.dek {
+				font-style: italic;
+				color: rgb(var(--text-muted));
+				font-size: 22px;
+				line-height: 1.45;
+				margin: 22px 0 24px;
+			}
+			.byline {
+				display: flex;
+				align-items: center;
+				gap: 10px;
+				font-size: 14px;
+				color: rgb(var(--text-muted));
+				padding-top: 18px;
+				border-top: 1px solid var(--hairline-soft);
+			}
+			.byline strong {
+				color: rgb(var(--text));
+				font-weight: 700;
+			}
+			.byline .sep {
+				opacity: 0.4;
+			}
+			.prose .empty {
+				color: rgb(var(--text-muted));
+				font-style: italic;
+			}
+			@media (max-width: 540px) {
+				.preview-body {
+					padding: 24px 18px 48px;
+				}
+				.post-head h1 {
+					font-size: 34px;
+				}
+				.dek {
+					font-size: 18px;
+				}
+			}
+		</style>
+	</body>
+</html>
