@@ -1,0 +1,596 @@
+---
+import BaseHead from '../../components/BaseHead.astro';
+
+const REPO_OWNER = 'ObliviousWill';
+const REPO_NAME = 'field-notes';
+const BRANCH = 'main';
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<BaseHead title="Admin · Field Notes" description="" noindex />
+	</head>
+	<body class="admin-body">
+		<header class="topbar">
+			<a class="brand" href={`${base}/`}>← Field Notes</a>
+			<span class="env-tag">admin</span>
+			<button id="signout" class="signout" type="button" hidden>Sign out</button>
+		</header>
+
+		<main class="shell">
+			<!-- Login -->
+			<section id="login" class="card" hidden>
+				<h1>Sign in</h1>
+				<p class="lead">
+					Paste a GitHub Personal Access Token with <code>contents:write</code> on
+					this repo. It's stored only in your browser.
+				</p>
+				<form id="login-form">
+					<label>
+						<span>GitHub PAT</span>
+						<input
+							id="token-input"
+							type="password"
+							autocomplete="off"
+							spellcheck="false"
+							required
+							placeholder="ghp_..."
+						/>
+					</label>
+					<p id="login-error" class="err" hidden></p>
+					<button type="submit" class="primary">Sign in</button>
+					<p class="hint">
+						Create one at <a
+							href="https://github.com/settings/personal-access-tokens/new"
+							target="_blank"
+							rel="noopener">github.com/settings/personal-access-tokens</a
+						>. Fine-grained, this repo only, contents read+write.
+					</p>
+				</form>
+			</section>
+
+			<!-- Editor -->
+			<section id="editor" class="card editor" hidden>
+				<div class="editor-head">
+					<h1>New post</h1>
+					<span id="user-chip" class="user-chip"></span>
+				</div>
+
+				<form id="post-form" class="form">
+					<label class="field">
+						<span class="label">Title</span>
+						<input id="f-title" type="text" required maxlength="160" />
+					</label>
+
+					<label class="field">
+						<span class="label">Slug</span>
+						<input
+							id="f-slug"
+							type="text"
+							required
+							pattern="[a-z0-9-]+"
+							placeholder="auto-from-title"
+						/>
+						<span class="hint">Lowercase, hyphens. Becomes the URL.</span>
+					</label>
+
+					<label class="field">
+						<span class="label">Description (dek)</span>
+						<textarea id="f-desc" rows="2" required maxlength="240"></textarea>
+						<span class="hint">One sentence under the title. Shown in lists.</span>
+					</label>
+
+					<div class="field">
+						<span class="label">Tags</span>
+						<div class="tags">
+							<label class="chip"><input type="checkbox" name="tag" value="ai" /> ai</label>
+							<label class="chip"
+								><input type="checkbox" name="tag" value="building" /> building</label
+							>
+							<label class="chip"
+								><input type="checkbox" name="tag" value="marketing" /> marketing</label
+							>
+						</div>
+					</div>
+
+					<label class="field">
+						<span class="label">Publish date</span>
+						<input id="f-date" type="date" required />
+					</label>
+
+					<label class="field">
+						<span class="label">Body (markdown)</span>
+						<textarea id="f-body" rows="18" required></textarea>
+					</label>
+
+					<p id="form-error" class="err" hidden></p>
+
+					<div class="actions">
+						<button type="submit" class="primary" id="publish-btn">
+							Publish to repo
+						</button>
+						<span class="status" id="status"></span>
+					</div>
+				</form>
+			</section>
+
+			<!-- Success -->
+			<section id="success" class="card" hidden>
+				<h1>Published.</h1>
+				<p class="lead">
+					Committed to <code id="s-path"></code>. GitHub Pages is rebuilding now —
+					give it 30–60 seconds.
+				</p>
+				<div class="actions">
+					<a id="s-link" class="primary" href="#" target="_blank" rel="noopener">
+						Open post →
+					</a>
+					<a id="s-commit" class="ghost" href="#" target="_blank" rel="noopener">
+						View commit
+					</a>
+					<button type="button" id="another" class="ghost">Write another</button>
+				</div>
+			</section>
+		</main>
+
+		<script is:inline define:vars={{ REPO_OWNER, REPO_NAME, BRANCH, base }}>
+			const TOKEN_KEY = 'fn-admin-token';
+			const $ = (id) => document.getElementById(id);
+			const sections = {
+				login: $('login'),
+				editor: $('editor'),
+				success: $('success'),
+			};
+			const signoutBtn = $('signout');
+
+			const show = (key) => {
+				Object.entries(sections).forEach(([k, el]) => {
+					el.hidden = k !== key;
+				});
+				signoutBtn.hidden = key === 'login';
+			};
+
+			const slugify = (s) =>
+				s
+					.toLowerCase()
+					.normalize('NFKD')
+					.replace(/[̀-ͯ]/g, '')
+					.replace(/[^\w\s-]/g, '')
+					.trim()
+					.replace(/\s+/g, '-')
+					.replace(/-+/g, '-');
+
+			const fmtDate = (iso) => {
+				const d = new Date(iso + 'T00:00:00');
+				return d.toLocaleDateString('en-US', {
+					month: 'short',
+					day: '2-digit',
+					year: 'numeric',
+				});
+			};
+
+			const utf8ToB64 = (str) =>
+				btoa(
+					new TextEncoder()
+						.encode(str)
+						.reduce((acc, b) => acc + String.fromCharCode(b), ''),
+				);
+
+			const ghHeaders = (token) => ({
+				Accept: 'application/vnd.github+json',
+				Authorization: 'Bearer ' + token,
+				'X-GitHub-Api-Version': '2022-11-28',
+			});
+
+			const fetchUser = async (token) => {
+				const res = await fetch('https://api.github.com/user', {
+					headers: ghHeaders(token),
+				});
+				if (!res.ok) throw new Error('Token rejected (' + res.status + ')');
+				return res.json();
+			};
+
+			const renderUser = (user) => {
+				const chip = $('user-chip');
+				chip.textContent = '@' + user.login;
+			};
+
+			const enterEditor = async (token) => {
+				try {
+					const user = await fetchUser(token);
+					renderUser(user);
+					$('f-date').value = new Date().toISOString().slice(0, 10);
+					show('editor');
+				} catch (err) {
+					localStorage.removeItem(TOKEN_KEY);
+					$('login-error').textContent = err.message;
+					$('login-error').hidden = false;
+					show('login');
+				}
+			};
+
+			// Boot
+			const existing = localStorage.getItem(TOKEN_KEY);
+			if (existing) {
+				enterEditor(existing);
+			} else {
+				show('login');
+			}
+
+			// Login
+			$('login-form').addEventListener('submit', async (e) => {
+				e.preventDefault();
+				$('login-error').hidden = true;
+				const token = $('token-input').value.trim();
+				if (!token) return;
+				try {
+					const user = await fetchUser(token);
+					localStorage.setItem(TOKEN_KEY, token);
+					renderUser(user);
+					$('f-date').value = new Date().toISOString().slice(0, 10);
+					show('editor');
+				} catch (err) {
+					$('login-error').textContent = err.message;
+					$('login-error').hidden = false;
+				}
+			});
+
+			signoutBtn.addEventListener('click', () => {
+				localStorage.removeItem(TOKEN_KEY);
+				$('token-input').value = '';
+				show('login');
+			});
+
+			// Auto-slug
+			$('f-title').addEventListener('input', (e) => {
+				const slug = $('f-slug');
+				if (!slug.dataset.touched) {
+					slug.value = slugify(e.target.value);
+				}
+			});
+			$('f-slug').addEventListener('input', (e) => {
+				e.target.dataset.touched = '1';
+			});
+
+			// Publish
+			$('post-form').addEventListener('submit', async (e) => {
+				e.preventDefault();
+				$('form-error').hidden = true;
+				const status = $('status');
+				const btn = $('publish-btn');
+				const token = localStorage.getItem(TOKEN_KEY);
+				if (!token) {
+					show('login');
+					return;
+				}
+
+				const title = $('f-title').value.trim();
+				const slug = slugify($('f-slug').value);
+				const description = $('f-desc').value.trim();
+				const date = $('f-date').value;
+				const body = $('f-body').value.trim();
+				const tags = Array.from(
+					document.querySelectorAll('input[name="tag"]:checked'),
+				).map((c) => c.value);
+
+				if (!title || !slug || !description || !date || !body) {
+					$('form-error').textContent = 'All fields are required.';
+					$('form-error').hidden = false;
+					return;
+				}
+
+				const tagList = tags.length ? '[' + tags.map((t) => "'" + t + "'").join(', ') + ']' : '[]';
+				const escapeYaml = (s) => s.replace(/'/g, "''");
+				const frontmatter =
+					"---\n" +
+					"title: '" + escapeYaml(title) + "'\n" +
+					"description: '" + escapeYaml(description) + "'\n" +
+					"pubDate: '" + fmtDate(date) + "'\n" +
+					"tags: " + tagList + "\n" +
+					"---\n\n";
+				const fileContent = frontmatter + body + '\n';
+				const path = 'src/content/blog/' + slug + '.md';
+
+				btn.disabled = true;
+				status.textContent = 'Publishing…';
+
+				try {
+					const url =
+						'https://api.github.com/repos/' +
+						REPO_OWNER +
+						'/' +
+						REPO_NAME +
+						'/contents/' +
+						path;
+					const res = await fetch(url, {
+						method: 'PUT',
+						headers: { ...ghHeaders(token), 'Content-Type': 'application/json' },
+						body: JSON.stringify({
+							message: 'Add post: ' + title,
+							content: utf8ToB64(fileContent),
+							branch: BRANCH,
+						}),
+					});
+					if (!res.ok) {
+						const err = await res.json().catch(() => ({}));
+						throw new Error(err.message || 'GitHub API error (' + res.status + ')');
+					}
+					const data = await res.json();
+					$('s-path').textContent = path;
+					$('s-link').href = base + '/blog/' + slug + '/';
+					$('s-commit').href = data.commit && data.commit.html_url ? data.commit.html_url : '#';
+					show('success');
+					status.textContent = '';
+					btn.disabled = false;
+				} catch (err) {
+					$('form-error').textContent = err.message;
+					$('form-error').hidden = false;
+					status.textContent = '';
+					btn.disabled = false;
+				}
+			});
+
+			// Write another
+			$('another').addEventListener('click', () => {
+				$('post-form').reset();
+				$('f-slug').dataset.touched = '';
+				$('f-date').value = new Date().toISOString().slice(0, 10);
+				show('editor');
+			});
+		</script>
+
+		<style is:global>
+			body.admin-body {
+				background: #0f1419;
+				color: #e6e3d8;
+				font-family: var(--font-atkinson);
+				margin: 0;
+				min-height: 100vh;
+			}
+			body.admin-body a {
+				color: #ffb162;
+				background-image: none;
+			}
+			body.admin-body code {
+				background: rgba(255, 255, 255, 0.06);
+				color: #ffd1a4;
+				padding: 1px 6px;
+				border-radius: 3px;
+				font-size: 0.85em;
+			}
+		</style>
+
+		<style>
+			.topbar {
+				display: flex;
+				align-items: center;
+				gap: 16px;
+				padding: 14px 28px;
+				border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+				background: #0a0e12;
+			}
+			.brand {
+				color: #e6e3d8 !important;
+				text-decoration: none;
+				font-weight: 700;
+				font-size: 14px;
+				letter-spacing: 0.04em;
+			}
+			.env-tag {
+				font-size: 10px;
+				letter-spacing: 0.16em;
+				text-transform: uppercase;
+				padding: 3px 8px;
+				background: #ffb162;
+				color: #0a0e12;
+				border-radius: 3px;
+				font-weight: 700;
+			}
+			.signout {
+				margin-left: auto;
+				background: transparent;
+				color: #e6e3d8;
+				border: 1px solid rgba(255, 255, 255, 0.18);
+				font-family: inherit;
+				font-size: 13px;
+				padding: 7px 14px;
+				border-radius: 4px;
+				cursor: pointer;
+			}
+			.signout:hover {
+				border-color: #ffb162;
+				color: #ffb162;
+			}
+			.shell {
+				max-width: 760px;
+				margin: 0 auto;
+				padding: 40px 24px 80px;
+			}
+			.card {
+				background: #161b22;
+				border: 1px solid rgba(255, 255, 255, 0.08);
+				border-radius: 8px;
+				padding: 36px;
+			}
+			.card h1 {
+				font-family: var(--font-display);
+				font-weight: 500;
+				font-size: 32px;
+				margin: 0 0 8px;
+				color: #e6e3d8;
+				letter-spacing: -0.015em;
+				line-height: 1.1;
+			}
+			.lead {
+				color: rgba(230, 227, 216, 0.7);
+				font-size: 15px;
+				margin: 0 0 24px;
+				line-height: 1.55;
+			}
+			.editor-head {
+				display: flex;
+				align-items: baseline;
+				justify-content: space-between;
+				gap: 12px;
+				margin-bottom: 28px;
+			}
+			.editor-head h1 {
+				margin: 0;
+			}
+			.user-chip {
+				font-size: 12px;
+				color: rgba(230, 227, 216, 0.6);
+				font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+			}
+			.form,
+			#login-form {
+				display: flex;
+				flex-direction: column;
+				gap: 20px;
+			}
+			.field {
+				display: flex;
+				flex-direction: column;
+				gap: 6px;
+			}
+			.label,
+			#login-form label > span {
+				font-size: 11px;
+				letter-spacing: 0.16em;
+				text-transform: uppercase;
+				font-weight: 700;
+				color: rgba(230, 227, 216, 0.7);
+			}
+			.hint {
+				font-size: 12px;
+				color: rgba(230, 227, 216, 0.45);
+			}
+			.hint a {
+				text-decoration: underline;
+				text-decoration-color: rgba(255, 177, 98, 0.5);
+			}
+			input[type='text'],
+			input[type='password'],
+			input[type='date'],
+			textarea {
+				background: #0a0e12;
+				border: 1px solid rgba(255, 255, 255, 0.12);
+				border-radius: 4px;
+				padding: 10px 12px;
+				color: #e6e3d8;
+				font-family: inherit;
+				font-size: 15px;
+				outline: none;
+				width: 100%;
+				box-sizing: border-box;
+			}
+			input[type='text']:focus,
+			input[type='password']:focus,
+			input[type='date']:focus,
+			textarea:focus {
+				border-color: #ffb162;
+			}
+			textarea {
+				font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+				font-size: 14px;
+				line-height: 1.55;
+				resize: vertical;
+			}
+			#f-body {
+				min-height: 360px;
+			}
+			.tags {
+				display: flex;
+				gap: 8px;
+				flex-wrap: wrap;
+			}
+			.chip {
+				display: inline-flex;
+				align-items: center;
+				gap: 6px;
+				padding: 7px 12px;
+				background: #0a0e12;
+				border: 1px solid rgba(255, 255, 255, 0.12);
+				border-radius: 999px;
+				font-size: 13px;
+				cursor: pointer;
+				color: rgba(230, 227, 216, 0.85);
+			}
+			.chip:has(input:checked) {
+				border-color: #ffb162;
+				color: #ffb162;
+				background: rgba(255, 177, 98, 0.08);
+			}
+			.actions {
+				display: flex;
+				align-items: center;
+				gap: 14px;
+				flex-wrap: wrap;
+				margin-top: 4px;
+			}
+			.primary {
+				background: #ffb162;
+				color: #0a0e12;
+				border: 0;
+				padding: 12px 22px;
+				font-family: inherit;
+				font-size: 14px;
+				font-weight: 700;
+				border-radius: 4px;
+				cursor: pointer;
+				text-decoration: none;
+				display: inline-block;
+				letter-spacing: 0.01em;
+			}
+			.primary:hover {
+				background: #ffc080;
+			}
+			.primary:disabled {
+				opacity: 0.5;
+				cursor: not-allowed;
+			}
+			.ghost {
+				background: transparent;
+				color: #e6e3d8;
+				border: 1px solid rgba(255, 255, 255, 0.18);
+				padding: 11px 18px;
+				font-family: inherit;
+				font-size: 14px;
+				border-radius: 4px;
+				cursor: pointer;
+				text-decoration: none;
+				display: inline-block;
+			}
+			.ghost:hover {
+				border-color: #ffb162;
+				color: #ffb162;
+			}
+			.status {
+				font-size: 13px;
+				color: rgba(230, 227, 216, 0.65);
+			}
+			.err {
+				margin: 0;
+				padding: 10px 14px;
+				background: rgba(220, 80, 80, 0.12);
+				border: 1px solid rgba(220, 80, 80, 0.35);
+				color: #f5b0b0;
+				border-radius: 4px;
+				font-size: 14px;
+			}
+			@media (max-width: 640px) {
+				.shell {
+					padding: 24px 14px 56px;
+				}
+				.card {
+					padding: 24px;
+				}
+				.card h1 {
+					font-size: 26px;
+				}
+			}
+		</style>
+	</body>
+</html>

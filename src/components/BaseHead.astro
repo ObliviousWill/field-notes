@@ -9,11 +9,12 @@ interface Props {
 	title: string;
 	description: string;
 	ogImageUrl?: string;
+	noindex?: boolean;
 }
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 
-const { title, description, ogImageUrl } = Astro.props;
+const { title, description, ogImageUrl, noindex = false } = Astro.props;
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 const resolvedOgPath = ogImageUrl ?? `${base}/og/default.png`;
 const ogImage = new URL(resolvedOgPath, Astro.site);
@@ -37,6 +38,7 @@ const ogImage = new URL(resolvedOgPath, Astro.site);
 	href={new URL(`${base}/projects/rss.xml`, Astro.site)}
 />
 <meta name="generator" content={Astro.generator} />
+{noindex && <meta name="robots" content="noindex,nofollow" />}
 
 <Font cssVariable="--font-atkinson" preload />
 <Font cssVariable="--font-display" preload />

@@ -8,7 +8,10 @@ import { defineConfig, fontProviders } from 'astro/config';
 export default defineConfig({
 	site: 'https://obliviouswill.github.io',
 	base: '/field-notes',
-	integrations: [mdx(), sitemap()],
+	integrations: [
+		mdx(),
+		sitemap({ filter: (page) => !page.includes('/admin') }),
+	],
 	fonts: [
 		{
 			provider: fontProviders.local(),
