@@ -1,7 +1,7 @@
 ---
 title: 'Get twice as fast at typing, without typing'
 description: 'How dictation (and Wispr) doubled my output and saved my keyboard stress'
-pubDate: 'Jun 03, 2026'
+pubDate: 'Jun 02, 2026'
 tags: ['ai', 'marketing']
 ---
 
@@ -11,7 +11,8 @@ That's the hook. It isn't the point.
 
 The point is that dictation has crossed a line in the last year or two. It used to be the thing you reached for when you couldn't type: accessibility, injury, holding a baby. Now it's a better default for a lot of knowledge work, and almost no one I work with has noticed. So this is me showing colleagues what's actually on the table. Not waving a personal best around.
 
-The speed bit, briefly...
+### The speed bit, briefly...
+
 
 110 versus 63 is a 75% jump. If you write for a living, and in marketing you do, that compounds fast. A twenty-minute first draft becomes eleven. Across a week, hours back.
 
@@ -23,7 +24,8 @@ So the fair comparison isn't messy 110 versus careful 63. The 110 arrives format
 
 That alone would justify the switch. It's not why I kept going.
 
-What changed...
+### What changed...
+
 
 When I type at 63, I edit as I go. I'm pruning sentences before they're finished. I keep things terse, partly because typing is effortful so brevity feels efficient, and partly because there's a quiet voice tidying everything in real time.
 
@@ -42,7 +44,8 @@ You dictate the full version. All the context, the bit you'd have cut, the "oh a
 You provide judgement. Which is the only bit that was ever really yours to do.
 Each layer removes work you used to do badly or slowly by hand.
 
-Why most people are leaving this on the table...
+### Why most people are leaving this on the table...
+
 
 Almost everyone I work with can type competently, so they do.
 
@@ -50,7 +53,8 @@ But I think they're missing something. The faster and more fluent a typist you a
 
 The barriers are real but smaller than they were. Talking to your machine feels strange, especially near other people. You get over that in about a week. You also have to stop treating the transcript as precious; it's input, not output, though with Wispr cleaning as it goes the gap is narrower than it used to be. And accuracy used to be the dealbreaker. It largely isn't. Once it's learned your names and product terms, the mangled-jargon problem disappears, and the learning carries between devices.
 
-Takeaway
+### Takeaway
+
 
 If this were a post about going from 63 to 110 words a minute, it'd be a productivity tip. Mildly interesting but generally ignored.
 
@@ -58,6 +62,6 @@ The real point is that dictation crossed a threshold while most of us weren't wa
 
 The number got me to try it. But not why I'm telling you about it.
 
-If you type for a living and you've filed dictation under "not for me, I'm already fast", then, yeah, I reckon it's for you. 
+If you type for a living and you've filed dictation under "not for me, I'm already fast", then, yeah, I reckon it's for you.
 
 It is so much better than you think it is. And there's probably other tools just like it. I'm not paid by Wispr to say this - I just think it's excellent.
