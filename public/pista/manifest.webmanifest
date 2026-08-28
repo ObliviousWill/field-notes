@@ -1,0 +1,16 @@
+{
+  "name": "PISTA padel scoring",
+  "short_name": "PISTA",
+  "description": "Americano, Mexicano, fixed pairs and single matches. Rounds drawn for you, standings kept as you score.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#08202E",
+  "theme_color": "#08202E",
+  "icons": [
+    { "src": "./icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "./icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "./icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}

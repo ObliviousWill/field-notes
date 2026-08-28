@@ -48,6 +48,8 @@ const relatedPosts = allPosts
 
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 const primaryLink = project.data.links?.[0];
+const isInternal = (url: string) => url.startsWith('/');
+const linkHref = (url: string) => (isInternal(url) ? `${base}${url}` : url);
 
 const startDateFormatted = project.data.startDate.toLocaleDateString('en-GB', {
 	year: 'numeric',
@@ -68,7 +70,12 @@ const startDateFormatted = project.data.startDate.toLocaleDateString('en-GB', {
 				<a class="fn-link" href={`${base}/projects/`}>← All projects</a>
 				{
 					primaryLink && (
-						<a class="fn-link" href={primaryLink.url} target="_blank" rel="noopener">
+						<a
+							class="fn-link"
+							href={linkHref(primaryLink.url)}
+							target={isInternal(primaryLink.url) ? undefined : '_blank'}
+							rel={isInternal(primaryLink.url) ? undefined : 'noopener'}
+						>
 							↗ {primaryLink.label}
 						</a>
 					)

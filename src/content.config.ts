@@ -30,7 +30,8 @@ const projects = defineCollection({
 				.array(
 					z.object({
 						label: z.string(),
-						url: z.string().url(),
+						// absolute for anything off-site, or a site-relative path like /pista/
+						url: z.union([z.string().url(), z.string().startsWith('/')]),
 					}),
 				)
 				.optional(),
