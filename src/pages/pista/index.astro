@@ -34,8 +34,11 @@ const ogImage = new URL(`${base}/pista/icon-512.png`, canonical);
 		<meta name="twitter:card" content="summary" />
 		<link rel="preconnect" href="https://fonts.googleapis.com" />
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link
+			rel="stylesheet"
+			href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&family=Fraunces:opsz,wght@9..144,500..900&display=swap"
+		/>
 		<style is:inline>
-@import url('https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&family=Fraunces:opsz,wght@9..144,500..900&display=swap');
 
 :root{
   --deep:#08202E;
@@ -57,6 +60,7 @@ const ogImage = new URL(`${base}/pista/icon-512.png`, canonical);
 
   --r:14px;
   --pad:18px;
+  --navh:66px;   /* tab bar, without the safe-area inset */
   --ease:cubic-bezier(.2,.8,.25,1);
 }
 
@@ -226,7 +230,8 @@ button{font-family:var(--font-ui);cursor:pointer}
 .netscore.empty{font-family:var(--font-ui);font-size:12px;font-weight:600;letter-spacing:.16em;
   text-transform:uppercase;color:var(--ball);padding:9px 16px}
 
-.bench{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:9px;padding-left:2px}
+.bench{display:flex;align-items:center;gap:5px;flex-wrap:wrap;margin-top:10px;padding-left:2px}
+.bench .bav{display:inline-flex}
 .bench .lbl{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--glass-dim)}
 
 /* ─── chips / avatars ─── */
@@ -375,12 +380,51 @@ button{font-family:var(--font-ui);cursor:pointer}
 .empty p{color:var(--glass);font-size:14px;font-weight:500;line-height:1.5;max-width:290px;margin:0 auto}
 .divide{display:flex;align-items:center;gap:12px;margin:24px 0 12px}
 .divide .rule{flex:1;height:1px;background:var(--line)}
-.toast{position:fixed;left:50%;top:calc(12px + env(safe-area-inset-top));transform:translateX(-50%);
+/* ─── sticky primary action ─── */
+.stickwrap,.btn-row.stick{
+  position:sticky;bottom:calc(var(--navh) + env(safe-area-inset-bottom) + 6px);z-index:20;
+  margin:12px -16px 0;padding:8px 16px 10px;
+  background:rgba(8,32,46,.86);backdrop-filter:blur(12px)}
+.stickwrap::before,.btn-row.stick::before{
+  content:'';position:absolute;left:0;right:0;bottom:100%;height:20px;pointer-events:none;
+  background:linear-gradient(to top, rgba(8,32,46,.86), rgba(8,32,46,0))}
+.stickwrap .btn-row{margin-top:8px}
+.stickwrap .btn-row:first-child{margin-top:0}
+
+/* ─── event chrome ─── */
+.evbar{position:sticky;top:0;z-index:25;display:flex;align-items:center;gap:10px;
+  margin:0 -16px 12px;padding:8px 12px;background:rgba(8,32,46,.88);backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--line-soft)}
+.evbar .ebk{background:none;border:0;color:var(--glass);font-size:17px;min-width:40px;min-height:44px;
+  display:grid;place-items:center;border-radius:10px;flex:none}
+.evbar .ebk:hover{color:var(--chalk)}
+.evbar .ebt{flex:1;min-width:0}
+.evbar .ebn{font-family:var(--font-display);font-weight:800;font-size:17px;line-height:1.15;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.evbar .ebm{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--glass-dim);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.evtabs{margin:0 0 12px}
+.evtabs .seg{flex:1}
+.split[data-tab="round"]>.colB,.split[data-tab="table"]>.colA{display:none}
+.split[data-tab="table"]>.colB .divide{display:none}
+
+/* ─── menu sheet ─── */
+.menu{display:flex;flex-direction:column;margin:0 0 4px}
+.menu button{background:none;border:0;border-top:1px solid var(--line-soft);color:var(--chalk);
+  font-family:var(--font-ui);font-size:15.5px;font-weight:600;text-align:left;padding:0 4px;min-height:54px}
+.menu button:first-child{border-top:0}
+.menu button.danger{color:var(--coral)}
+
+/* ─── players list ─── */
+.plist .row{padding:8px 0}
+.plist .row .sub{font-size:12.5px}
+
+.toast{position:fixed;left:50%;bottom:calc(var(--navh) + env(safe-area-inset-bottom) + 14px);transform:translateX(-50%);
   display:flex;align-items:center;background:var(--ball);color:#12210A;font-size:12.5px;font-weight:700;
   letter-spacing:.06em;padding:11px 20px;border-radius:99px;z-index:60;animation:drop .22s var(--ease);
   white-space:nowrap;box-shadow:0 8px 26px rgba(4,16,24,.5);max-width:calc(100% - 32px)}
-@keyframes drop{from{transform:translate(-50%,-150%)}to{transform:translate(-50%,0)}}
-button.pill{min-height:36px;padding:7px 13px}
+@keyframes drop{from{transform:translate(-50%,150%)}to{transform:translate(-50%,0)}}
+button.pill{min-height:36px;padding:7px 13px;background:none}
 .banner{border:1px solid rgba(242,160,61,.42);background:rgba(242,160,61,.10);border-radius:12px;
   padding:13px 15px;margin-top:14px;display:flex;gap:12px;align-items:flex-start}
 .banner .bx{color:var(--amber);font-size:13px;line-height:1.45;font-weight:500;flex:1}
@@ -404,7 +448,13 @@ button.pill{min-height:36px;padding:7px 13px}
   .pagehead{padding:14px 0 10px}
   h1{font-size:26px}
   .split{display:grid;grid-template-columns:1.15fr .85fr;gap:22px;align-items:start}
+  .split[data-tab]>.colA,.split[data-tab]>.colB{display:block}
+  .split[data-tab="table"]>.colB .divide{display:flex}
+  .evtabs{display:none}
   .colB{position:sticky;top:10px}
+  .evbar{margin-bottom:8px}
+  .stickwrap,.btn-row.stick{position:static;margin:12px 0 0;padding:0;background:none;backdrop-filter:none}
+  .stickwrap::before,.btn-row.stick::before{display:none}
   .courts{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px;align-items:start}
   .courts .court-wrap{margin-top:0}
   .side{height:56px}
@@ -861,12 +911,12 @@ function vPlayers() {
     h += '<div class="empty"><div class="g" aria-hidden="true">&#9679;</div><p>No one here yet. Add everyone who plays regularly, then build an event around them.</p></div>';
   } else {
     const at = {}; allTime().forEach(r => at[r.id] = r);
-    h += '<div class="panel" style="margin-top:12px">';
+    h += '<div class="panel plist" style="margin-top:12px">';
     S.players.forEach(p => {
       const s = at[p.id];
       h += '<div class="row"><button style="background:none;border:0;padding:0;display:flex;align-items:center;gap:12px;flex:1;min-width:0;color:inherit;text-align:left" ' +
-        'data-a="open-profile" data-id="' + p.id + '">' + av(p.id, true) + '<span class="grow"><span class="nm" style="display:block">' + esc(p.name) + '</span>' +
-        '<span class="sub" style="display:block">' + (s ? s.pl + ' rounds &middot; ' + s.w + ' won &middot; ' + s.pf + ' pts' : 'No rounds yet') + '</span></span></button>' +
+        'data-a="open-profile" data-id="' + p.id + '">' + av(p.id) + '<span class="grow"><span class="nm" style="display:block">' + esc(p.name) + '</span>' +
+        (s ? '<span class="sub" style="display:block">' + s.pl + ' rounds &middot; ' + s.w + ' won &middot; ' + s.pf + ' pts</span>' : '') + '</span></button>' +
         '<button class="icon-btn" data-a="del-player" data-id="' + p.id + '" aria-label="Remove ' + esc(p.name) + '">&#10005;</button></div>';
     });
     h += '</div>';
@@ -930,7 +980,7 @@ function vNewEvent() {
         '<span class="o-k">' + (d.format === k ? '&#9679;' : '&#9675;') + '</span><span><span class="o-n">' + FORMATS[k].n + '</span>' +
         '<span class="o-d" style="display:block">' + FORMATS[k].d + '</span></span></button>';
     });
-    h += '</div><div class="btn-row"><button class="btn primary" data-a="wiz-next">Choose players</button></div>';
+    h += '</div><div class="btn-row stick"><button class="btn primary" data-a="wiz-next">Choose players</button></div>';
   }
 
   if (d.step === 1) {
@@ -949,7 +999,7 @@ function vNewEvent() {
     h += '<div class="hint">' + (d.ids.length < 4 ? 'You need at least four players.' :
       d.format === 'roundrobin' ? (d.ids.length % 2 ? 'Fixed pairs needs an even number.' : 'That is ' + (d.ids.length / 2) + ' pairs.') :
       (d.ids.length % 4 ? (d.ids.length % 4) + ' will rest each round, rotating fairly.' : 'Everyone plays every round.')) + '</div>';
-    h += '<div class="btn-row"><button class="btn primary" data-a="wiz-next" ' + (ok && !(d.format === 'roundrobin' && d.ids.length % 2) ? '' : 'disabled') + '>Set the rules</button></div>';
+    h += '<div class="btn-row stick"><button class="btn primary" data-a="wiz-next" ' + (ok && !(d.format === 'roundrobin' && d.ids.length % 2) ? '' : 'disabled') + '>Set the rules</button></div>';
   }
 
   if (d.step === 2) {
@@ -983,7 +1033,7 @@ function vNewEvent() {
         '<div class="hint">' + (d.format === 'mexicano' ? 'Round one is drawn at random. After that the table sets the pairings.' :
           'Suggested for ' + d.ids.length + ' players on ' + d.courts + ' court' + (d.courts > 1 ? 's' : '') + '.') + '</div></div></div>';
     }
-    h += '<div class="btn-row"><button class="btn primary" data-a="create-event">Start ' + esc(d.name || 'event') + '</button></div>';
+    h += '<div class="btn-row stick"><button class="btn primary" data-a="create-event">Start ' + esc(d.name || 'event') + '</button></div>';
   }
   return h;
 }
@@ -1004,9 +1054,12 @@ function vEvent() {
   if (idx == null) { idx = Math.min(evProgress(ev), total - 1); view.r = idx; }
   const r = ev.rounds[idx];
 
-  let h = '<button class="backlink" data-a="back">&#8592; Back</button>' +
-    '<div class="pagehead"><div><div class="eyebrow">' + esc(FORMATS[ev.format].n) + ' &middot; ' + fmtDate(ev.created) + '</div>' +
-    '<h1>' + esc(ev.name) + '</h1></div>' + (ev.status === 'live' ? '<span class="pill ball">Live</span>' : '<span class="pill">Finished</span>') + '</div>';
+  const tab = view.tab === 'table' ? 'table' : 'round';
+  let h = '<div class="evbar"><button class="ebk" data-a="back" aria-label="Back">&#8592;</button>' +
+    '<div class="ebt"><div class="ebn">' + esc(ev.name) + '</div><div class="ebm">' + esc(FORMATS[ev.format].n) + ' &middot; ' +
+    (ev.status === 'live' ? 'Round ' + (idx + 1) + ' of ' + roundsPlanned(ev) : fmtDate(ev.created)) + '</div></div>' +
+    (ev.status === 'live' ? '<span class="pill ball">Live</span>' : '<span class="pill">Finished</span>') +
+    '<button class="icon-btn" data-a="event-menu" aria-label="Event options" aria-haspopup="dialog">&#8943;</button></div>';
 
   if (ev.status !== 'live') {
     const w = winnerOf(ev);
@@ -1016,7 +1069,10 @@ function vEvent() {
       evProgress(ev) + ' rounds</div></div></div>';
   }
 
-  h += '<div class="split"><div class="colA">';
+  h += '<div class="segs evtabs" role="tablist">' +
+    '<button class="seg ' + (tab === 'round' ? 'on' : '') + '" data-a="ev-tab" data-v="round" role="tab" aria-selected="' + (tab === 'round') + '">Round</button>' +
+    '<button class="seg ' + (tab === 'table' ? 'on' : '') + '" data-a="ev-tab" data-v="table" role="tab" aria-selected="' + (tab === 'table') + '">Table</button></div>';
+  h += '<div class="split" data-tab="' + tab + '"><div class="colA">';
 
   /* round strip */
   h += '<div class="court-label" style="margin-bottom:7px"><span class="eyebrow">Rounds</span>' +
@@ -1050,35 +1106,27 @@ function vEvent() {
   h += '</div>';
 
   if (r.resting && r.resting.length) {
-    h += '<div class="bench"><span class="lbl">Sitting out</span>' + r.resting.map(id => '<span class="chip">' + av(id) + esc(pname(id)) + '</span>').join('') + '</div>';
+    h += '<div class="bench"><span class="lbl">Sitting out</span>' +
+      r.resting.map(id => '<span class="bav" title="' + esc(pname(id)) + '" aria-label="' + esc(pname(id)) + '">' + av(id) + '</span>').join('') + '</div>';
   }
 
   /* controls */
   const done = roundDone(r);
   if (ev.status === 'live') {
+    const rows = [];
     if (idx < total - 1) {
-      h += '<div class="btn-row"><button class="btn" data-a="goto-round" data-i="' + (idx + 1) + '">Round ' + (idx + 2) + ' &#8594;</button></div>';
+      rows.push('<button class="btn" data-a="goto-round" data-i="' + (idx + 1) + '">Round ' + (idx + 2) + ' &#8594;</button>');
     } else if (ev.format === 'mexicano' && done && total < roundsPlanned(ev)) {
-      h += '<div class="btn-row"><button class="btn primary" data-a="next-round">Draw round ' + (total + 1) +
-        ' <span style="opacity:.6;font-weight:600">of ' + roundsPlanned(ev) + '</span></button></div>';
+      rows.push('<button class="btn primary" data-a="next-round">Draw round ' + (total + 1) +
+        ' <span style="opacity:.6;font-weight:600">of ' + roundsPlanned(ev) + '</span></button>');
     }
-    if (done && idx === total - 1) {
-      h += '<div class="btn-row"><button class="btn" data-a="finish-event">Finish event</button></div>';
-    }
-    const untouched = r.matches.every(m => m.sa == null && m.sb == null);
-    h += '<div class="btn-row">' +
-      (untouched ? '<button class="btn ghost small" data-a="redraw-round" data-i="' + idx + '" style="flex:1">Redraw round</button>' : '') +
-      (ev.format !== 'roundrobin' ? '<button class="btn ghost small" data-a="squad-sheet" style="flex:1">Who is playing</button>' : '') +
-      '</div>';
+    if (done && idx === total - 1) rows.push('<button class="btn" data-a="finish-event">Finish event</button>');
+    if (rows.length) h += '<div class="stickwrap">' + rows.map(b => '<div class="btn-row">' + b + '</div>').join('') + '</div>';
   }
   h += '</div><div class="colB">';
 
   h += '<div class="divide"><span class="eyebrow">Table</span><span class="rule"></span></div><div class="panel">' +
     (ev.format === 'roundrobin' ? teamTableHTML(ev) : tableHTML(standings(ev), 'Pts')) + '</div></div></div>';
-  h += '<div class="btn-row"><button class="btn ghost small" data-a="run-it-back" style="flex:1">Run it back</button>' +
-    '<button class="btn ghost small" data-a="share-event" style="flex:1">Copy the table</button></div>' +
-    '<div class="btn-row">' +
-    '<button class="btn ghost small danger" data-a="del-event" data-id="' + ev.id + '" style="width:100%">Delete event</button></div>';
   return h;
 }
 
@@ -1115,7 +1163,7 @@ function vNewMatch() {
         '<button class="seg ' + (d.superTb ? 'on' : '') + '" data-a="m-stb" data-v="1">Super tiebreak</button>' +
         '<button class="seg ' + (!d.superTb ? 'on' : '') + '" data-a="m-stb" data-v="0">Full set</button></div></div>';
     }
-    h += '</div><div class="btn-row"><button class="btn primary" data-a="create-match">Start match</button></div>';
+    h += '</div><div class="btn-row stick"><button class="btn primary" data-a="create-match">Start match</button></div>';
   } else {
     h += '<div class="hint">Tap four players to make the two pairs.</div>';
   }
@@ -1177,6 +1225,24 @@ function renderSheet() {
       '<h3>' + esc(sheet.title) + '</h3><div class="sub">' + esc(sheet.body) + '</div>' +
       '<div class="btn-row"><button class="btn ghost" data-a="close-sheet">Cancel</button>' +
       '<button class="btn ' + (sheet.danger ? 'danger' : 'primary') + '" data-a="confirm-yes">' + esc(sheet.label) + '</button></div></div>';
+    return;
+  }
+  if (sheet.kind === 'eventmenu') {
+    const ev = S.events.find(e => e.id === sheet.ev);
+    if (!ev) { sheet = null; return renderSheet(); }
+    const r = ev.rounds[view.r] || ev.rounds[0];
+    const untouched = r && r.matches.every(m => m.sa == null && m.sb == null);
+    let items = '';
+    if (ev.status === 'live' && untouched) items += '<button data-a="redraw-round" data-i="' + view.r + '">Redraw this round</button>';
+    if (ev.status === 'live' && ev.format !== 'roundrobin') items += '<button data-a="squad-sheet">Who is playing</button>';
+    items += '<button data-a="run-it-back">Run it back</button>';
+    items += '<button data-a="share-event">Copy the table</button>';
+    items += '<button class="danger" data-a="del-event" data-id="' + ev.id + '">Delete event</button>';
+    L.innerHTML = '<div class="scrim" data-a="close-sheet"></div><div class="sheet"><div class="grab"></div>' +
+      '<h3>' + esc(ev.name) + '</h3><div class="sub">' + esc(FORMATS[ev.format].n) + ' &middot; ' +
+      evProgress(ev) + ' of ' + roundsPlanned(ev) + ' rounds played</div>' +
+      '<div class="menu">' + items + '</div>' +
+      '<div class="btn-row"><button class="btn ghost" data-a="close-sheet" style="width:100%">Close</button></div></div>';
     return;
   }
   if (sheet.kind === 'restore') {
@@ -1279,6 +1345,7 @@ function render() {
 document.addEventListener('click', e => {
   const el = e.target.closest('[data-a]'); if (!el) return;
   const a = el.dataset.a; const d = draft;
+  if (sheet && sheet.kind === 'eventmenu' && a !== 'close-sheet') { sheet = null; renderSheet(); }
 
   if (a === 'back') { history.length > 1 ? go(view.from || 'home') : go('home'); return; }
   if (a.indexOf('tab-') === 0) { go(a.slice(4) === 'home' ? 'home' : a.slice(4)); return; }
@@ -1346,7 +1413,9 @@ document.addEventListener('click', e => {
 
   /* event */
   if (a === 'open-event') { go('event', { id: el.dataset.id, from: view.name }); return; }
-  if (a === 'goto-round') { view.r = +el.dataset.i; render(); window.scrollTo(0, 0); return; }
+  if (a === 'goto-round') { view.r = +el.dataset.i; view.tab = 'round'; render(); window.scrollTo(0, 0); return; }
+  if (a === 'ev-tab') { view.tab = el.dataset.v; render(); window.scrollTo(0, 0); return; }
+  if (a === 'event-menu') { sheet = { kind: 'eventmenu', ev: view.id }; renderSheet(); return; }
   if (a === 'redraw-round') {
     const ev = S.events.find(x => x.id === view.id);
     const changed = redrawRound(ev, +el.dataset.i);
