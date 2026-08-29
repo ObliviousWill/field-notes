@@ -230,6 +230,8 @@ button{font-family:var(--font-ui);cursor:pointer}
 .netscore.empty{font-family:var(--font-ui);font-size:12px;font-weight:600;letter-spacing:.16em;
   text-transform:uppercase;color:var(--ball);padding:9px 16px}
 
+.rival{text-transform:none;letter-spacing:.005em;font-size:12px;font-weight:600;color:var(--glass);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:64%;text-align:right}
 .bench{display:flex;align-items:center;gap:5px;flex-wrap:wrap;margin-top:10px;padding-left:2px}
 .bench .bav{display:inline-flex}
 .bench .lbl{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--glass-dim)}
@@ -513,6 +515,7 @@ const FORMATS = {
 let S = { players: [], events: [], matches: [] };
 let view = { name: 'home' };
 let draft = null, sheet = null, toastT = null, pending = null;
+let SHARED = null;   // a night someone sent us, read only, kept out of S
 
 /* ── storage ── */
 const KEY = 'pista:v1';
@@ -546,7 +549,8 @@ function paintBanner() {
 }
 
 /* ── people helpers ── */
-const P = id => S.players.find(p => p.id === id) || { id, name: '?', c: 3 };
+const P = id => S.players.find(p => p.id === id) ||
+  (SHARED && SHARED.ps.find(p => p.id === id)) || { id, name: '?', c: 3 };
 const pname = id => P(id).name;
 function av(id, lg) { const p = P(id); return '<span class="av' + (lg ? ' lg' : '') + '" style="background:' + AVC[p.c % AVC.length] + '">' + esc(inits(p.name)) + '</span>'; }
 function inits(n) { const p = String(n).trim().split(/\s+/); return ((p[0] || '?')[0] + (p[1] ? p[1][0] : '')).toUpperCase(); }
@@ -747,6 +751,265 @@ function winnerOf(ev) {
 const roundDone = r => r.matches.every(m => m.sa != null && m.sb != null);
 const evProgress = ev => (ev.rounds || []).filter(roundDone).length;
 
+/* ══════════ view links ══════════ */
+function b64url(bytes) {
+  let s = '';
+  for (let i = 0; i < bytes.length; i++) s += String.fromCharCode(bytes[i]);
+  return btoa(s).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+}
+function unb64url(str) {
+  const b = atob(str.replace(/-/g, '+').replace(/_/g, '/'));
+  const out = new Uint8Array(b.length);
+  for (let i = 0; i < b.length; i++) out[i] = b.charCodeAt(i);
+  return out;
+}
+async function pack(obj) {
+  const bytes = new TextEncoder().encode(JSON.stringify(obj));
+  if (window.CompressionStream) {
+    try {
+      const stream = new Blob([bytes]).stream().pipeThrough(new CompressionStream('gzip'));
+      return 'z' + b64url(new Uint8Array(await new Response(stream).arrayBuffer()));
+    } catch (e) { /* fall through to plain */ }
+  }
+  return 'r' + b64url(bytes);
+}
+async function unpack(str) {
+  const flag = str[0];
+  let bytes = unb64url(str.slice(1));
+  if (flag === 'z') {
+    const stream = new Blob([bytes]).stream().pipeThrough(new DecompressionStream('gzip'));
+    bytes = new Uint8Array(await new Response(stream).arrayBuffer());
+  } else if (flag !== 'r') throw new Error('unknown payload');
+  return JSON.parse(new TextDecoder().decode(bytes));
+}
+async function shareLink(id) {
+  const ev = S.events.find(e => e.id === id); if (!ev) return;
+  const involved = {};
+  ev.playerIds.forEach(x => involved[x] = 1);
+  (ev.rounds || []).forEach(r => r.matches.forEach(m => m.a.concat(m.b).forEach(x => involved[x] = 1)));
+  const ps = S.players.filter(p => involved[p.id]).map(p => ({ id: p.id, name: p.name, c: p.c }));
+  const url = location.origin + location.pathname + '#v=' + await pack({ v: 1, t: Date.now(), ev: ev, ps: ps });
+  if (url.length > 40000) { toast('This night is too long to fit in a link'); return; }
+  try {
+    if (navigator.share) { await navigator.share({ title: ev.name, text: 'PISTA \u00b7 ' + ev.name, url: url }); return; }
+  } catch (e) { if (e && e.name === 'AbortError') return; }
+  try {
+    if (navigator.clipboard) { await navigator.clipboard.writeText(url); toast('Link copied'); return; }
+  } catch (e) { /* falls through */ }
+  toast('Could not share the link');
+}
+async function openShared() {
+  const h = location.hash || '';
+  if (h.indexOf('#v=') !== 0) return false;
+  try {
+    const d = await unpack(decodeURIComponent(h.slice(3)));
+    if (!d || !d.ev || !Array.isArray(d.ps)) throw new Error('not a PISTA link');
+    SHARED = d; view = { name: 'shared' }; render(); window.scrollTo(0, 0);
+    return true;
+  } catch (e) { toast('That link could not be read'); return false; }
+}
+function vShared() {
+  const ev = SHARED && SHARED.ev;
+  if (!ev) return vHome();
+  const pairs = ev.format === 'roundrobin';
+  const w = winnerOf(ev);
+  let h = '<div class="evbar"><div class="ebt"><div class="ebn">' + esc(ev.name) + '</div>' +
+    '<div class="ebm">Shared \u00b7 ' + esc(FORMATS[ev.format].n) + ' \u00b7 ' + fmtDate(ev.created) + '</div></div>' +
+    '<span class="pill' + (ev.status === 'live' ? ' ball' : '') + '">' + (ev.status === 'live' ? 'In play' : 'Finished') + '</span></div>';
+  h += '<div class="banner"><div class="bx"><b>Read only</b>Someone shared this night with you. It is a snapshot' +
+    (SHARED.t ? ' from ' + new Date(SHARED.t).toLocaleString('en-GB', { weekday: 'short', hour: '2-digit', minute: '2-digit' }) : '') +
+    ', so it will not update on its own.</div></div>';
+  if (w) h += '<div class="champ">' + (w.id ? av(w.id, true) : '') +
+    '<div><div class="cl">Winner</div><div class="cn">' + esc(w.who) + '</div>' +
+    '<div class="cs">' + w.pts + ' points &middot; ' + (w.diff > 0 ? '+' : '') + w.diff + ' difference &middot; ' +
+    evProgress(ev) + ' rounds</div></div></div>';
+  h += '<div class="divide"><span class="eyebrow">Table</span><span class="rule"></span></div><div class="panel">' +
+    (pairs ? teamTableHTML(ev) : tableHTML(standings(ev), 'Pts')) + '</div>';
+  (ev.rounds || []).forEach((r, i) => {
+    h += '<div class="divide"><span class="eyebrow">Round ' + (i + 1) + '</span><span class="rule"></span></div><div class="panel">';
+    r.matches.forEach(m => {
+      const done = m.sa != null && m.sb != null;
+      h += '<div class="row"><div class="grow"><div class="nm">' + esc(m.a.map(x => pname(x)).join(' & ')) +
+        ' v ' + esc(m.b.map(x => pname(x)).join(' & ')) + '</div>' +
+        '<div class="sub">' + (done ? m.sa + '&#8211;' + m.sb : 'not scored') + '</div></div></div>';
+    });
+    if (r.resting && r.resting.length) h += '<div class="hint">Sitting out: ' + esc(r.resting.map(x => pname(x)).join(', ')) + '</div>';
+    h += '</div>';
+  });
+  h += '<div class="btn-row"><button class="btn primary" data-a="save-shared">Save to my device</button></div>' +
+    '<div class="btn-row"><button class="btn ghost small" data-a="exit-shared" style="width:100%">Open my own PISTA</button></div>';
+  return h;
+}
+
+/* ══════════ the share card ══════════ */
+const CARD_DISPLAY = "'Fraunces','Iowan Old Style',Georgia,serif";
+const CARD_UI = "'Archivo',system-ui,-apple-system,sans-serif";
+async function cardFonts() {
+  if (!document.fonts || !document.fonts.load) return;
+  try {
+    await Promise.all([
+      document.fonts.load('800 72px Fraunces'), document.fonts.load('600 40px Fraunces'),
+      document.fonts.load('700 26px Archivo'), document.fonts.load('600 30px Archivo'),
+    ]);
+  } catch (e) { /* the fallbacks in the stacks above take over */ }
+}
+function roundRect(g, x, y, w, h, r) {
+  g.beginPath();
+  g.moveTo(x + r, y); g.arcTo(x + w, y, x + w, y + h, r); g.arcTo(x + w, y + h, x, y + h, r);
+  g.arcTo(x, y + h, x, y, r); g.arcTo(x, y, x + w, y, r); g.closePath();
+}
+function spaced(g, text, x, y, extra) {
+  let cx = x;
+  for (const ch of String(text)) { g.fillText(ch, cx, y); cx += g.measureText(ch).width + extra; }
+  return cx - x - extra;
+}
+function spacedWidth(g, text, extra) {
+  let w = 0;
+  for (const ch of String(text)) w += g.measureText(ch).width + extra;
+  return w - extra;
+}
+function fitText(g, text, max, size, weight, family) {
+  let s = size;
+  for (;;) { g.font = weight + ' ' + s + 'px ' + family; if (g.measureText(text).width <= max || s <= 22) break; s -= 3; }
+  return s;
+}
+async function drawCard(o) {
+  await cardFonts();
+  const W = 1080, H = 1350, PAD = 92;
+  const c = document.createElement('canvas'); c.width = W; c.height = H;
+  const g = c.getContext('2d');
+  g.fillStyle = '#08202E'; g.fillRect(0, 0, W, H);
+  const glow = g.createRadialGradient(W / 2, -80, 40, W / 2, 500, 980);
+  glow.addColorStop(0, 'rgba(20,83,111,.9)'); glow.addColorStop(1, 'rgba(8,32,46,0)');
+  g.fillStyle = glow; g.fillRect(0, 0, W, H);
+  g.strokeStyle = 'rgba(235,243,241,.14)'; g.lineWidth = 2;
+  roundRect(g, 44, 44, W - 88, H - 88, 34); g.stroke();
+
+  g.textBaseline = 'alphabetic'; g.textAlign = 'left';
+  /* wordmark */
+  g.fillStyle = '#EBF3F1'; g.font = '600 46px ' + CARD_DISPLAY;
+  spaced(g, 'PISTA', PAD, 150, 14);
+  /* eyebrow, right */
+  g.font = '700 24px ' + CARD_UI; g.fillStyle = '#9BBCC4';
+  const ew = spacedWidth(g, o.eyebrow.toUpperCase(), 3);
+  spaced(g, o.eyebrow.toUpperCase(), W - PAD - ew, 150, 3);
+  g.strokeStyle = 'rgba(235,243,241,.16)'; g.lineWidth = 1;
+  g.beginPath(); g.moveTo(PAD, 188); g.lineTo(W - PAD, 188); g.stroke();
+
+  /* title */
+  let y = 274;
+  const tsize = fitText(g, o.title, W - PAD * 2, 78, '800', CARD_DISPLAY);
+  g.fillStyle = '#EBF3F1'; g.font = '800 ' + tsize + 'px ' + CARD_DISPLAY;
+  g.fillText(o.title, PAD, y);
+  y += 46;
+  g.font = '600 27px ' + CARD_UI; g.fillStyle = '#A9CBD2';
+  g.fillText(o.sub, PAD, y);
+
+  /* hero */
+  y += 46;
+  const heroH = 208;
+  g.fillStyle = 'rgba(217,230,79,.10)'; roundRect(g, PAD, y, W - PAD * 2, heroH, 26); g.fill();
+  g.strokeStyle = 'rgba(217,230,79,.5)'; g.lineWidth = 2;
+  roundRect(g, PAD, y, W - PAD * 2, heroH, 26); g.stroke();
+  g.fillStyle = '#D9E64F'; g.font = '700 24px ' + CARD_UI;
+  spaced(g, o.hero.label.toUpperCase(), PAD + 38, y + 62, 3);
+  const hsize = fitText(g, o.hero.name, W - PAD * 2 - 76, 72, '800', CARD_DISPLAY);
+  g.fillStyle = '#EBF3F1'; g.font = '800 ' + hsize + 'px ' + CARD_DISPLAY;
+  g.fillText(o.hero.name, PAD + 38, y + 132);
+  if (o.hero.meta) {
+    g.fillStyle = '#A9CBD2'; g.font = '600 26px ' + CARD_UI;
+    g.fillText(o.hero.meta, PAD + 38, y + 174);
+  }
+  y += heroH + 62;
+
+  /* rows */
+  g.font = '700 22px ' + CARD_UI; g.fillStyle = '#9BBCC4';
+  spaced(g, o.rowsLabel.toUpperCase(), PAD, y, 3);
+  g.textAlign = 'right'; spaced(g, o.rowsUnit.toUpperCase(), W - PAD - spacedWidth(g, o.rowsUnit.toUpperCase(), 3), y, 3);
+  g.textAlign = 'left';
+  y += 20;
+  o.rows.slice(0, 8).forEach((r, i) => {
+    y += 62;
+    g.strokeStyle = 'rgba(235,243,241,.09)'; g.lineWidth = 1;
+    g.beginPath(); g.moveTo(PAD, y - 44); g.lineTo(W - PAD, y - 44); g.stroke();
+    const lead = i === 0;
+    g.fillStyle = lead ? '#D9E64F' : '#9BBCC4'; g.font = '700 26px ' + CARD_UI;
+    g.fillText(String(i + 1), PAD, y);
+    g.fillStyle = '#EBF3F1'; g.font = '600 32px ' + CARD_UI;
+    const name = r.name.length > 26 ? r.name.slice(0, 25) + '\u2026' : r.name;
+    g.fillText(name, PAD + 54, y);
+    g.textAlign = 'right';
+    g.fillStyle = lead ? '#D9E64F' : '#EBF3F1'; g.font = '800 36px ' + CARD_DISPLAY;
+    g.fillText(String(r.value), W - PAD, y);
+    if (r.note) { g.fillStyle = '#9BBCC4'; g.font = '600 26px ' + CARD_UI; g.fillText(r.note, W - PAD - 116, y); }
+    g.textAlign = 'left';
+  });
+
+  /* footer */
+  g.fillStyle = '#9BBCC4'; g.font = '600 24px ' + CARD_UI;
+  g.fillText(o.foot, PAD, H - 92);
+  return c;
+}
+function cardFoot() {
+  try { return (location.host + location.pathname).replace(/\/$/, ''); } catch (e) { return 'PISTA'; }
+}
+async function shareCanvas(canvas, name, title) {
+  /* jpeg: the card is a gradient, so png runs to a megabyte for no visible gain */
+  const blob = await new Promise(res => canvas.toBlob(res, 'image/jpeg', 0.92));
+  if (!blob) { toast('Could not make the image'); return; }
+  const file = new File([blob], name + '.jpg', { type: 'image/jpeg' });
+  try {
+    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+      await navigator.share({ files: [file], title: title });
+      return;
+    }
+  } catch (e) { if (e && e.name === 'AbortError') return; }
+  const url = URL.createObjectURL(blob), a = document.createElement('a');
+  a.href = url; a.download = name + '.jpg'; a.click();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+  toast('Image saved');
+}
+async function shareEventCard(id) {
+  const ev = S.events.find(e => e.id === id); if (!ev) return;
+  toast('Making the card');
+  const pairs = ev.format === 'roundrobin';
+  const board = pairs ? teamTable(ev) : standings(ev);
+  const top = board[0];
+  const who = !top || !top.pl ? 'Nobody yet' : pairs ? top.ids.map(x => pname(x)).join(' & ') : pname(top.id);
+  const live = ev.status === 'live';
+  const canvas = await drawCard({
+    eyebrow: live ? 'In play' : 'Final',
+    title: ev.name,
+    sub: FORMATS[ev.format].n + '  \u00b7  ' + fmtDate(ev.created) + '  \u00b7  ' + evProgress(ev) + ' of ' + roundsPlanned(ev) + ' rounds',
+    hero: { label: live ? 'Leading' : 'Winner', name: who,
+      meta: top && top.pl ? top.pf + ' points  \u00b7  ' + (top.diff > 0 ? '+' : '') + top.diff + ' difference' : '' },
+    rowsLabel: pairs ? 'Pairs' : 'Table', rowsUnit: 'Pts',
+    rows: board.map(r => ({ name: pairs ? r.ids.map(x => pname(x)).join(' & ') : pname(r.id),
+      value: r.pf, note: (r.diff > 0 ? '+' : '') + r.diff })),
+    foot: cardFoot(),
+  });
+  await shareCanvas(canvas, 'pista-' + ev.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''), ev.name);
+}
+async function shareMatchCard(id) {
+  const m = S.matches.find(x => x.id === id); if (!m) return;
+  toast('Making the card');
+  const w = matchWinner(m), sw = setsWon(m);
+  const nameA = m.a.map(x => pname(x)).join(' & '), nameB = m.b.map(x => pname(x)).join(' & ');
+  const canvas = await drawCard({
+    eyebrow: w ? 'Final' : 'In play',
+    title: nameA + '  v  ' + nameB,
+    sub: (m.a.length === 1 ? 'Singles' : 'Doubles') + '  \u00b7  best of ' + m.cfg.sets + '  \u00b7  ' + fmtDate(m.created),
+    hero: { label: w ? 'Winner' : 'Sets', name: w ? (w === 'a' ? nameA : nameB) : sw.a + '\u2013' + sw.b,
+      meta: w ? sw.a + '\u2013' + sw.b + ' in sets' : '' },
+    rowsLabel: 'Sets', rowsUnit: '',
+    rows: m.sets.filter(x => x.a !== '' && x.a != null && x.b !== '' && x.b != null)
+      .map((x, i) => ({ name: (m.cfg.superTb && m.cfg.sets > 1 && i === m.cfg.sets - 1 ? 'Super tiebreak' : 'Set ' + (i + 1)),
+        value: x.a + '\u2013' + x.b })),
+    foot: cardFoot(),
+  });
+  await shareCanvas(canvas, 'pista-match', nameA + ' v ' + nameB);
+}
+
 /* ══════════ chrome ══════════ */
 function toast(msg, actionLabel, fn) {
   const old = document.querySelector('.toast'); if (old) old.remove();
@@ -853,6 +1116,46 @@ function matchTableHTML(rows) {
       '<td class="big">' + r.sw + '&#8211;' + r.sl + '</td></tr>';
   });
   return h + '</tbody></table>';
+}
+/* every past meeting, as pairs and as individuals across the net */
+function rivalIndex() {
+  const duel = {}, duo = {};
+  const tk = ids => ids.slice().sort().join('+');
+  const add = (map, key, winner) => { map[key] = map[key] || {}; if (winner) map[key][winner] = (map[key][winner] || 0) + 1; };
+  const record = (a, b, win) => {
+    const ka = tk(a), kb = tk(b);
+    add(duo, [ka, kb].sort().join(' v '), win === 'a' ? ka : win === 'b' ? kb : null);
+    a.forEach(x => b.forEach(y => add(duel, [x, y].sort().join('|'), win === 'a' ? x : win === 'b' ? y : null)));
+  };
+  S.events.forEach(ev => (ev.rounds || []).forEach(r => r.matches.forEach(m => {
+    if (m.sa == null || m.sb == null) return;
+    record(m.a, m.b, m.sa > m.sb ? 'a' : m.sb > m.sa ? 'b' : null);
+  })));
+  S.matches.forEach(m => { const w = matchWinner(m); if (w) record(m.a, m.b, w); });
+  return { duel: duel, duo: duo, tk: tk };
+}
+/* the line above a court: these exact teams if they have met, else the strongest personal rivalry on it */
+function rivalryLine(a, b, idx) {
+  const ka = idx.tk(a), kb = idx.tk(b);
+  const d = idx.duo[[ka, kb].sort().join(' v ')];
+  if (d) {
+    const wa = d[ka] || 0, wb = d[kb] || 0;
+    if (wa + wb > 0) {
+      if (wa === wb) return 'Level at ' + wa + '&#8211;' + wb;
+      const lead = wa > wb ? a : b;
+      return esc(lead.map(x => pname(x)).join(' & ')) + ' lead ' + Math.max(wa, wb) + '&#8211;' + Math.min(wa, wb);
+    }
+  }
+  let best = null;
+  a.forEach(x => b.forEach(y => {
+    const rec = idx.duel[[x, y].sort().join('|')]; if (!rec) return;
+    const wx = rec[x] || 0, wy = rec[y] || 0, tot = wx + wy;
+    if (tot >= 2 && (!best || tot > best.tot)) best = { x: x, y: y, wx: wx, wy: wy, tot: tot };
+  }));
+  if (!best) return '';
+  if (best.wx === best.wy) return esc(pname(best.x)) + ' v ' + esc(pname(best.y)) + ', level';
+  const up = best.wx > best.wy ? best.x : best.y, down = best.wx > best.wy ? best.y : best.x;
+  return esc(pname(up)) + ' leads ' + esc(pname(down)) + ' ' + Math.max(best.wx, best.wy) + '&#8211;' + Math.min(best.wx, best.wy);
 }
 function tableHTML(rows, unit) {
   let h = '<table class="table"><thead><tr><th>Player</th><th>P</th><th>W</th><th>+/&#8722;</th><th>' + unit + '</th></tr></thead><tbody>';
@@ -1163,11 +1466,13 @@ function vEvent() {
   h += '</div>';
 
   /* courts */
+  const RI = rivalIndex();
   h += '<div class="courts">';
   r.matches.forEach((m, mi) => {
     const scored = m.sa != null && m.sb != null;
+    const riv = scored ? '' : rivalryLine(m.a, m.b, RI);
     h += '<div class="court-wrap"><div class="court-label"><span class="eyebrow">Court ' + m.court + '</span>' +
-      (scored ? '<span class="eyebrow" style="color:var(--ball)">Scored</span>' : '') + '</div>' +
+      (scored ? '<span class="eyebrow" style="color:var(--ball)">Scored</span>' : riv ? '<span class="eyebrow rival">' + riv + '</span>' : '') + '</div>' +
       '<div class="court ' + (scored ? 'done' : '') + '">' +
       '<div class="side top ' + (scored && m.sa > m.sb ? 'win' : '') + '"><div class="team"><div class="nm">' + teamName(m.a) + '</div></div></div>' +
       '<div class="net"><button class="netscore ' + (scored ? '' : 'empty') + '" data-a="score" data-r="' + idx + '" data-m="' + mi + '"' +
@@ -1261,6 +1566,10 @@ function vMatch() {
     '<span class="pill ' + (w ? 'ball' : '') + '">' + (w ? 'Result in' : 'In play') + '</span></div>';
 
   const sw = setsWon(m);
+  if (!m.sets.some(x => x.a !== '' && x.a != null)) {
+    const riv = rivalryLine(m.a, m.b, rivalIndex());
+    if (riv) h += '<div class="court-label"><span class="eyebrow">Head to head</span><span class="eyebrow rival">' + riv + '</span></div>';
+  }
   h += '<div class="court ' + (w ? 'done' : '') + '">' +
     '<div class="side top ' + (w === 'a' ? 'win' : '') + '"><div class="team"><div class="nm">' + teamName(m.a) + '</div></div></div>' +
     '<div class="net"><span class="netscore">' + sw.a + '<span class="sep">&#8211;</span>' + sw.b + '</span></div>' +
@@ -1279,6 +1588,7 @@ function vMatch() {
   h += '</div><div class="hint">' + (m.cfg.superTb && m.cfg.sets > 1 ? 'Deciding set is a super tiebreak. ' : '') +
     (m.cfg.golden ? 'Golden point at deuce.' : 'Advantage scoring.') + '</div></div>';
   h += '<div class="btn-row"><button class="btn primary" data-a="save-sets">Save score</button></div>' +
+    '<div class="btn-row"><button class="btn ghost small" data-a="share-match-card" data-id="' + m.id + '" style="flex:1">Share the result</button></div>' +
     '<div class="btn-row"><button class="btn ghost small danger" data-a="del-match" data-id="' + m.id + '" style="width:100%">Delete match</button></div>';
   return h;
 }
@@ -1313,6 +1623,8 @@ function renderSheet() {
     if (ev.status === 'live' && untouched) items += '<button data-a="redraw-round" data-i="' + view.r + '">Redraw this round</button>';
     if (ev.status === 'live' && ev.format !== 'roundrobin') items += '<button data-a="squad-sheet">Who is playing</button>';
     items += '<button data-a="run-it-back">Run it back</button>';
+    items += '<button data-a="share-card" data-id="' + ev.id + '">Share the result</button>';
+    items += '<button data-a="share-link" data-id="' + ev.id + '">Share a view link</button>';
     items += '<button data-a="share-event">Copy the table</button>';
     items += '<button class="danger" data-a="del-event" data-id="' + ev.id + '">Delete event</button>';
     L.innerHTML = '<div class="scrim" data-a="close-sheet"></div><div class="sheet"><div class="grab"></div>' +
@@ -1408,7 +1720,7 @@ function paintSheet() {
 }
 
 /* ══════════ render ══════════ */
-const VIEWS = { home: vHome, players: vPlayers, history: vHistory, newevent: vNewEvent, event: vEvent, newmatch: vNewMatch, match: vMatch, profile: vProfile };
+const VIEWS = { home: vHome, players: vPlayers, history: vHistory, newevent: vNewEvent, event: vEvent, newmatch: vNewMatch, match: vMatch, profile: vProfile, shared: vShared };
 function render() {
   $('#app').innerHTML = (VIEWS[view.name] || vHome)();
   const tabs = [['home', '&#9650;', 'Court'], ['players', '&#9679;', 'Players'], ['history', '&#9632;', 'History']];
@@ -1627,6 +1939,47 @@ document.addEventListener('click', e => {
     return;
   }
 
+  if (a === 'share-card') { shareEventCard(el.dataset.id); return; }
+  if (a === 'share-link') { shareLink(el.dataset.id); return; }
+  if (a === 'exit-shared') {
+    SHARED = null;
+    try { history.replaceState(null, '', location.pathname); } catch (e) { location.hash = ''; }
+    go('home'); return;
+  }
+  if (a === 'save-shared') {
+    const src = SHARED; if (!src) return;
+    const already = S.events.find(e => e.id === src.ev.id);
+    if (already) {
+      SHARED = null;
+      try { history.replaceState(null, '', location.pathname); } catch (e) { location.hash = ''; }
+      go('event', { id: already.id, from: 'home' });
+      toast('You already have this night'); return;
+    }
+    const map = {};
+    src.ps.forEach(sp => {
+      const byName = S.players.find(x => x.name.toLowerCase() === sp.name.toLowerCase());
+      if (byName) { map[sp.id] = byName.id; return; }
+      const id = S.players.some(x => x.id === sp.id) ? uid() : sp.id;
+      S.players.push({ id: id, name: sp.name, c: S.players.length });
+      map[sp.id] = id;
+    });
+    const mp = x => map[x] || x;
+    const ev = JSON.parse(JSON.stringify(src.ev));
+    ev.playerIds = (ev.playerIds || []).map(mp);
+    (ev.rounds || []).forEach(r => {
+      r.matches.forEach(m => { m.a = m.a.map(mp); m.b = m.b.map(mp); });
+      if (r.resting) r.resting = r.resting.map(mp);
+    });
+    if (ev.config && ev.config.teams) ev.config.teams = ev.config.teams.map(t => t.map(mp));
+    if (S.events.some(e => e.id === ev.id)) ev.id = uid();
+    S.events.push(ev); save();
+    SHARED = null;
+    try { history.replaceState(null, '', location.pathname); } catch (e) { location.hash = ''; }
+    go('event', { id: ev.id, from: 'home' });
+    toast('Saved to this device');
+    return;
+  }
+  if (a === 'share-match-card') { shareMatchCard(el.dataset.id); return; }
   if (a === 'share-event') {
     const ev = S.events.find(x => x.id === view.id);
     const lines = [ev.name, FORMATS[ev.format].n + ' \u00b7 ' + fmtDate(ev.created) + ' \u00b7 ' + evProgress(ev) + ' rounds played', ''];
@@ -1682,7 +2035,8 @@ document.addEventListener('keydown', e => {
 });
 
 /* ── boot ── */
-(function () { load(); if (mode === 'none') probe(); render(); })();
+(function () { load(); if (mode === 'none') probe(); render(); openShared(); })();
+window.addEventListener('hashchange', () => { if ((location.hash || '').indexOf('#v=') === 0) openShared(); });
 
 		</script>
 	</body>
