@@ -791,7 +791,7 @@ function vHome() {
     '<button class="tile" data-a="new-event"><div><div class="t-name">New event</div>' +
     '<div class="t-desc">Americano, Mexicano or fixed pairs</div></div><div class="t-mark" aria-hidden="true">&#9679;&#9679;&#9679;&#9679;</div></button>' +
     '<button class="tile" data-a="new-match"><div><div class="t-name">Quick match</div>' +
-    '<div class="t-desc">One match, sets and golden point</div></div><div class="t-mark" aria-hidden="true">6&#8211;4</div></button>' +
+    '<div class="t-desc">Singles or doubles, sets and golden point</div></div><div class="t-mark" aria-hidden="true">6&#8211;4</div></button>' +
     '</div>';
 
   const board = allTime();
@@ -1136,7 +1136,7 @@ function vNewMatch() {
   let h = head('Quick match', 'Line-up');
   h += '<div class="panel"><div style="display:flex;gap:8px"><input class="inp" id="newp" placeholder="Add someone new" autocomplete="off" maxlength="24">' +
     '<button class="btn small primary" data-a="add-player" style="min-width:74px">Add</button></div></div>';
-  h += '<div class="divide"><span class="eyebrow">Pick four (' + d.ids.length + ')</span><span class="rule"></span></div><div class="pickgrid">';
+  h += '<div class="divide"><span class="eyebrow">Playing (' + d.ids.length + ')</span><span class="rule"></span></div><div class="pickgrid">';
   S.players.forEach(p => {
     const on = d.ids.indexOf(p.id) >= 0;
     h += '<button class="pick ' + (on ? 'on' : '') + '" data-a="toggle-player" data-id="' + p.id + '">' + av(p.id) +
@@ -1144,10 +1144,11 @@ function vNewMatch() {
   });
   h += '</div>';
 
-  if (d.ids.length === 4) {
+  const singles = d.ids.length === 2;
+  if (singles || d.ids.length === 4) {
     const t = mSides(d);
-    h += '<div class="divide"><span class="eyebrow">Teams</span><span class="rule"></span>' +
-      '<button class="btn ghost small" data-a="swap-sides">Swap</button></div>' +
+    h += '<div class="divide"><span class="eyebrow">' + (singles ? 'Singles' : 'Teams') + '</span><span class="rule"></span>' +
+      '<button class="btn ghost small" data-a="swap-sides">' + (singles ? 'Swap ends' : 'Change pairs') + '</button></div>' +
       '<div class="court"><div class="side top"><div class="team"><div class="nm">' + teamName(t[0]) + '</div></div></div>' +
       '<div class="net"></div><div class="side bot"><div class="team"><div class="nm">' + teamName(t[1]) + '</div></div></div></div>';
     h += '<div class="divide"><span class="eyebrow">Rules</span><span class="rule"></span></div><div class="panel">';
@@ -1165,12 +1166,13 @@ function vNewMatch() {
     }
     h += '</div><div class="btn-row stick"><button class="btn primary" data-a="create-match">Start match</button></div>';
   } else {
-    h += '<div class="hint">Tap four players to make the two pairs.</div>';
+    h += '<div class="hint">Pick two for singles, or four for doubles.</div>';
   }
   return h;
 }
 function mSides(d) {
-  if (!d.order || d.order.length !== 4 || d.order.some(x => d.ids.indexOf(x) < 0)) d.order = d.ids.slice();
+  if (!d.order || d.order.length !== d.ids.length || d.order.some(x => d.ids.indexOf(x) < 0)) d.order = d.ids.slice();
+  if (d.ids.length === 2) return [[d.order[0]], [d.order[1]]];
   return [[d.order[0], d.order[1]], [d.order[2], d.order[3]]];
 }
 
@@ -1179,7 +1181,7 @@ function vMatch() {
   if (!m) return vHome();
   const w = matchWinner(m);
   let h = '<button class="backlink" data-a="back">&#8592; Back</button>' +
-    '<div class="pagehead"><div><div class="eyebrow">Match &middot; ' + fmtDate(m.created) + '</div>' +
+    '<div class="pagehead"><div><div class="eyebrow">' + (m.a.length === 1 ? 'Singles' : 'Doubles') + ' &middot; ' + fmtDate(m.created) + '</div>' +
     '<h1>Best of ' + m.cfg.sets + '</h1></div>' +
     '<span class="pill ' + (w ? 'ball' : '') + '">' + (w ? 'Result in' : 'In play') + '</span></div>';
 
@@ -1389,7 +1391,7 @@ document.addEventListener('click', e => {
   if (a === 'toggle-player') {
     const id = el.dataset.id, i = d.ids.indexOf(id);
     if (i >= 0) d.ids.splice(i, 1);
-    else { if (view.name === 'newmatch' && d.ids.length >= 4) { toast('Four players only'); return; } d.ids.push(id); }
+    else { if (view.name === 'newmatch' && d.ids.length >= 4) { toast('Two for singles, four for doubles'); return; } d.ids.push(id); }
     d.teams = null; d.order = null; render(); return;
   }
   if (a === 'set-courts') { d.courts = +el.dataset.v; d.rounds = defaultRounds(d.ids.length, d.courts); render(); return; }
@@ -1515,7 +1517,16 @@ document.addEventListener('click', e => {
 
   /* quick match */
   if (a === 'new-match') { draft = { ids: [], order: null, sets: 3, games: 6, golden: true, superTb: true }; go('newmatch', { from: 'home' }); return; }
-  if (a === 'swap-sides') { const o = mSides(d); d.order = [o[0][0], o[1][0], o[0][1], o[1][1]]; render(); return; }
+  if (a === 'swap-sides') {
+    const o = mSides(d);
+    if (d.ids.length === 2) { d.order = [o[1][0], o[0][0]]; }
+    else {
+      /* hold the first player and rotate who partners them, so all three pairings come round */
+      const anchor = o[0][0], rest = [o[0][1], o[1][0], o[1][1]];
+      d.order = [anchor, rest[1], rest[2], rest[0]];
+    }
+    render(); return;
+  }
   if (a === 'm-sets') { d.sets = +el.dataset.v; render(); return; }
   if (a === 'm-games') { d.games = +el.dataset.v; render(); return; }
   if (a === 'm-golden') { d.golden = el.dataset.v === '1'; render(); return; }
