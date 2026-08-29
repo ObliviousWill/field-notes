@@ -2092,7 +2092,35 @@ document.addEventListener('keydown', e => {
 });
 
 /* ── boot ── */
-(function () { load(); if (mode === 'none') probe(); render(); openShared(); })();
+/* Added to a home screen the app runs under the clock and the home indicator. iOS usually
+   reports that through env(safe-area-inset-*), but with a translucent status bar some versions
+   report nothing at all, so measure it and fall back to the device's known insets. */
+function insetFallback() {
+  const standalone = window.navigator.standalone === true ||
+    (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches);
+  if (!standalone || !document.body) return;
+  const probe = document.createElement('div');
+  probe.style.cssText = 'position:fixed;top:0;left:0;width:1px;visibility:hidden;pointer-events:none;' +
+    'height:env(safe-area-inset-top,0px);border-bottom:env(safe-area-inset-bottom,0px) solid transparent';
+  document.body.appendChild(probe);
+  const cs = getComputedStyle(probe);
+  const top = parseFloat(cs.height) || 0, bottom = parseFloat(cs.borderBottomWidth) || 0;
+  probe.remove();
+  const tall = Math.max(screen.width || 0, screen.height || 0);
+  const notched = tall >= 812;                       // everything from the X onwards
+  const inset = tall >= 852 ? 59 : notched ? 47 : 20;
+  const R = document.documentElement.style;
+  const landscape = window.innerWidth > window.innerHeight;
+  R.removeProperty('--sat'); R.removeProperty('--sal'); R.removeProperty('--sar');
+  if (!top) {
+    /* turned sideways iOS hides the status bar and the notch moves to one edge */
+    if (landscape) { if (notched) { R.setProperty('--sal', inset + 'px'); R.setProperty('--sar', inset + 'px'); } }
+    else R.setProperty('--sat', inset + 'px');
+  }
+  if (!bottom && notched) R.setProperty('--sab', landscape ? '21px' : '34px');
+}
+window.addEventListener('orientationchange', () => setTimeout(insetFallback, 250));
+(function () { load(); if (mode === 'none') probe(); insetFallback(); render(); openShared(); })();
 window.addEventListener('hashchange', () => { if ((location.hash || '').indexOf('#v=') === 0) openShared(); });
 
 		</script>

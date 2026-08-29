@@ -12,4 +12,6 @@ Every offset now comes from four variables set once, `--sat`, `--sab`, `--sal` a
 
 Then a pass on spacing so the main screens fit that viewport without scrolling: tighter page heads and dividers, denser list rows and tables, and two step-down tiers for short screens, one at 815px and one at 700px, that trim chrome rather than tap targets. Everything stays at 44px.
 
+One belt-and-braces addition after the first attempt looked wrong on a real phone: with a translucent status bar, some iOS versions report no inset at all through `env()`, which would leave the wordmark back under the clock. On boot, if the app is running standalone, it now measures what `env()` actually returns through a hidden probe element. If that comes back zero it falls back to the device's known inset, worked out from the screen size, and it recomputes on rotation because a notch moves to the side edge when you turn the phone. When `env()` reports properly, which is most of the time, none of this fires.
+
 Measured across five phones in standalone, from a 16 Pro Max down to an SE, every screen fits on every one of them, bar the third step of the event set-up on the SE, which runs 9px over. Safari with its URL bar showing improved as well: the players list and every wizard step now fit where they used to scroll.
