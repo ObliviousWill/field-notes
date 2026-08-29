@@ -794,12 +794,20 @@ function vHome() {
     '<div class="t-desc">Singles or doubles, sets and golden point</div></div><div class="t-mark" aria-hidden="true">6&#8211;4</div></button>' +
     '</div>';
 
-  const board = allTime();
+  const board = allTime(), mboard = matchBoard();
   if (board.length) {
-    h += '<div class="divide"><span class="eyebrow">All-time</span><span class="rule"></span></div><div class="panel">' + tableHTML(board.slice(0, 5), 'Pts') + '</div>';
-  } else if (!S.players.length) {
-    h += '<div class="empty"><div class="g" aria-hidden="true">&#9679;</div><p>Nothing played yet. Add your players, then set up an event.</p>' +
-      '<div class="btn-row" style="max-width:220px;margin:18px auto 0"><button class="btn primary" data-a="tab-players">Add players</button></div></div>';
+    h += '<div class="divide"><span class="eyebrow">All-time &middot; events</span><span class="rule"></span></div><div class="panel">' +
+      tableHTML(board.slice(0, 5), 'Pts') + '</div>';
+  }
+  if (mboard.length) {
+    h += '<div class="divide"><span class="eyebrow">All-time &middot; matches</span><span class="rule"></span></div><div class="panel">' +
+      matchTableHTML(mboard.slice(0, 5)) + '</div>';
+  }
+  if (!board.length && !mboard.length) {
+    if (!S.players.length) {
+      h += '<div class="empty"><div class="g" aria-hidden="true">&#9679;</div><p>Nothing played yet. Add your players, then set up an event.</p>' +
+        '<div class="btn-row" style="max-width:220px;margin:18px auto 0"><button class="btn primary" data-a="tab-players">Add players</button></div></div>';
+    }
   }
   return h;
 }
@@ -815,6 +823,36 @@ function allTime() {
   });
   return Object.keys(t).map(k => { const x = t[k]; x.diff = x.pf - x.pa; return x; })
     .sort((a, b) => b.pf - a.pf || b.diff - a.diff);
+}
+function matchTally() {
+  const t = {}, touch = id => (t[id] = t[id] || { id: id, p: 0, w: 0, l: 0, sw: 0, sl: 0, gf: 0, ga: 0 });
+  S.matches.forEach(m => {
+    const win = matchWinner(m); if (!win) return;
+    const st = setsWon(m), g = { a: 0, b: 0 };
+    m.sets.forEach(x => { if (x.a === '' || x.b === '' || x.a == null) return; g.a += +x.a; g.b += +x.b; });
+    [['a', 'b'], ['b', 'a']].forEach(sides => {
+      const me = sides[0], you = sides[1];
+      m[me].forEach(id => {
+        const r = touch(id); r.p++; r[win === me ? 'w' : 'l']++;
+        r.sw += st[me]; r.sl += st[you]; r.gf += g[me]; r.ga += g[you];
+      });
+    });
+  });
+  return t;
+}
+function matchBoard() {
+  const t = matchTally();
+  return Object.keys(t).map(k => t[k])
+    .sort((a, b) => b.w - a.w || (b.sw - b.sl) - (a.sw - a.sl) || b.p - a.p);
+}
+function matchTableHTML(rows) {
+  let h = '<table class="table"><thead><tr><th>Player</th><th>P</th><th>W</th><th>Sets</th></tr></thead><tbody>';
+  rows.forEach((r, i) => {
+    h += '<tr class="' + (i === 0 ? 'lead' : '') + '"><td><span class="pos">' + (i + 1) + '</span>' + av(r.id) +
+      '<span>' + esc(pname(r.id)) + '</span></td><td class="dim">' + r.p + '</td><td class="dim">' + r.w + '</td>' +
+      '<td class="big">' + r.sw + '&#8211;' + r.sl + '</td></tr>';
+  });
+  return h + '</tbody></table>';
 }
 function tableHTML(rows, unit) {
   let h = '<table class="table"><thead><tr><th>Player</th><th>P</th><th>W</th><th>+/&#8722;</th><th>' + unit + '</th></tr></thead><tbody>';
@@ -838,6 +876,7 @@ function teamTableHTML(ev) {
 
 function profileStats(id) {
   const st = { pf: 0, pa: 0, pl: 0, w: 0, d: 0, l: 0 }, partners = {}, opps = {}, form = [];
+  const M = { p: 0, w: 0, l: 0, sw: 0, sl: 0, gf: 0, ga: 0 };
   let events = 0;
   S.events.slice().sort((a, b) => a.created - b.created).forEach(ev => {
     let seen = false;
@@ -851,34 +890,63 @@ function profileStats(id) {
       st.pf += mine; st.pa += theirs; st.pl++;
       const res = mine > theirs ? 'W' : mine < theirs ? 'L' : 'D';
       st[res === 'W' ? 'w' : res === 'L' ? 'l' : 'd']++;
-      form.push(res);
+      form.push({ ts: ev.created, res: res });
       if (mate) { partners[mate] = partners[mate] || { p: 0, w: 0 }; partners[mate].p++; if (res === 'W') partners[mate].w++; }
       foes.forEach(f => { opps[f] = opps[f] || { p: 0, w: 0 }; opps[f].p++; if (res === 'W') opps[f].w++; });
     }));
     if (seen) events++;
   });
+
+  S.matches.forEach(m => {
+    const inA = m.a.indexOf(id) >= 0, inB = m.b.indexOf(id) >= 0;
+    if (!inA && !inB) return;
+    const win = matchWinner(m); if (!win) return;
+    const me = inA ? 'a' : 'b', you = inA ? 'b' : 'a';
+    const sets = setsWon(m);
+    M.p++; M[win === me ? 'w' : 'l']++;
+    M.sw += sets[me]; M.sl += sets[you];
+    m.sets.forEach(x => { if (x.a === '' || x.b === '' || x.a == null) return; M.gf += +x[me]; M.ga += +x[you]; });
+    const res = win === me ? 'W' : 'L';
+    form.push({ ts: m.created, res: res });
+    const mate = m[me].filter(x => x !== id)[0], foes = m[you];
+    if (mate) { partners[mate] = partners[mate] || { p: 0, w: 0 }; partners[mate].p++; if (res === 'W') partners[mate].w++; }
+    foes.forEach(f => { opps[f] = opps[f] || { p: 0, w: 0 }; opps[f].p++; if (res === 'W') opps[f].w++; });
+  });
+  form.sort((a, b) => a.ts - b.ts);
   const rank = (obj, dir) => Object.keys(obj).filter(k => obj[k].p >= 2)
     .sort((a, b) => dir * ((obj[b].w / obj[b].p) - (obj[a].w / obj[a].p)) || obj[b].p - obj[a].p)[0];
-  return { st: st, events: events, form: form.slice(-10),
+  return { st: st, m: M, events: events, form: form.slice(-10).map(f => f.res),
     bestMate: rank(partners, 1), mateRec: partners, hardest: rank(opps, -1), oppRec: opps };
 }
 function vProfile() {
   const p = S.players.find(x => x.id === view.id);
   if (!p) return vPlayers();
-  const d = profileStats(p.id), st = d.st;
+  const d = profileStats(p.id), st = d.st, M = d.m;
   const pct = st.pl ? Math.round(st.w / st.pl * 100) : 0;
+  const bits = [];
+  if (d.events) bits.push(d.events + ' event' + (d.events > 1 ? 's' : ''));
+  if (M.p) bits.push(M.p + ' match' + (M.p > 1 ? 'es' : ''));
   let h = '<button class="backlink" data-a="back">&#8592; Players</button>' +
     '<div class="profhead">' + av(p.id, false).replace('class="av"', 'class="av xl"') +
     '<div><h1>' + esc(p.name) + '</h1><div class="eyebrow" style="margin-top:5px">' +
-    (d.events ? d.events + ' event' + (d.events > 1 ? 's' : '') + ' played' : 'Yet to play') + '</div></div></div>' +
+    (bits.length ? bits.join(' &middot; ') + ' played' : 'Yet to play') + '</div></div></div>' +
     '<div class="btn-row" style="margin-bottom:16px"><button class="btn ghost small" data-a="rename-player" data-id="' + p.id + '">Rename</button></div>';
 
-  h += '<div class="stats"><div><div class="v">' + st.pf + '</div><div class="k">Points</div></div>' +
-    '<div><div class="v">' + pct + '%</div><div class="k">Win rate</div></div>' +
-    '<div><div class="v">' + (st.diff = st.pf - st.pa, (st.diff > 0 ? '+' : '') + st.diff) + '</div><div class="k">Diff</div></div></div>';
-  h += '<div class="stats" style="margin-top:10px"><div><div class="v">' + st.pl + '</div><div class="k">Rounds</div></div>' +
-    '<div><div class="v">' + st.w + '</div><div class="k">Won</div></div>' +
-    '<div><div class="v">' + st.l + '</div><div class="k">Lost</div></div></div>';
+  if (st.pl) {
+    h += '<div class="divide" style="margin-top:0"><span class="eyebrow">Event rounds</span><span class="rule"></span></div>';
+    h += '<div class="stats"><div><div class="v">' + st.pf + '</div><div class="k">Points</div></div>' +
+      '<div><div class="v">' + pct + '%</div><div class="k">Win rate</div></div>' +
+      '<div><div class="v">' + (st.diff = st.pf - st.pa, (st.diff > 0 ? '+' : '') + st.diff) + '</div><div class="k">Diff</div></div></div>';
+    h += '<div class="stats" style="margin-top:10px"><div><div class="v">' + st.pl + '</div><div class="k">Rounds</div></div>' +
+      '<div><div class="v">' + st.w + '</div><div class="k">Won</div></div>' +
+      '<div><div class="v">' + st.l + '</div><div class="k">Lost</div></div></div>';
+  }
+  if (M.p) {
+    h += '<div class="divide"><span class="eyebrow">Matches</span><span class="rule"></span></div>';
+    h += '<div class="stats"><div><div class="v">' + M.p + '</div><div class="k">Played</div></div>' +
+      '<div><div class="v">' + M.w + '</div><div class="k">Won</div></div>' +
+      '<div><div class="v">' + M.sw + '&#8211;' + M.sl + '</div><div class="k">Sets</div></div></div>';
+  }
 
   if (d.form.length) {
     h += '<div class="divide"><span class="eyebrow">Recent form</span><span class="rule"></span></div>' +
@@ -897,7 +965,7 @@ function vProfile() {
         '</div><div class="sub">Toughest opponent &middot; ' + d.oppRec[d.hardest].w + ' of ' + d.oppRec[d.hardest].p + ' beaten</div></div></div>' : '') +
       '</div>';
   }
-  if (!st.pl) h += '<div class="empty"><p>No scored rounds yet. Their numbers fill in as soon as they play.</p></div>';
+  if (!st.pl && !M.p) h += '<div class="empty"><p>Nothing scored yet. Their numbers fill in as soon as they play.</p></div>';
   return h;
 }
 
@@ -911,12 +979,19 @@ function vPlayers() {
     h += '<div class="empty"><div class="g" aria-hidden="true">&#9679;</div><p>No one here yet. Add everyone who plays regularly, then build an event around them.</p></div>';
   } else {
     const at = {}; allTime().forEach(r => at[r.id] = r);
+    const mt = matchTally();
     h += '<div class="panel plist" style="margin-top:12px">';
     S.players.forEach(p => {
-      const s = at[p.id];
+      const s = at[p.id], ms = mt[p.id];
+      const bits = [];
+      /* keep it to one line: the win split lives on the profile */
+      if (s) bits.push(s.pl + ' rounds', s.pf + ' pts');
+      if (s && s.w && !ms) bits.splice(1, 0, s.w + ' won');
+      if (ms) bits.push(ms.p + (ms.p === 1 ? ' match' : ' matches'), ms.w + ' won');
+      if (s && ms) bits.pop();
       h += '<div class="row"><button style="background:none;border:0;padding:0;display:flex;align-items:center;gap:12px;flex:1;min-width:0;color:inherit;text-align:left" ' +
         'data-a="open-profile" data-id="' + p.id + '">' + av(p.id) + '<span class="grow"><span class="nm" style="display:block">' + esc(p.name) + '</span>' +
-        (s ? '<span class="sub" style="display:block">' + s.pl + ' rounds &middot; ' + s.w + ' won &middot; ' + s.pf + ' pts</span>' : '') + '</span></button>' +
+(bits.length ? '<span class="sub" style="display:block">' + bits.join(' &middot; ') + '</span>' : '') + '</span></button>' +
         '<button class="icon-btn" data-a="del-player" data-id="' + p.id + '" aria-label="Remove ' + esc(p.name) + '">&#10005;</button></div>';
     });
     h += '</div>';
