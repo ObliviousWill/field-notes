@@ -56,3 +56,25 @@ the current company (see below).
   not things he has said he does.
 - **Form handling.** The submit handler is a client-side demo. Point it at an
   email/CRM endpoint and keep the thank-you state.
+
+## Site architecture this page assumes
+
+This file is the **home page** of a hub-and-spoke site, not the whole site.
+It is deliberately a selection: four projects, six services, five questions.
+Measured at 1,600 words — 12 screenfuls on desktop, 20 on a phone, with a
+persistent call/quote bar so the form is always one tap away.
+
+The full build should be:
+
+| Page | Job |
+|---|---|
+| Home | This page. Establish trust, show the work, capture the easy enquiries. |
+| 6 service pages | Garden design, patios & paving, driveways, walls & steps, decking & fencing, planting & lawns. Each with its own title, H1, URL, projects, FAQs and form. These are what rank. |
+| One page per project | The highest-value SEO asset, and what prospects actually want to see. He already has these indexed under `/site/norwich-gardening-projects/`. |
+| Areas we cover | The full town list, off the home page. |
+| 3–4 town pages | Only where there are real projects to show. Never one per village — thin location pages are a penalty risk. |
+| Ad landing page | No navigation, one action, for paid traffic. Should not be the home page. |
+
+**Migration risk:** the existing `.asp` project URLs are indexed. Any rebuild
+needs a 301 redirect map, or it throws away rankings the business already has.
+This is the largest technical risk in the project.
