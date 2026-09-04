@@ -6,6 +6,22 @@ dependencies beyond Google Fonts.
 
 Open `index.html` in a browser, or publish it anywhere static.
 
+## Design direction
+
+Warm and planted, photography-led: sage grounds, forest-green ink and solid
+green buttons, with marigold reserved for star ratings and the headline
+highlight. Petrona for headings, Source Sans 3 for everything else, 19px
+body, soft radii and low shadows.
+
+An earlier pass used monospace annotations, hard offset shadows and a survey
+grid. It stood out, but it read as developer tooling rather than horticulture,
+and letterspaced monospace at 11px is the wrong choice for an audience mostly
+in their 50s and 60s. That version is kept in git history only.
+
+The one technical flourish that survived is the canvas-drawn CAD garden plan
+in the design section, because in-house drawings are a real differentiator
+against a man-with-a-van, and no competitor in the area shows them.
+
 ## Where the real content came from
 
 The company's own copy, project write-ups, accreditations, reviews and contact
