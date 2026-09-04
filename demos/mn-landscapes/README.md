@@ -31,7 +31,8 @@ the build environment, so anything price-related was deliberately left out
 rather than invented.
 
 Note that much of the public material predates the change of ownership: the
-founders sold the business to Chris. All copy here is deliberately written as
+founders sold the business to Chris. MN Horticulture is not his, and the
+business does not do garden maintenance — design and build only. All copy here is deliberately written as
 a claim about the business rather than about any individual, so nothing on the
 page depends on who is on the tools. Two things still need checking against
 the current company (see below).
@@ -48,8 +49,10 @@ the current company (see below).
 - **Confirm** the review attributions, the phone number and the email address
   (`chris@mnlandscapes.com` is on a different domain to the website — worth
   moving to `.co.uk` for trust).
-- **Decide what happens after handover.** The page now offers return visits
-  and a written planting note. If maintenance is not something the business
-  does any more, that promise needs pulling.
+- **Two proposed promises need his agreement.** The page says he hands over
+  the planting plan at the end, and that he'll suggest a local gardener if
+  asked. Both are cheap for a design-and-build outfit that already draws
+  planting plans, and both are good differentiators — but they are proposals,
+  not things he has said he does.
 - **Form handling.** The submit handler is a client-side demo. Point it at an
   email/CRM endpoint and keep the thank-you state.
