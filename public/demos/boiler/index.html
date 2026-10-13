@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Inside your oil boiler</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@500;600;700&family=Barlow+Semi+Condensed:wght@700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#DCE3E7; --ink:#1E2A33; --muted:#566570; --panel:rgba(255,255,255,.94);
+  --line:#C4CED4; --chip:#EEF2F4; --accent:#E0661F; --sym:#E89A0C;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#1B2329; --ink:#E8EDF0; --muted:#9AA8B2; --panel:rgba(33,42,49,.95);
+    --line:#38454E; --chip:#27323A;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#1B2329; --ink:#E8EDF0; --muted:#9AA8B2; --panel:rgba(33,42,49,.95);
+  --line:#38454E; --chip:#27323A;
+}
+*,*::before,*::after{box-sizing:inherit}
+html{height:100%;scroll-padding-top:env(safe-area-inset-top,0px)}
+body{height:100%;margin:0;overflow:hidden;background:var(--bg);color:var(--ink);
+  font:500 15px/1.45 "Barlow",system-ui,-apple-system,"Segoe UI",sans-serif;position:relative}
+#stage{position:absolute;inset:0}
+#stage canvas{display:block;width:100%;height:100%;touch-action:none}
+h1,h2{font-family:"Barlow Semi Condensed","Barlow",system-ui,sans-serif;font-weight:700;margin:0;line-height:1.1}
+h1{font-size:26px}
+h2{font-size:24px}
+h3{font-size:15px;font-weight:700;margin:16px 0 4px}
+p{margin:0}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+
+.panel{position:absolute;background:var(--panel);border:1px solid var(--line);border-radius:12px;
+  backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+#left{left:16px;top:calc(16px + env(safe-area-inset-top,0px));width:290px;
+  max-height:calc(100% - 100px);overflow:auto;padding:18px}
+#left .intro{color:var(--muted);margin:6px 0 16px}
+.group-title{font-weight:700;margin:0 0 8px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{border:1px solid var(--line);background:var(--chip);border-radius:999px;padding:6px 12px;font-weight:600;font-size:14px}
+.chip[aria-pressed="true"]{background:var(--sym);border-color:var(--sym);color:#1E2A33}
+#likely{margin-top:12px;display:none}
+#likely.on{display:block}
+#likely p{color:var(--muted);font-size:14px;margin-bottom:6px}
+.partlist{list-style:none;margin:0;padding:0}
+.partlist button{width:100%;text-align:left;background:none;border:0;border-radius:8px;padding:6px 8px;display:flex;gap:8px;align-items:center}
+.partlist button:hover{background:var(--chip)}
+.partlist button[aria-current="true"]{background:var(--chip);font-weight:700}
+.swatch{width:10px;height:10px;border-radius:50%;background:var(--muted);flex:none}
+#likely .swatch{background:var(--sym)}
+.divider{border:0;border-top:1px solid var(--line);margin:16px 0}
+
+#detail{right:16px;top:calc(16px + env(safe-area-inset-top,0px));width:350px;max-height:calc(100% - 100px);overflow:auto;padding:20px;
+  transform:translateX(calc(100% + 24px));transition:transform .25s ease}
+#detail.open{transform:none}
+#detail .does{margin-top:8px}
+#detail ul{margin:0;padding-left:18px}
+#detail li{margin:2px 0}
+#close{position:absolute;right:10px;top:10px;border:0;background:var(--chip);border-radius:50%;width:32px;height:32px;font-size:18px;line-height:1}
+.safety{margin-top:16px;padding:10px 12px;border-left:4px solid var(--accent);background:var(--chip);border-radius:4px;font-weight:600;font-size:14px}
+
+#controls{left:50%;bottom:calc(16px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);display:flex;gap:6px;padding:6px}
+#controls button{border:0;background:none;border-radius:8px;padding:8px 14px;font-weight:600}
+#controls button:hover{background:var(--chip)}
+#controls button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+
+#dots{position:absolute;inset:0;pointer-events:none}
+.dot{position:absolute;width:16px;height:16px;margin:-8px 0 0 -8px;border-radius:50%;border:2px solid #fff;
+  background:var(--ink);pointer-events:auto;padding:0;box-shadow:0 1px 4px rgba(0,0,0,.35)}
+.dot.sym{background:var(--sym)}
+.dot.sel{background:var(--accent);width:20px;height:20px;margin:-10px 0 0 -10px}
+.dot::after{content:attr(data-name);position:absolute;left:22px;top:50%;transform:translateY(-50%);white-space:nowrap;
+  background:var(--panel);color:var(--ink);border:1px solid var(--line);padding:3px 8px;border-radius:6px;font-weight:600;font-size:13px;
+  opacity:0;pointer-events:none;transition:opacity .12s}
+.dot:hover::after,.dot:focus-visible::after,.dot.sel::after{opacity:1}
+.dot.hidden{display:none}
+#hint{position:absolute;left:50%;bottom:calc(78px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);color:var(--muted);font-size:13px;pointer-events:none;white-space:nowrap}
+
+@media (max-width:760px){
+  #left{left:8px;right:8px;width:auto;top:calc(8px + env(safe-area-inset-top,0px));padding:12px 14px;max-height:none}
+  #left .intro,#parts-block{display:none}
+  h1{font-size:20px;margin-bottom:8px}
+  .chips{flex-wrap:nowrap;overflow-x:auto;padding-bottom:4px}
+  .chip{white-space:nowrap}
+  #detail{left:8px;right:8px;top:auto;bottom:calc(8px + env(safe-area-inset-bottom,0px));width:auto;max-height:55%;
+    transform:translateY(calc(100% + 24px))}
+  #detail.open{transform:none}
+  #hint{display:none}
+}
+@media (prefers-reduced-motion:reduce){#detail,.dot::after{transition:none}}
+</style>
+<style>html,body{overflow-x:clip}</style>
+</head>
+<body>
+<div id="stage"></div>
+<div id="dots" aria-label="Boiler parts"></div>
+
+<aside class="panel" id="left">
+  <h1>Inside your oil boiler</h1>
+  <p class="intro">Drag to turn it round. Tap any dot to see what that part does and what can go wrong.</p>
+  <p class="group-title">What's the problem?</p>
+  <div class="chips" id="chips"></div>
+  <div id="likely"><p>Most likely causes, in order:</p><ul class="partlist" id="likely-list"></ul></div>
+  <div id="parts-block">
+    <hr class="divider">
+    <p class="group-title">All parts</p>
+    <ul class="partlist" id="part-list"></ul>
+  </div>
+</aside>
+
+<aside class="panel" id="detail" aria-live="polite">
+  <button id="close" aria-label="Close">×</button>
+  <h2 id="d-name"></h2>
+  <p class="does" id="d-does"></p>
+  <h3>What goes wrong</h3><ul id="d-wrong"></ul>
+  <h3>What you'll notice</h3><ul id="d-notice"></ul>
+  <h3>How it's fixed</h3><p id="d-fix"></p>
+  <div class="safety" id="d-safety" hidden></div>
+</aside>
+
+<div class="panel" id="controls">
+  <button id="btn-inside" aria-pressed="true">See inside</button>
+  <button id="btn-case" aria-pressed="false">Show cover</button>
+  <button id="btn-reset">Reset view</button>
+</div>
+<div id="hint">Pinch or scroll to zoom</div>
+
+<script src="../vendor/three.min.js"></script>
+<script src="../vendor/OrbitControls.js"></script>
+<script>
+(function(){
+const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const OFTEC="Oil work is only for an OFTEC registered technician.";
+
+/* ---------- Content ---------- */
+const DATA = {
+  flue:{name:"Flue",does:"Carries waste gases from the burner out of your home.",
+    wrong:["Soot builds up if the burner isn't set up right","Joints and seals work loose","Outside end gets blocked"],
+    notice:["Smell of fumes","Black marks round the outside end","Boiler locks out"],
+    fix:"Checked and cleaned at every service. The fumes are tested with an analyser to make sure the burner is burning cleanly.",safety:"Oil boilers produce carbon monoxide too. You need a working CO alarm in the same room."},
+  hx:{name:"Heat exchanger and baffles",does:"The burner fires into this chamber. Heat passes through the walls into the water for your radiators and hot water. Metal plates called baffles slow the hot gases so more heat is captured, and a second coil at the bottom squeezes out extra heat.",
+    wrong:["Soot coats the baffles and walls","Baffles burn out or get left out after a service","Corrosion can cause leaks"],
+    notice:["Higher oil use than usual","Smell of fumes or soot","Boiler overheats and cuts out"],
+    fix:"Brushed out and the baffles cleaned at every annual service. A leaking heat exchanger usually means a new boiler."},
+  burnerfan:{name:"Burner motor and fan",does:"Blows air into the burner so the oil burns properly. The same motor drives the oil pump.",
+    wrong:["Bearings wear out","Motor seizes or its starter part fails","Air setting drifts"],
+    notice:["Whining or grinding noise","Boiler tries to start then locks out","Black smoke from the flue"],
+    fix:"Replace the motor or the part that starts it. The air setting is checked with a fumes analyser.",safety:OFTEC},
+  oilpump:{name:"Oil pump",does:"Pumps oil from the supply at high pressure to the nozzle.",
+    wrong:["Wears and loses pressure","Its internal filter blocks","Air gets in and it loses its prime"],
+    notice:["Reset light comes on","Boiler starts then stops"],
+    fix:"Bleed the air out, clean the filter, set the pressure, or replace the pump.",safety:OFTEC},
+  solenoid:{name:"Oil valve",does:"An electric valve on the pump. It opens to let oil through to the nozzle once the burner is ready, and snaps shut when it stops.",
+    wrong:["Sticks open or shut","Coil fails"],
+    notice:["Smoky or smelly shut-down","Boiler won't light","Rumble when the burner stops"],
+    fix:"Replace the valve or its coil.",safety:OFTEC},
+  nozzle:{name:"Nozzle",does:"Sprays the oil as a fine mist so it can burn. It's small, cheap and does a lot of work.",
+    wrong:["Wears or partly blocks over a year"],
+    notice:["Smell of oil or fumes","Soot and black smoke","Rumble on start-up","Reset light"],
+    fix:"Replaced at every annual service as standard.",safety:OFTEC},
+  ignition:{name:"Ignition electrodes",does:"Two metal rods that make a spark to light the oil mist.",
+    wrong:["Tips wear or the gap between them changes","Ceramic insulators crack","The part that makes the spark fails"],
+    notice:["Rumble or bang when the boiler lights","Reset light comes on"],
+    fix:"Reset the gap or replace the electrodes. Checked at every service.",safety:OFTEC},
+  photocell:{name:"Photocell",does:"A small light sensor that watches for the flame. If it can't see one, the burner shuts off for safety.",
+    wrong:["Gets dirty or sooted up","Fails with age"],
+    notice:["Boiler lights, then locks out a few seconds later"],
+    fix:"Clean or replace it.",safety:OFTEC},
+  controlbox:{name:"Burner control box and reset button",does:"Runs the burner's start-up in the right order. If anything isn't right it stops the burner and lights the reset button.",
+    wrong:["Locks out because of a fault somewhere else","The box itself fails"],
+    notice:["Red light on the burner","Nothing happens when the heating calls"],
+    fix:"The lockout is a sign, not the fault. The engineer finds the cause, then replaces the box only if it has failed.",
+    safety:"Don't press reset more than twice. Unburnt oil can build up in the boiler and flare up. Call your engineer."},
+  controls:{name:"Boiler thermostat and overheat cut-out",does:"The dial sets how hot the boiler runs. A separate cut-out shuts the boiler down if it ever gets too hot.",
+    wrong:["Cut-out trips because of another fault","Thermostat fails"],
+    notice:["Boiler completely dead","Water too hot or not hot enough"],
+    fix:"Find out why it overheated, often the pump, then reset or replace the thermostat."},
+  condensate:{name:"Condensate trap and pipe",does:"Condensing oil boilers make slightly acidic water as they run. This trap and pipe drain it away.",
+    wrong:["Outside pipe freezes in cold weather","Trap blocks up"],
+    notice:["Gurgling noise","Boiler cuts out during a cold snap","Water on the floor"],
+    fix:"Thaw the pipe with warm water, never boiling. Cleaned at every service. For good, reroute or insulate the outside pipe."},
+  hose:{name:"Oil hose and supply pipe",does:"Brings oil from the tank to the burner. The last bit is a flexible hose so the burner can be moved for servicing.",
+    wrong:["Hose perishes with age","Joints weep oil or let air in"],
+    notice:["Smell of oil","Oil stains under the boiler","Reset light, especially after a refill"],
+    fix:"Hoses are replaced every few years. Joints are remade and the line checked for air.",safety:OFTEC},
+  filter:{name:"Oil filter",does:"Catches sludge, water and bits of dirt from the tank before they reach the burner.",
+    wrong:["Blocks up, especially if the tank has sludge or water in it"],
+    notice:["Reset light","Boiler stops for no clear reason"],
+    fix:"Clean or replace the filter at every service.",safety:OFTEC},
+  firevalve:{name:"Fire valve",does:"A safety valve where the oil pipe enters your home. A sensor inside the boiler is linked to it, and if it senses fire the valve shuts off the oil.",
+    wrong:["Trips when the boiler area gets too hot","Sensor line gets kinked or damaged"],
+    notice:["Boiler won't run even with oil in the tank"],
+    fix:"Find out why it tripped, then reset or replace the valve.",safety:OFTEC},
+  tank:{name:"Oil tank",does:"Stores your heating oil outside.",
+    wrong:["Running out is the most common call-out","Water and sludge collect at the bottom","Old tanks crack or leak"],
+    notice:["Boiler stops and won't restart","Repeated lockouts after a new delivery stirs up sludge"],
+    fix:"Refill, then bleed the air out of the supply. Water and sludge can be drained, and an old tank checked or replaced.",safety:OFTEC},
+  pump:{name:"Heating pump",does:"Pushes hot water from the boiler round your radiators and hot water cylinder. It's often next to the boiler or in the airing cupboard.",
+    wrong:["Seizes up, often from sludge","Air trapped in it","Motor fails"],
+    notice:["Boiler runs but radiators stay cold","Humming or buzzing","Boiler overheats and cuts out"],
+    fix:"Let the air out, free it off, or replace it."},
+  pipes:{name:"Flow and return pipes",does:"Flow carries hot water out to your radiators and cylinder. Return brings it back to be heated again.",
+    wrong:["Joints and valves weep over time","Sludge builds up inside"],
+    notice:["Drips or water marks","Radiators slow to warm"],
+    fix:"Remake the joint or replace the valve. Sludge means the system needs cleaning."}
+};
+const ORDER=["flue","hx","controls","controlbox","photocell","burnerfan","oilpump","solenoid","nozzle","ignition","hose","firevalve","filter","tank","condensate","pump","pipes"];
+const SYMPTOMS=[
+  {label:"Boiler won't come on",parts:["tank","controlbox","controls","filter","firevalve","oilpump","condensate"]},
+  {label:"Reset light keeps coming on",parts:["tank","filter","photocell","nozzle","ignition","hose","oilpump","condensate"]},
+  {label:"Smell of oil or fumes",parts:["hose","nozzle","hx","flue","solenoid"]},
+  {label:"Rumble or bang on start-up",parts:["ignition","nozzle","solenoid","hx"]},
+  {label:"Black smoke from the flue",parts:["nozzle","hx","burnerfan","flue"]},
+  {label:"Radiators cold, boiler running",parts:["pump","controls","pipes"]},
+  {label:"Leaking",parts:["hose","condensate","pipes","hx"]}
+];
+const OUTSIDE=['flue','controls','pipes','pump','filter','firevalve','tank','condensate'];
+
+/* ---------- Scene ---------- */
+const stage=document.getElementById('stage');
+const renderer=new THREE.WebGLRenderer({antialias:true,alpha:true});
+renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
+renderer.outputEncoding=THREE.sRGBEncoding;
+stage.appendChild(renderer.domElement);
+const scene=new THREE.Scene();
+const camera=new THREE.PerspectiveCamera(35,1,0.1,120);
+const HOME_POS=new THREE.Vector3(8,5.5,16);
+const HOME_TARGET=new THREE.Vector3(-1.6,-0.6,-1.6);
+camera.position.copy(HOME_POS);
+const controls=new THREE.OrbitControls(camera,renderer.domElement);
+controls.target.copy(HOME_TARGET);
+controls.enableDamping=true;controls.dampingFactor=.08;controls.minDistance=4;controls.maxDistance=32;controls.enablePan=false;
+controls.maxPolarAngle=Math.PI*.55;
+
+scene.add(new THREE.HemisphereLight(0xffffff,0x8894a0,.85));
+const key=new THREE.DirectionalLight(0xffffff,.9);key.position.set(6,10,8);scene.add(key);
+const rim=new THREE.DirectionalLight(0xdfe8ff,.4);rim.position.set(-8,4,-6);scene.add(rim);
+const boiler=new THREE.Group();scene.add(boiler);
+
+function mat(color,o){return new THREE.MeshStandardMaterial(Object.assign({color,roughness:.5,metalness:.15},o||{}));}
+const COPPER=0xB8733A,STEEL=0xA9B2B8,DARK=0x3A454D,BRASS=0xB08D3E,M={metalness:.6,roughness:.35};
+const parts={};const pickables=[];
+ORDER.forEach(id=>parts[id]={id,data:DATA[id],meshes:[],anchor:new THREE.Vector3()});
+function reg(id,m){m.userData.id=id;parts[id].meshes.push(m);pickables.push(m);boiler.add(m);return m;}
+function at(m,x,y,z){m.position.set(x,y,z);return m;}
+function cyl(r,h,c,o,seg){return new THREE.Mesh(new THREE.CylinderGeometry(r,r,h,seg||32),mat(c,o));}
+function box(w,h,d,c,o){return new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mat(c,o));}
+function rx(m){m.rotation.x=Math.PI/2;return m;}
+function rz(m){m.rotation.z=Math.PI/2;return m;}
+function tube(pts,r,c,o){
+  const cv=new THREE.CatmullRomCurve3(pts.map(p=>new THREE.Vector3(p[0],p[1],p[2])),false,'centripetal');
+  return new THREE.Mesh(new THREE.TubeGeometry(cv,100,r,10,false),mat(c,o||M));
+}
+class Helix extends THREE.Curve{constructor(r,h,t){super();this.r=r;this.h=h;this.t=t;}
+  getPoint(u,out){out=out||new THREE.Vector3();const a=u*Math.PI*2*this.t;return out.set(Math.cos(a)*this.r,(u-.5)*this.h,Math.sin(a)*this.r);}}
+
+/* Room: floor and back wall */
+const floor=new THREE.Mesh(new THREE.PlaneGeometry(26,20),mat(0xBCC6CB,{roughness:.9,metalness:0,transparent:true,opacity:.45}));
+floor.rotation.x=-Math.PI/2;at(floor,-3,-3.01,-2);boiler.add(floor);
+const wall=at(new THREE.Mesh(new THREE.BoxGeometry(9,8,.3),mat(0xC9D1D6,{roughness:.9,metalness:0,transparent:true,opacity:.35,depthWrite:false})),0,1,-2.4);
+boiler.add(wall);
+
+/* Casing: floor-standing kitchen oil boiler */
+const W=3.2,H=6,D=4.2;
+const caseMat=mat(0xF4F6F6,{roughness:.35,metalness:0,transparent:true,opacity:.1,depthWrite:false});
+const casing=new THREE.Mesh(new THREE.BoxGeometry(W,H,D),caseMat);boiler.add(casing);
+boiler.add(new THREE.LineSegments(new THREE.EdgesGeometry(casing.geometry),new THREE.LineBasicMaterial({color:0x8A99A3})));
+
+/* Cover badge removed for the public copy */
+const logoMat={opacity:0};
+
+/* Flue */
+reg('flue',at(cyl(.4,1.5,0xE3E6E8,{roughness:.3}),0,2.9,-.8));
+reg('flue',at(new THREE.Mesh(new THREE.SphereGeometry(.4,24,16),mat(0xE3E6E8,{roughness:.3})),0,3.65,-.8));
+reg('flue',at(rx(cyl(.4,2.3,0xE3E6E8,{roughness:.3})),0,3.65,-1.95));
+reg('flue',at(rx(cyl(.5,.25,0x9AA3A8)),0,3.65,-3.15));
+parts.flue.anchor.set(0,3.65,-.4);
+
+/* Heat exchanger: combustion chamber, baffles, condensing coil */
+reg('hx',at(cyl(1.1,3.6,0x6E7880,{transparent:true,opacity:.3,depthWrite:false,metalness:.5}),0,.4,-.6));
+reg('hx',at(cyl(1.12,.08,STEEL,{metalness:.6}),0,2.2,-.6));
+reg('hx',at(cyl(1.12,.08,STEEL,{metalness:.6}),0,-1.4,-.6));
+for(let i=0;i<5;i++) reg('hx',at(cyl(.85,.05,0x3B3B3B,{roughness:.9}),0,1.0+i*.25,-.6));
+reg('hx',at(new THREE.Mesh(new THREE.TubeGeometry(new Helix(.6,.9,4),240,.09,10,false),mat(STEEL,{metalness:.7,roughness:.3})),0,-2.2,-.8));
+parts.hx.anchor.set(-.9,1.4,.2);
+
+/* Burner: mounted on the front of the chamber */
+reg('ignition',at(rx(cyl(.28,.7,0xB9C0C4,{transparent:true,opacity:.35,depthWrite:false,metalness:.5})),0,-.5,.8));
+[-.07,.07].forEach(x=>{reg('ignition',at(rx(cyl(.025,.75,0xDDDDDD,{metalness:.8})),x,-.36,.85));reg('ignition',at(rx(cyl(.05,.2,0xF2EFE6,{roughness:.8})),x,-.36,1.05));});
+parts.ignition.anchor.set(.35,-.25,.85);
+{const n=new THREE.Mesh(new THREE.ConeGeometry(.1,.22,20),mat(BRASS,M));n.rotation.x=-Math.PI/2;reg('nozzle',at(n,0,-.5,.44));}
+reg('nozzle',at(rx(cyl(.05,.4,BRASS,M)),0,-.5,.7));
+parts.nozzle.anchor.set(0,-.62,.3);
+const burnerBody=at(box(1,1,.8,0x9E2B25,{roughness:.45}),0,-.55,1.5);boiler.add(burnerBody);
+reg('controlbox',at(box(.72,.34,.62,0x22292E),0,.12,1.5));
+reg('controlbox',at(rx(cyl(.09,.08,0xE0302A,{emissive:0x000000})),.18,.12,1.84));
+parts.controlbox.anchor.set(.18,.12,1.95);
+reg('photocell',at(rx(cyl(.07,.28,0x5A636A)),-.25,-.05,1.02));
+parts.photocell.anchor.set(-.3,-.05,1.2);
+reg('burnerfan',at(rz(cyl(.3,.6,0x5E6B74)),.8,-.55,1.45));
+reg('burnerfan',at(rz(cyl(.22,.1,DARK)),1.12,-.55,1.45));
+parts.burnerfan.anchor.set(1.15,-.55,1.45);
+reg('oilpump',at(box(.42,.42,.45,0x7D868C,M),-.72,-.68,1.5));
+parts.oilpump.anchor.set(-.95,-.75,1.6);
+reg('solenoid',at(cyl(.12,.3,0x1B1F22),-.72,-.33,1.55));
+parts.solenoid.anchor.set(-.72,-.18,1.7);
+
+/* Boiler controls on the top front */
+reg('controls',at(box(2.9,.45,.5,0x2E3840),0,2.72,1.8));
+[-.8,-.1].forEach(x=>reg('controls',at(rx(cyl(.13,.1,0xE8ECEE)),x,2.72,2.08)));
+reg('controls',at(rx(cyl(.08,.1,0xC8412F)),.7,2.72,2.08));
+parts.controls.anchor.set(-.1,2.72,2.15);
+
+/* Condensate trap and pipe */
+reg('condensate',at(cyl(.22,.6,0xE8ECEE,{transparent:true,opacity:.85,roughness:.2}),1.05,-2.5,-1.4));
+reg('condensate',tube([[1.05,-2.85,-1.4],[1.9,-2.9,-1.45],[2.3,-2.9,-1.9],[2.3,-2.9,-3.2]],.1,0x9AA3A8,{roughness:.6,metalness:0}));
+parts.condensate.anchor.set(1.05,-2.4,-1.1);
+
+/* Oil supply: tank, filter, fire valve, pipe, hose */
+reg('tank',at(box(2.6,2.2,1.8,0x3F5D3A,{roughness:.7,metalness:0}),-6.2,-1.9,-5.2));
+reg('tank',at(box(2.8,.12,2,0x34502F,{roughness:.7,metalness:0}),-6.2,-.75,-5.2));
+reg('tank',at(cyl(.18,.12,0xE8ECEE),-5.5,-.62,-4.9));
+parts.tank.anchor.set(-6.2,-1.4,-4.25);
+reg('filter',at(cyl(.2,.45,0xE9EDE3,{transparent:true,opacity:.75,roughness:.2}),-4.5,-2.55,-4.3));
+reg('filter',at(cyl(.22,.1,BRASS,M),-4.5,-2.28,-4.3));
+parts.filter.anchor.set(-4.5,-2.4,-4.0);
+reg('firevalve',at(rz(cyl(.13,.45,BRASS,M)),-2.6,-2.85,-2.8));
+reg('firevalve',at(cyl(.1,.2,0xC8412F),-2.6,-2.62,-2.8));
+reg('firevalve',tube([[-2.6,-2.5,-2.8],[-2.4,-1.2,-2.65],[-1.9,.3,-1.9],[-1.4,.35,.4],[-1.1,.3,1.3]],.018,0x9AA3A8,{metalness:.6}));
+reg('firevalve',at(cyl(.07,.25,0x9AA3A8,M),-1.1,.3,1.3));
+parts.firevalve.anchor.set(-2.6,-2.55,-2.55);
+reg('hose',tube([[-4.9,-2.6,-4.6],[-4.5,-2.85,-4.3],[-2.6,-2.85,-2.8],[-2.2,-2.85,-1.8],[-1.9,-2.85,-.8],[-1.9,-2.85,.9]],.055,COPPER));
+reg('hose',tube([[-1.9,-2.85,.9],[-1.55,-2.3,1.35],[-1.05,-1.3,1.5],[-.8,-.8,1.5]],.07,0x4B4F52,{roughness:.8,metalness:.2}));
+parts.hose.anchor.set(-1.5,-2.2,1.5);
+
+/* Flow and return, with the heating pump */
+reg('pipes',tube([[.9,1.8,-1.3],[.9,3.0,-1.7],[.9,4.7,-1.7],[.9,4.9,-2.6]],.09,COPPER));
+reg('pipes',tube([[1.3,-1.6,-1.3],[1.35,0,-1.8],[1.3,4.7,-1.8],[1.3,4.9,-2.6]],.09,COPPER));
+reg('pipes',at(new THREE.Mesh(new THREE.TorusGeometry(.12,.035,8,24),mat(0xC8412F)),.9,3.3,-1.7));
+reg('pipes',at(new THREE.Mesh(new THREE.TorusGeometry(.12,.035,8,24),mat(0x2F6FA8)),1.3,3.3,-1.8));
+boiler.children.slice(-2).forEach(t=>t.rotation.x=Math.PI/2);
+parts.pipes.anchor.set(1.1,3.3,-1.5);
+reg('pump',at(cyl(.2,.5,0x2A333A),.9,4.1,-1.7));
+reg('pump',at(rx(cyl(.28,.6,0x34597A)),.9,4.1,-1.3));
+parts.pump.anchor.set(.9,4.1,-.95);
+
+/* ---------- UI ---------- */
+const dotsEl=document.getElementById('dots');
+ORDER.forEach(id=>{const b=document.createElement('button');b.className='dot';b.dataset.name=DATA[id].name;b.setAttribute('aria-label',DATA[id].name);
+  b.addEventListener('click',()=>select(id));dotsEl.appendChild(b);parts[id].el=b;});
+function partButton(id){const li=document.createElement('li');const b=document.createElement('button');
+  b.innerHTML='<span class="swatch"></span>'+DATA[id].name;b.dataset.id=id;b.addEventListener('click',()=>select(id));li.appendChild(b);return li;}
+const partList=document.getElementById('part-list');ORDER.forEach(id=>partList.appendChild(partButton(id)));
+let selected=null,symptom=null;
+const chipsEl=document.getElementById('chips');
+SYMPTOMS.forEach((s,i)=>{const c=document.createElement('button');c.className='chip';c.textContent=s.label;c.setAttribute('aria-pressed','false');
+  c.addEventListener('click',()=>setSymptom(symptom===i?null:i));chipsEl.appendChild(c);});
+function setSymptom(i){symptom=i;[...chipsEl.children].forEach((c,j)=>c.setAttribute('aria-pressed',j===i?'true':'false'));
+  const bx=document.getElementById('likely'),list=document.getElementById('likely-list');list.innerHTML='';
+  if(i===null)bx.classList.remove('on');else{SYMPTOMS[i].parts.forEach(id=>list.appendChild(partButton(id)));bx.classList.add('on');}refresh();}
+const detail=document.getElementById('detail');
+function fillList(el,items){el.innerHTML='';items.forEach(t=>{const li=document.createElement('li');li.textContent=t;el.appendChild(li);});}
+function select(id){selected=id;const d=DATA[id];
+  document.getElementById('d-name').textContent=d.name;document.getElementById('d-does').textContent=d.does;
+  fillList(document.getElementById('d-wrong'),d.wrong);fillList(document.getElementById('d-notice'),d.notice);
+  document.getElementById('d-fix').textContent=d.fix;
+  const sf=document.getElementById('d-safety');sf.hidden=!d.safety;sf.textContent=d.safety||'';
+  detail.classList.add('open');focusTo(parts[id].anchor.clone().add(boiler.position),id==='tank'?12:9);refresh();}
+function deselect(){selected=null;detail.classList.remove('open');refresh();}
+document.getElementById('close').addEventListener('click',deselect);
+window.addEventListener('keydown',e=>{if(e.key==='Escape')deselect();});
+const SEL=new THREE.Color(0xE0661F),SYM=new THREE.Color(0xE89A0C),NONE=new THREE.Color(0x000000);
+function refresh(){const sp=symptom===null?[]:SYMPTOMS[symptom].parts;
+  ORDER.forEach(id=>{const p=parts[id];p.state=id===selected?'sel':sp.includes(id)?'sym':'none';
+    p.meshes.forEach(m=>{m.material.emissive.copy(p.state==='sel'?SEL:p.state==='sym'?SYM:NONE);m.material.emissiveIntensity=p.state==='sel'?.55:.4;});
+    p.el.classList.toggle('sel',p.state==='sel');p.el.classList.toggle('sym',p.state==='sym');});
+  document.querySelectorAll('.partlist button').forEach(b=>b.setAttribute('aria-current',b.dataset.id===selected?'true':'false'));}
+
+let coverOn=false;
+const bIn=document.getElementById('btn-inside'),bCase=document.getElementById('btn-case');
+function setCover(solid){caseMat.opacity=solid?1:.1;caseMat.transparent=!solid;caseMat.depthWrite=solid;caseMat.needsUpdate=true;
+  bIn.setAttribute('aria-pressed',String(!solid));bCase.setAttribute('aria-pressed',String(solid));coverOn=solid;}
+bIn.addEventListener('click',()=>setCover(false));bCase.addEventListener('click',()=>setCover(true));
+document.getElementById('btn-reset').addEventListener('click',()=>{deselect();focusTo(HOME_TARGET.clone(),0,HOME_POS.clone());});
+
+let focus=null;
+function focusTo(target,dist,pos){focus={target,dist,pos,t:0};if(reduceMotion)finishFocus();}
+function finishFocus(){controls.target.copy(focus.target);
+  if(focus.pos)camera.position.copy(focus.pos);
+  else{const dir=camera.position.clone().sub(controls.target).normalize();camera.position.copy(controls.target).addScaledVector(dir,focus.dist);}focus=null;}
+function stepFocus(){if(!focus)return;focus.t++;controls.target.lerp(focus.target,.1);
+  if(focus.pos)camera.position.lerp(focus.pos,.1);
+  else{const off=camera.position.clone().sub(controls.target);const len=off.length();off.setLength(len+(focus.dist-len)*.1);camera.position.copy(controls.target).add(off);}
+  if(focus.t>45)focus=null;}
+controls.addEventListener('start',()=>{focus=null;});
+
+const ray=new THREE.Raycaster(),ptr=new THREE.Vector2();let down=null;
+function pick(e){const r=renderer.domElement.getBoundingClientRect();
+  ptr.set(((e.clientX-r.left)/r.width)*2-1,-((e.clientY-r.top)/r.height)*2+1);ray.setFromCamera(ptr,camera);
+  const hit=ray.intersectObjects(pickables,false)[0];return hit?hit.object.userData.id:null;}
+renderer.domElement.addEventListener('pointerdown',e=>{down=[e.clientX,e.clientY];});
+renderer.domElement.addEventListener('pointerup',e=>{if(!down)return;const mv=Math.hypot(e.clientX-down[0],e.clientY-down[1]);down=null;
+  if(mv<6){const id=pick(e);if(id)select(id);}});
+renderer.domElement.addEventListener('pointermove',e=>{if(e.pointerType!=='mouse'||e.buttons)return;renderer.domElement.style.cursor=pick(e)?'pointer':'grab';});
+
+function resize(){const w=stage.clientWidth,h=stage.clientHeight;renderer.setSize(w,h,false);
+  camera.aspect=w/h;camera.fov=w<760?50:35;camera.updateProjectionMatrix();}
+window.addEventListener('resize',resize);resize();
+
+const v=new THREE.Vector3();
+function animate(time){requestAnimationFrame(animate);stepFocus();controls.update();
+  if(!reduceMotion){const pulse=.25+.3*(.5+.5*Math.sin(time/260));
+    ORDER.forEach(id=>{if(parts[id].state==='sym')parts[id].meshes.forEach(m=>m.material.emissiveIntensity=pulse);});}
+  renderer.render(scene,camera);
+  const w=stage.clientWidth,h=stage.clientHeight;
+  ORDER.forEach(id=>{const p=parts[id];v.copy(p.anchor).add(boiler.position).project(camera);
+    const hide=v.z>1||(coverOn&&!OUTSIDE.includes(id)&&p.state==='none');
+    p.el.classList.toggle('hidden',hide);
+    p.el.style.left='0';p.el.style.top='0';
+    p.el.style.transform='translate('+((v.x+1)/2*w).toFixed(1)+'px,'+((1-v.y)/2*h).toFixed(1)+'px)';});}
+refresh();
+if(!reduceMotion){camera.position.set(3,8,24);focusTo(HOME_TARGET.clone(),0,HOME_POS.clone());}
+requestAnimationFrame(animate);
+})();
+</script>
+</body>
+</html>

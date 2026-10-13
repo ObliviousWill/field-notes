@@ -4,6 +4,7 @@ interface Props {
 }
 
 const { status } = Astro.props;
+const label = { building: 'in progress', shipped: 'in use', paused: 'on hold' }[status];
 ---
 
-<span class:list={['status', `status-${status}`]}>{status}</span>
+<span class:list={['status', `status-${status}`]}>{label}</span>

@@ -6,22 +6,39 @@ import Header from '../../components/Header.astro';
 import NewsletterBlock from '../../components/NewsletterBlock.astro';
 import PageTitle from '../../components/PageTitle.astro';
 import ProjectCard from '../../components/ProjectCard.astro';
-import StatusPill from '../../components/StatusPill.astro';
 import { SITE_TITLE } from '../../consts';
 
 const projects = (await getCollection('projects')).sort(
 	(a, b) => b.data.startDate.valueOf() - a.data.startDate.valueOf(),
 );
 
-const building = projects.filter((p) => p.data.status === 'building');
-const paused = projects.filter((p) => p.data.status === 'paused');
-const shipped = projects.filter((p) => p.data.status === 'shipped');
+const groups = [
+	{
+		area: 'work',
+		label: 'At work',
+		intro:
+			'Tools and AI helpers I have built for my day job, running marketing and customer service at a UK children\'s activities business. Names, people and numbers are left out on purpose.',
+	},
+	{
+		area: 'local',
+		label: 'For local businesses',
+		intro:
+			'Demos for small local firms. The idea: show a customer the thing, instead of describing it.',
+	},
+	{
+		area: 'personal',
+		label: 'For me',
+		intro: 'Side projects, and this site.',
+	},
+]
+	.map((g) => ({ ...g, projects: projects.filter((p) => p.data.area === g.area) }))
+	.filter((g) => g.projects.length > 0);
 
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 const rssUrl = `${base}/projects/rss.xml`;
 const blogUrl = `${base}/blog/`;
 const description =
-	"What I'm building, with the work shown: decisions, dead ends, screenshots, and what I'd do differently. Each project has its own page with a running log of updates.";
+	"Everything I've built, explained in plain English: what it is, who it's for, and what I learned. Each project has its own page, with a diary of updates.";
 ---
 
 <!doctype html>
@@ -41,71 +58,32 @@ const description =
 				<a slot="side-link" class="fn-link" href={rssUrl}>RSS ↗</a>
 			</PageTitle>
 
-			<div class="legend">
-				<span class="item"><StatusPill status="building" /> active</span>
-				<span class="item"><StatusPill status="paused" /> on hold</span>
-				<span class="item"><StatusPill status="shipped" /> done</span>
-			</div>
 
 			<hr />
 
 			{
-				building.length > 0 && (
-					<section class="group">
+				groups.map((group, i) => (
+					<section class:list={['group', { 'group-spaced': i > 0 }]}>
 						<div class="group-head">
-							<span class="group-label">Active</span>
+							<span class="group-label">{group.label}</span>
 							<span class="group-rule" aria-hidden="true" />
-							<span class="group-count">{building.length}</span>
+							<span class="group-count">{group.projects.length}</span>
 						</div>
+						<p class="group-intro">{group.intro}</p>
 						<div class="card-stack">
-							{building.map((project) => (
+							{group.projects.map((project) => (
 								<ProjectCard project={project} expanded />
 							))}
 						</div>
 					</section>
-				)
-			}
-
-			{
-				paused.length > 0 && (
-					<section class="group group-spaced">
-						<div class="group-head">
-							<span class="group-label">On hold</span>
-							<span class="group-rule" aria-hidden="true" />
-							<span class="group-count">{paused.length}</span>
-						</div>
-						<div class="card-stack">
-							{paused.map((project) => (
-								<ProjectCard project={project} expanded />
-							))}
-						</div>
-					</section>
-				)
-			}
-
-			{
-				shipped.length > 0 && (
-					<section class="group group-spaced">
-						<div class="group-head">
-							<span class="group-label">Shipped</span>
-							<span class="group-rule" aria-hidden="true" />
-							<span class="group-count">{shipped.length}</span>
-						</div>
-						<div class="card-stack">
-							{shipped.map((project) => (
-								<ProjectCard project={project} expanded />
-							))}
-						</div>
-					</section>
-				)
+				))
 			}
 
 			<section class="cross-link">
 				<div>
-					<p class="cl-title">The blog tracks the thinking around these.</p>
+					<p class="cl-title">The blog has the thinking behind these.</p>
 					<p class="cl-body">
-						Posts mention specific projects where they come up — look for the "Mentions"
-						line below the post body.
+						When a post talks about a project, there's a link to it at the end of the post.
 					</p>
 				</div>
 				<a class="fn-link" href={blogUrl}>Go to the blog →</a>
@@ -137,6 +115,12 @@ const description =
 	}
 	.group-spaced {
 		margin-top: 48px;
+	}
+	.group-intro {
+		margin: 0 0 18px;
+		max-width: 620px;
+		font-size: 15px;
+		color: rgb(var(--text-muted));
 	}
 	.group-head {
 		display: flex;
