@@ -7,11 +7,9 @@ startDate: 'Sep 25 2026'
 links:
   - label: 'Try the boiler'
     url: '/demos/boiler/'
-  - label: 'Try the bathroom planner'
-    url: '/demos/bathroom/'
 facts:
   - label: 'What it is'
-    value: 'An interactive 3D boiler, and a small-bathroom planner'
+    value: 'An interactive 3D boiler that explains itself'
   - label: 'Who it is for'
     value: "A local plumber's customers"
   - label: 'Works on'
