@@ -1,33 +1,20 @@
 ---
 project: 'field-notes'
-title: 'The 720px main'
+title: 'Fixing pages that ran off phone screens'
 pubDate: 'Aug 29 2026'
 ---
 
-Reported from a phone: pages were running off the side of the screen, the projects pages worst of all.
+Someone told me pages were running off the side of their phone screen, the projects pages worst of all.
 
-The cause was one line inherited from the starter template. `main` was laid out as a **fixed** 720px box:
+The cause was one setting left over from the template I started with. It told the main column of every page to be a fixed width. Something else usually squeezed it down to fit a phone, but three pages had their own settings that undid that. On those pages, a third of every line was cut off.
 
-```css
-main {
-	width: 720px;
-	max-width: calc(100% - 2em);
-}
-```
+It was easy to miss for two reasons:
 
-The `max-width` was the only thing keeping that box on a small screen, and it is fragile: any page that sets its own `max-width` on `main` overrides it and leaves the fixed 720px width behind. Three pages did exactly that (the projects index, project pages, update pages), each setting `max-width: 760px`. On a 390px phone their `main` laid out 760px wide, so a third of every line sat off the right edge.
+- On a computer the screen is wide enough, so nothing looked wrong.
+- An earlier fix stopped pages scrolling sideways. So on a phone the extra text was just cut off, quietly, instead of being obviously broken.
 
-Two things hid it. `html` and `body` carry `overflow-x: clip` from an earlier overflow fix, so the page did not scroll sideways and `document.scrollWidth` reported no problem at all: the content was simply cut off instead. And on a desktop browser the fixed 720px is narrower than the space available, so nothing looked wrong.
+The fix was to stop fixing the width. The column now fills whatever space there is, up to a sensible maximum on big screens. Nothing changed on a computer, and phones now fit.
 
-The fix is to stop pinning the width at all:
+I then checked every page at four phone sizes, down to the smallest common one, with that earlier fix switched off so nothing could hide.
 
-```css
-main {
-	width: auto;
-	max-width: 720px;
-}
-```
-
-An auto width fills whatever room there is, minus its own padding, and the `max-width` caps it on big screens. The three page-level overrides came out, since with a fixed width of 720px they never widened anything on desktop anyway. Desktop is unchanged at 800px total and 720px of content; phones now fit.
-
-Checked every page at 430, 390, 360 and 320px wide, with the `overflow-x: clip` guard switched off so real overflow could not hide, and no element crosses the viewport edge on any of them.
+**The lesson:** "it looks fine on my laptop" isn't testing. Most people will read this on a phone.
