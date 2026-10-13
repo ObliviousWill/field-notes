@@ -30,6 +30,14 @@ const tags = post.data.tags ?? [];
 				<span class="sep" aria-hidden="true">·</span>
 				<span>{readingTime} min read</span>
 				{
+					post.data.audio && (
+						<>
+							<span class="sep" aria-hidden="true">·</span>
+							<span class="listen">audio version</span>
+						</>
+					)
+				}
+				{
 					post.data.updatedDate && (
 						<>
 							<span class="sep" aria-hidden="true">·</span>
@@ -91,6 +99,9 @@ const tags = post.data.tags ?? [];
 	}
 	.sep {
 		opacity: 0.4;
+	}
+	.listen {
+		color: var(--accent-ink);
 	}
 	.updated {
 		display: inline-flex;

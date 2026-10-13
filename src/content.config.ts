@@ -14,6 +14,8 @@ const blog = defineCollection({
 			tags: z.array(z.enum(['building', 'marketing', 'ai'])).optional(),
 			author: z.string().optional(),
 			mentions: z.array(reference('projects')).optional(),
+			// site-relative path to a recording of the post, e.g. /blog/audio/my-post.mp3
+			audio: z.string().startsWith('/').optional(),
 		}),
 });
 
@@ -24,6 +26,8 @@ const projects = defineCollection({
 			title: z.string(),
 			summary: z.string(),
 			status: z.enum(['building', 'shipped', 'paused']),
+			// who it's for: drives the grouping on the projects page
+			area: z.enum(['work', 'local', 'personal']).default('personal'),
 			startDate: z.coerce.date(),
 			heroImage: z.optional(image()),
 			links: z

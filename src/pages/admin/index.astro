@@ -140,6 +140,19 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 							<input id="f-date" type="date" required />
 						</label>
 
+						<div class="field">
+							<span class="label">Audio version (optional)</span>
+							<div id="audio-current" class="audio-current" hidden>
+								<audio id="audio-player" controls preload="none"></audio>
+								<button type="button" id="audio-remove" class="ghost small">Remove audio</button>
+							</div>
+							<input id="f-audio" type="file" accept="audio/*,.mp3,.m4a" />
+							<p class="hint">
+								Read the post into your phone's voice recorder, then pick the file here. MP3
+								or M4A, up to 25MB (about 25 minutes). It goes live when you press Publish.
+							</p>
+						</div>
+
 						<p id="form-error" class="err" hidden></p>
 
 						<div class="actions">
@@ -194,7 +207,11 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 				editing: null, // { slug, path, sha } or null for new
 				mode: 'edit',
 				previewReady: false,
+				audio: '', // site-relative path of the current recording, if any
+				extraFm: {}, // frontmatter this form doesn't edit, kept as-is on save
 			};
+			const MANAGED_FM = ['title', 'description', 'pubDate', 'tags', 'audio'];
+			const MAX_AUDIO_BYTES = 25 * 1024 * 1024;
 			let editor = null;
 			let previewDebounce = null;
 
@@ -282,9 +299,22 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 				const m = md.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n+([\s\S]*)$/);
 				if (!m) return { fm: {}, body: md };
 				const fm = {};
+				let listKey = null;
 				m[1].split(/\r?\n/).forEach((line) => {
+					// block list items ("  - value") belong to the key above them
+					const item = line.match(/^\s+-\s+(.*)$/);
+					if (item && listKey) {
+						fm[listKey].push(item[1].trim().replace(/^['"]|['"]$/g, ''));
+						return;
+					}
+					listKey = null;
 					const kv = line.match(/^(\w+):\s*(.*)$/);
 					if (!kv) return;
+					if (kv[2].trim() === '') {
+						listKey = kv[1];
+						fm[listKey] = [];
+						return;
+					}
 					let val = kv[2].trim();
 					if (val.startsWith("'") && val.endsWith("'")) {
 						val = val.slice(1, -1).replace(/''/g, "'");
@@ -305,15 +335,22 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 
 			function buildMarkdown(fm, body) {
 				const escape = (s) => String(s).replace(/'/g, "''");
-				const tagList = fm.tags && fm.tags.length
-					? '[' + fm.tags.map((t) => "'" + t + "'").join(', ') + ']'
-					: '[]';
+				const list = (arr) =>
+					'[' + arr.map((t) => "'" + escape(t) + "'").join(', ') + ']';
+				const tagList = fm.tags && fm.tags.length ? list(fm.tags) : '[]';
+				let extra = '';
+				Object.keys(fm.extra || {}).forEach((key) => {
+					const val = fm.extra[key];
+					extra += key + ': ' + (Array.isArray(val) ? list(val) : "'" + escape(val) + "'") + '\n';
+				});
 				return (
 					"---\n" +
 					"title: '" + escape(fm.title) + "'\n" +
 					"description: '" + escape(fm.description) + "'\n" +
 					"pubDate: '" + fm.pubDate + "'\n" +
 					"tags: " + tagList + "\n" +
+					extra +
+					(fm.audio ? "audio: '" + escape(fm.audio) + "'\n" : '') +
 					"---\n\n" +
 					body.replace(/\s+$/, '') +
 					'\n'
@@ -462,15 +499,29 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 				document.querySelectorAll('input[name="tag"]').forEach((c) => {
 					c.checked = tags.includes(c.value);
 				});
+				state.extraFm = {};
+				Object.keys(fm).forEach((key) => {
+					if (!MANAGED_FM.includes(key)) state.extraFm[key] = fm[key];
+				});
+				setAudio(fm.audio || '');
 				ensureEditor();
 				editor.setMarkdown(body || '');
 				schedulePreview();
+			}
+
+			function setAudio(path) {
+				state.audio = path;
+				$('f-audio').value = '';
+				$('audio-current').hidden = !path;
+				$('audio-player').src = path ? BASE + path : '';
 			}
 
 			function resetForm() {
 				$('post-form').reset();
 				$('f-slug').dataset.touched = '';
 				$('f-date').value = new Date().toISOString().slice(0, 10);
+				state.extraFm = {};
+				setAudio('');
 				ensureEditor();
 				editor.setMarkdown('');
 				$('form-error').hidden = true;
@@ -671,6 +722,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 
 			$('back-to-list').addEventListener('click', () => showList());
 			$('new-post-btn').addEventListener('click', () => openEditor(null));
+			$('audio-remove').addEventListener('click', () => setAudio(''));
 			$('back-list-btn').addEventListener('click', () => showList());
 
 			// Mode tabs
@@ -720,20 +772,45 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 					return;
 				}
 
+				const audioFile = $('f-audio').files[0];
+				if (audioFile && audioFile.size > MAX_AUDIO_BYTES) {
+					$('form-error').textContent =
+						'That recording is ' + Math.round(audioFile.size / 1048576) +
+						'MB. Keep it under 25MB: export it as MP3 or M4A rather than WAV.';
+					$('form-error').hidden = false;
+					return;
+				}
+
 				const fm = {
 					title: data.title,
 					description: data.description,
 					pubDate: fmtDate(data.date),
 					tags: data.tags,
+					extra: state.extraFm,
+					audio: state.audio,
 				};
-				const fileContent = buildMarkdown(fm, data.body);
 				const path = 'src/content/blog/' + data.slug + '.md';
 				const btn = $('publish-btn');
 				const status = $('status');
 				btn.disabled = true;
-				status.textContent = state.editing ? 'Updating…' : 'Publishing…';
 
 				try {
+					if (audioFile) {
+						status.textContent = 'Uploading audio…';
+						const ext =
+							(audioFile.name.split('.').pop() || 'mp3').toLowerCase().replace(/[^a-z0-9]/g, '') || 'mp3';
+						const audioPath = '/blog/audio/' + data.slug + '-' + Date.now() + '.' + ext;
+						await putFile(
+							token,
+							'public' + audioPath,
+							await blobToB64(audioFile),
+							null,
+							'Add audio: ' + data.title,
+						);
+						fm.audio = audioPath;
+					}
+					status.textContent = state.editing ? 'Updating…' : 'Publishing…';
+					const fileContent = buildMarkdown(fm, data.body);
 					const message = state.editing
 						? 'Update post: ' + data.title
 						: 'Add post: ' + data.title;
@@ -953,6 +1030,15 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 				text-transform: uppercase;
 				font-weight: 700;
 				color: rgba(230, 227, 216, 0.7);
+			}
+			.audio-current {
+				display: flex;
+				flex-direction: column;
+				gap: 8px;
+				align-items: flex-start;
+			}
+			.audio-current audio {
+				width: 100%;
 			}
 			.hint {
 				font-size: 12px;
