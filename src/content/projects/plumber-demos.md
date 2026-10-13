@@ -1,7 +1,7 @@
 ---
 title: 'See inside your boiler'
 summary: "A 3D boiler you can spin round on your phone, made for a local plumber's customers. Tap a part to see what it does and what goes wrong with it, or pick a symptom and the likely culprits light up."
-status: 'building'
+status: 'shipped'
 area: 'local'
 startDate: 'Sep 25 2026'
 links:
@@ -14,8 +14,8 @@ facts:
     value: "A local plumber's customers"
   - label: 'Works on'
     value: 'Any phone or computer, in the browser'
-  - label: 'Next step'
-    value: "Let the plumber add each boiler's service manual"
+  - label: 'Service manuals'
+    value: "The plumber can upload each boiler's manual"
 ---
 
 When your boiler breaks, you're stuck. You don't know what's wrong, you don't know if it's serious, and the words the engineer uses mean nothing to you.
@@ -32,6 +32,6 @@ The point isn't to turn customers into plumbers. It's to help them describe the 
 
 [Try it yourself](/field-notes/demos/boiler/). It works best on a phone.
 
-## What's next
+## Service manuals
 
-The bigger idea is to let the plumber upload the service manual for each make of boiler they look after. Then a customer could ask a question about *their* boiler and get an answer from the actual manual. That isn't built yet.
+The plumber can also upload the service manual for each make of boiler they look after. Then a customer can ask a question about *their* boiler and get an answer from the actual manual, not general advice from the internet. The demo on this site shows the 3D explorer on its own.
