@@ -2,6 +2,7 @@
 title: 'Get twice as fast at typing, without typing'
 description: 'How dictation (and Wispr) doubled my output and saved my keyboard stress'
 pubDate: 'Jun 02, 2026'
+audio: '/blog/audio/get-twice-as-fast-at-typing-without-typing.mp3'
 tags: ['ai', 'marketing']
 ---
 

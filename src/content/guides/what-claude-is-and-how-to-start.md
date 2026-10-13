@@ -2,6 +2,7 @@
 title: 'What Claude is, and how to start'
 description: 'What an AI assistant actually is, how to get Claude on your phone and computer, and what to try in your first ten minutes.'
 pubDate: 'Jun 16 2026'
+audio: '/guides/audio/what-claude-is-and-how-to-start.mp3'
 step: 1
 ---
 

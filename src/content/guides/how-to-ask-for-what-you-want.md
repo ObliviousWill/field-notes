@@ -2,6 +2,7 @@
 title: 'How to ask so you get a good answer'
 description: "The single biggest difference between a so-so answer and a great one is how you ask. A simple way to brief Claude like you'd brief a smart colleague."
 pubDate: 'Jul 14 2026'
+audio: '/guides/audio/how-to-ask-for-what-you-want.mp3'
 step: 2
 ---
 
