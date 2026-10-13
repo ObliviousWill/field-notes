@@ -13,6 +13,8 @@ const recentPosts = (await getCollection('blog'))
 	.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
 	.slice(0, 3);
 
+const guides = (await getCollection('guides')).sort((a, b) => a.data.step - b.data.step);
+
 const recentProjects = (await getCollection('projects'))
 	.sort((a, b) => b.data.startDate.valueOf() - a.data.startDate.valueOf())
 	.slice(0, 3);
@@ -39,6 +41,28 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 			</section>
 
 			<hr />
+
+			{
+				guides.length > 0 && (
+					<section class="start">
+						<SectionHeading title="New to AI? Start here" top={false}>
+							<a slot="side-link" class="fn-link" href={`${base}/guides/`}>
+								All guides →
+							</a>
+						</SectionHeading>
+						<ol class="start-list">
+							{guides.map((guide) => (
+								<li>
+									<a href={`${base}/guides/${guide.id}/`}>
+										<span class="start-num">{guide.data.step}</span>
+										<span class="start-title">{guide.data.title}</span>
+									</a>
+								</li>
+							))}
+						</ol>
+					</section>
+				)
+			}
 
 			{
 				recentProjects.length > 0 && (
@@ -136,6 +160,51 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 		}
 		.card-stack {
 			gap: 14px;
+		}
+	}
+	.start {
+		margin-bottom: 48px;
+	}
+	.start-list {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 12px;
+	}
+	.start-list a {
+		display: flex;
+		align-items: baseline;
+		gap: 12px;
+		height: 100%;
+		box-sizing: border-box;
+		padding: 16px 18px;
+		background: var(--bg-soft);
+		border: 1px solid var(--hairline-soft);
+		border-radius: 8px;
+		text-decoration: none;
+		background-image: none;
+		color: rgb(var(--text));
+	}
+	.start-list a:hover {
+		border-color: rgba(255, 177, 98, 0.7);
+		background-size: 0;
+	}
+	.start-num {
+		font-family: var(--font-display);
+		font-size: 26px;
+		line-height: 1;
+		color: var(--accent);
+	}
+	.start-title {
+		font-weight: 700;
+		font-size: 16px;
+		line-height: 1.3;
+	}
+	@media (max-width: 720px) {
+		.start-list {
+			grid-template-columns: 1fr;
 		}
 	}
 </style>

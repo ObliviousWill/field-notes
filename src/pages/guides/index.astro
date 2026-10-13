@@ -1,0 +1,112 @@
+---
+import { getCollection } from 'astro:content';
+import BaseHead from '../../components/BaseHead.astro';
+import Footer from '../../components/Footer.astro';
+import Header from '../../components/Header.astro';
+import NewsletterBlock from '../../components/NewsletterBlock.astro';
+import PageTitle from '../../components/PageTitle.astro';
+import { SITE_TITLE } from '../../consts';
+import { readingTimeMinutes } from '../../utils/readingTime';
+
+const guides = (await getCollection('guides')).sort((a, b) => a.data.step - b.data.step);
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const description =
+	'Short, plain-English guides for anyone starting out with Claude. No technical knowledge needed. Read them in order, one sitting each.';
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<BaseHead title={`Guides · ${SITE_TITLE}`} description={description} />
+	</head>
+	<body>
+		<Header current="guides" />
+		<main>
+			<PageTitle
+				title="Guides"
+				count={guides.length}
+				countLabel={guides.length === 1 ? 'guide' : 'guides'}
+				subtitle={description}
+			/>
+
+			<hr />
+
+			<ol class="guides">
+				{
+					guides.map((guide) => (
+						<li class="guide">
+							<span class="num" aria-hidden="true">
+								{String(guide.data.step).padStart(2, '0')}
+							</span>
+							<div>
+								<a class="title" href={`${base}/guides/${guide.id}/`}>
+									{guide.data.title}
+								</a>
+								<p class="desc">{guide.data.description}</p>
+								<p class="meta">
+									{readingTimeMinutes(guide.body)} min read
+									{guide.data.audio && <span> · audio version</span>}
+								</p>
+							</div>
+						</li>
+					))
+				}
+			</ol>
+
+			<NewsletterBlock />
+		</main>
+		<Footer />
+	</body>
+</html>
+<style>
+	.guides {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+	}
+	.guide {
+		display: grid;
+		grid-template-columns: 64px 1fr;
+		gap: 16px;
+		padding: 28px 0;
+		border-top: 1px solid var(--hairline-soft);
+	}
+	.guide:first-child {
+		border-top: none;
+	}
+	.num {
+		font-family: var(--font-display);
+		font-size: 40px;
+		line-height: 1;
+		color: var(--accent);
+	}
+	.title {
+		font-family: var(--font-display);
+		font-size: 28px;
+		line-height: 1.15;
+		color: rgb(var(--text));
+		text-decoration: none;
+	}
+	.desc {
+		margin: 10px 0 6px;
+		font-size: 17px;
+		color: rgb(var(--text-muted));
+	}
+	.meta {
+		margin: 0;
+		font-size: 13px;
+		color: rgb(var(--text-muted));
+	}
+	@media (max-width: 720px) {
+		.guide {
+			grid-template-columns: 44px 1fr;
+			gap: 12px;
+		}
+		.num {
+			font-size: 30px;
+		}
+		.title {
+			font-size: 22px;
+		}
+	}
+</style>

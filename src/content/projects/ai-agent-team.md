@@ -21,12 +21,12 @@ I wanted something the whole team could rely on. So I've set up a small team of 
 
 ## Who's on the team
 
-- **Scout** watches how full our clubs and classes are. When one is filling more slowly than usual, it works out why and suggests a fix.
-- **Ranger** watches enquiries from schools. It spots enquiries that are going cold and suggests what to do about them.
+- **The bookings helper** watches how many places we fill. When something is filling more slowly than usual, it works out why and suggests a fix.
+- **The enquiries helper** watches new business enquiries. It spots ones going cold and suggests what to do about them.
 - **The search helper** watches how many people find our website through Google, and where we're slipping.
 - **The website helper** keeps our web pages accurate and up to date.
-- **The writer** suggests articles that would help parents. Once a topic is approved, it drafts the article.
-- **Judge** checks everyone else's work before I see it. It's a hard marker.
+- **The writer** suggests articles that would help our customers. Once a topic is approved, it drafts the article.
+- **The checker** reviews everyone else's work before I see it. It's a hard marker.
 
 ## The rules that make it work
 
@@ -38,6 +38,6 @@ The thing I have least of is time to make decisions. So the rules are about prot
 - **Short.** About 150 words, starting with the question I need to answer.
 - **Respect a no.** If I've turned an idea down, a helper only brings it back with new evidence.
 
-Every morning I get one short list: at most three things that need me, already checked by Judge.
+Every morning I get one short list: at most three things that need me, already checked by the checker.
 
 The updates below show how it got here. I've also written up [what I learned setting it up](/field-notes/blog/i-gave-my-team-ai-colleagues/).

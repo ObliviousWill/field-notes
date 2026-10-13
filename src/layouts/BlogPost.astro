@@ -10,10 +10,17 @@ import PostRow from '../components/PostRow.astro';
 import StatusPill from '../components/StatusPill.astro';
 import { SITE_AUTHOR } from '../consts';
 
-type Props = CollectionEntry<'blog'>['data'] & {
+type Props = Omit<CollectionEntry<'blog'>['data'], 'tags' | 'mentions'> & {
+	tags?: CollectionEntry<'blog'>['data']['tags'];
+	mentions?: CollectionEntry<'blog'>['data']['mentions'];
 	readingTime?: number;
 	nextPost?: CollectionEntry<'blog'> | null;
 	ogImageUrl?: string;
+	// guides reuse this layout with their own crumbs and next link
+	section?: 'blog' | 'guides';
+	step?: number;
+	stepCount?: number;
+	nextGuide?: { href: string; title: string; description: string } | null;
 };
 
 const {
@@ -28,6 +35,10 @@ const {
 	ogImageUrl,
 	mentions,
 	audio,
+	section = 'blog',
+	step,
+	stepCount,
+	nextGuide,
 } = Astro.props;
 
 const byline = author ?? SITE_AUTHOR;
@@ -51,7 +62,7 @@ const resolvedMentions = mentions
 		<BaseHead title={title} description={description} ogImageUrl={ogImageUrl} />
 	</head>
 	<body>
-		<Header current="blog" />
+		<Header current={section} />
 
 		<div class="progress" aria-hidden="true">
 			<div class="progress-fill" data-progress-fill></div>
@@ -59,7 +70,13 @@ const resolvedMentions = mentions
 
 		<main>
 			<div class="crumbs">
-				<a class="fn-link" href={`${base}/blog/`}>← All notes</a>
+				{
+					section === 'guides' ? (
+						<a class="fn-link" href={`${base}/guides/`}>← All guides</a>
+					) : (
+						<a class="fn-link" href={`${base}/blog/`}>← All notes</a>
+					)
+				}
 				<span class="left">
 					<span class="left-dot" aria-hidden="true"></span>
 					<span class="left-text">
@@ -69,6 +86,12 @@ const resolvedMentions = mentions
 			</div>
 
 			<header class="post-head">
+				{step && (
+					<p class="step-label">
+						Guide {step}
+						{stepCount && ` of ${stepCount}`}
+					</p>
+				)}
 				{
 					tags && tags.length > 0 && (
 						<div class="chips">
@@ -107,7 +130,7 @@ const resolvedMentions = mentions
 				{
 					audio && (
 						<figure class="listen">
-							<figcaption class="listen-label">Prefer to listen? I've read this one out.</figcaption>
+							<figcaption class="listen-label">Prefer to listen? Play the audio version, read by an AI voice.</figcaption>
 							<audio controls preload="none" src={`${base}${audio}`}>
 								<a href={`${base}${audio}`}>Download the recording</a>
 							</audio>
@@ -139,6 +162,18 @@ const resolvedMentions = mentions
 							))}
 						</div>
 					</aside>
+				)
+			}
+
+			{
+				nextGuide && (
+					<section class="next">
+						<p class="next-label">Next guide</p>
+						<a class="next-guide" href={nextGuide.href}>
+							<span class="next-guide-title">{nextGuide.title}</span>
+							<span class="next-guide-desc">{nextGuide.description}</span>
+						</a>
+					</section>
 				)
 			}
 
@@ -452,6 +487,39 @@ const resolvedMentions = mentions
 		color: rgb(var(--text-muted));
 		margin: 0 0 12px;
 		font-weight: 700;
+	}
+	.step-label {
+		font-size: 12px;
+		letter-spacing: 0.16em;
+		text-transform: uppercase;
+		font-weight: 700;
+		color: var(--accent-ink);
+		margin: 0 0 14px;
+	}
+	.next-guide {
+		display: block;
+		padding: 18px 20px;
+		background: var(--bg-soft);
+		border: 1px solid var(--hairline-soft);
+		border-radius: 8px;
+		text-decoration: none;
+		background-image: none;
+	}
+	.next-guide:hover {
+		border-color: rgba(255, 177, 98, 0.7);
+		background-size: 0;
+	}
+	.next-guide-title {
+		display: block;
+		font-family: var(--font-display);
+		font-size: 24px;
+		color: rgb(var(--text));
+		margin-bottom: 6px;
+	}
+	.next-guide-desc {
+		display: block;
+		font-size: 15px;
+		color: rgb(var(--text-muted));
 	}
 	.next-list {
 		list-style: none;

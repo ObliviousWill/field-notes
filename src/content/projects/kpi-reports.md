@@ -19,7 +19,7 @@ Most businesses have a morning ritual. Someone opens three or four systems, copi
 
 So I handed the whole job to Claude. While I'm still asleep, it does this:
 
-1. It asks our booking system how much parents spent yesterday, this week and so far this year.
+1. It asks our booking system how much customers spent yesterday, this week and so far this year.
 2. It asks our customer database how many new enquiries came in and how many meetings got booked.
 3. It counts what the customer service team got through.
 4. It checks the numbers against each other. If something doesn't add up, it says so.
@@ -27,6 +27,6 @@ So I handed the whole job to Claude. While I'm still asleep, it does this:
 
 The rule that matters most is simple: **if it can't get a number, it says so. It never guesses.** A report that is quietly wrong is worse than no report at all.
 
-The same approach now runs a second report every Tuesday, on how many parents are using our new booking app.
+The same approach now runs a second report every Tuesday, on how many customers are using our new booking app.
 
 I'm not sharing the reports themselves. They are full of real figures. The updates below explain how they work and what went wrong on the way.

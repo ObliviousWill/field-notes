@@ -17,12 +17,12 @@ An "agent" is just an AI that does a job on its own, on a schedule, instead of w
 
 There are six, plus one that checks their work:
 
-- **Scout** watches how full our clubs and classes are.
-- **Ranger** watches enquiries from schools.
+- **The bookings helper** watches how many places we fill.
+- **The enquiries helper** watches new business enquiries.
 - **The search helper** watches how people find us on Google.
 - **The website helper** keeps our web pages accurate.
 - **The writer** suggests and drafts articles.
-- **Judge** checks everyone else's work before it reaches me.
+- **The checker** reviews everyone else's work before it reaches me.
 
 ## Lesson 1: the problem isn't what AI can do. It's what you can decide.
 
@@ -34,7 +34,7 @@ There's a second rule that goes with it: **one thing waiting at a time.** If I h
 
 ## Lesson 2: give it a job, not a to-do list
 
-Giving a helper a list of tasks didn't work. What worked was giving each one **a single number to look after**, the way you'd describe a job to a new starter. "Keep the clubs full." "Make sure no school enquiry goes cold."
+Giving a helper a list of tasks didn't work. What worked was giving each one **a single number to look after**, the way you'd describe a job to a new starter. "Fill the places." "Make sure no enquiry goes cold."
 
 Then it needs what any new starter needs:
 
@@ -51,9 +51,9 @@ Leave any one of those out and the written instructions on their own do nothing.
 
 In the first version, each helper checked its own work. Two of the worst mistakes got straight through. The helper that made a mistake was the worst one at spotting it.
 
-So now there's Judge. Judge can't change anything. It can only pass or fail, with reasons. It re-checks at least two numbers in every suggestion against the original source, rather than trusting the summary. Its instructions say "be hard to please", and also "don't fail things just to look tough".
+So now there's a separate checker. It can't change anything. It can only pass or fail, with reasons. It re-checks at least two numbers in every suggestion against the original source, rather than trusting the summary. Its instructions say "be hard to please", and also "don't fail things just to look tough".
 
-Every Friday, Judge checks itself too. If it has passed almost everything for two weeks running, it has to say so. Either the helpers are very good or it's gone soft.
+Every Friday, the checker checks itself too. If it has passed almost everything for two weeks running, it has to say so. Either the helpers are very good or it's gone soft.
 
 ## Lesson 4: suggest, never decide
 
@@ -65,7 +65,7 @@ I'll be honest about the weak spot. Right now they work through my login. The ru
 
 ## Lesson 5: put it where people already look
 
-I don't open a chat to manage any of this. Suggestions appear on the same task board the rest of the team uses. I approve or reject them there, with a one-line reason. Each morning Judge sends me one short email: at most three things that need me, most important first.
+I don't open a chat to manage any of this. Suggestions appear on the same task board the rest of the team uses. I approve or reject them there, with a one-line reason. Each morning the checker sends me one short email: at most three things that need me, most important first.
 
 And when I turn something down, the helpers read my reason. They only bring the idea back if the evidence has changed.
 

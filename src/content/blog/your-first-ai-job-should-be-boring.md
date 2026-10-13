@@ -1,7 +1,7 @@
 ---
 title: 'Your first job for AI should be a boring one'
 description: 'The AI work that has saved me the most time is the dullest: a news round-up every Monday and a numbers report every morning. How to set one up, and the rules that stop it going wrong.'
-pubDate: 'Oct 13 2026'
+pubDate: 'Sep 18 2026'
 tags: ['ai', 'marketing']
 mentions:
   - sector-news
@@ -31,7 +31,7 @@ You don't need any special software for the news briefing. Claude can now run a 
 
 The instructions are where the work is. Write them as if you're briefing a new assistant on their first day:
 
-- **What to look for.** "News from the last seven days about childcare, schools and children's activities in the UK."
+- **What to look for.** "News from the last seven days about the UK education sector."
 - **How to check it.** "Check the date on every story. Only use things from the last seven days."
 - **What to produce.** "Three stories. For each: what happened, the link, why it matters to us, and an idea for sharing it with the team."
 - **How to write it.** "Plain English. If a sentence wouldn't make sense to someone outside marketing, rewrite it."

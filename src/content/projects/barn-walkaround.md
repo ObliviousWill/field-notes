@@ -4,6 +4,9 @@ summary: 'A 3D model of a barn conversion and its land that you can walk round b
 status: 'shipped'
 area: 'local'
 startDate: 'Sep 28 2026'
+links:
+  - label: 'Walk round the barn'
+    url: '/demos/barn/'
 facts:
   - label: 'What it is'
     value: 'A walk-round 3D model of a building project'
@@ -11,8 +14,8 @@ facts:
     value: 'Anyone planning a building project who wants to see it first'
   - label: 'Works on'
     value: 'Phone or computer, in the browser'
-  - label: 'Shared publicly?'
-    value: 'No. It is a real place, so the model stays private'
+  - label: 'Best on'
+    value: 'A bigger screen, though it works on a phone'
 ---
 
 Planning drawings are hard to read unless you do it for a living. A floor plan tells you where the walls go. It doesn't tell you what it will feel like to stand in the kitchen, or whether the patio will get the evening sun.
@@ -27,4 +30,6 @@ So I built the whole site in 3D from the drawings: the converted barn, a glass g
 
 The details make it believable. The real cars are parked on the drive, at their real sizes. There's an orchard, a vegetable patch, a pond, and gaps under the fences for hedgehogs.
 
-This one is a real place, so I'm not sharing the model. What I'd take from it is the idea. If you're spending serious money on a building project, an evening spent making a model you can walk round is cheap, and it will show you things the drawings never will.
+[Walk round it yourself](/field-notes/demos/barn/). Try the Walk button, then drag the sun slider.
+
+If you're spending serious money on a building project, an evening spent making a model you can walk round is cheap. It will show you things the drawings never will.

@@ -1,0 +1,88 @@
+---
+// Small sticky prompt in the corner of every page. Visitors can dismiss it;
+// the choice is remembered in their browser only.
+const contactUrl = 'https://www.linkedin.com/in/williambaker7/';
+---
+
+<aside class="cta" data-cta hidden>
+	<a href={contactUrl} target="_blank" rel="noopener">
+		Need a hand becoming effective with AI? <strong>Get in touch.</strong>
+	</a>
+	<button type="button" class="cta-close" aria-label="Hide this message" data-cta-close>×</button>
+</aside>
+<script is:inline>
+	(function () {
+		var KEY = 'fn:cta-dismissed';
+		var el = document.querySelector('[data-cta]');
+		if (!el) return;
+		var dismissed = false;
+		try {
+			dismissed = localStorage.getItem(KEY) === '1';
+		} catch (e) {}
+		if (!dismissed) el.hidden = false;
+		el.querySelector('[data-cta-close]').addEventListener('click', function () {
+			el.hidden = true;
+			try {
+				localStorage.setItem(KEY, '1');
+			} catch (e) {}
+		});
+	})();
+</script>
+<style>
+	.cta {
+		position: fixed;
+		right: 16px;
+		bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+		z-index: 20;
+		display: flex;
+		align-items: center;
+		gap: 4px;
+		max-width: calc(100vw - 32px);
+		box-sizing: border-box;
+		padding: 8px 8px 8px 16px;
+		background: rgb(var(--text));
+		color: var(--bg, #eee9df);
+		border-radius: 999px;
+		box-shadow: 0 6px 20px rgba(0, 0, 0, 0.18);
+		font-size: 13px;
+		line-height: 1.3;
+	}
+	.cta[hidden] {
+		display: none;
+	}
+	.cta a {
+		color: #eee9df;
+		text-decoration: none;
+		background-image: none;
+	}
+	.cta a:hover {
+		background-size: 0;
+	}
+	.cta strong {
+		color: #ffb162;
+	}
+	.cta-close {
+		flex: none;
+		width: 28px;
+		height: 28px;
+		border: none;
+		border-radius: 50%;
+		background: transparent;
+		color: #eee9df;
+		opacity: 0.6;
+		font-size: 18px;
+		line-height: 1;
+		cursor: pointer;
+	}
+	.cta-close:hover {
+		opacity: 1;
+	}
+	@media (max-width: 480px) {
+		.cta {
+			font-size: 12px;
+			left: 16px;
+			right: 16px;
+			justify-content: space-between;
+		}
+	}
+</style>

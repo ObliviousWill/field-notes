@@ -1,7 +1,7 @@
 ---
 title: "Show, don't tell: 3D demos for small businesses"
 description: "A boiler you can take apart on your phone. A garden you can walk round before it's dug. Why a small business can now afford to show customers the thing, instead of describing it."
-pubDate: 'Oct 13 2026'
+pubDate: 'Sep 30 2026'
 tags: ['building', 'marketing']
 mentions:
   - plumber-demos
@@ -29,7 +29,7 @@ While helping a landscape gardener with their marketing, we boiled their custome
 
 ## A building before it's built
 
-A barn conversion, built in 3D from the planning drawings. You can walk round it, take the roof off, and move the sun to see where the evening light falls. It's a real place, so I'm keeping that one private, but the [project page](/field-notes/projects/barn-walkaround/) shows what's in it.
+A barn conversion, built in 3D from the planning drawings. You can walk round it, take the roof off, and move the sun to see where the evening light falls. [Try it](/field-notes/demos/barn/).
 
 ## What I've learned
 

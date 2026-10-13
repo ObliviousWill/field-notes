@@ -61,4 +61,17 @@ const updates = defineCollection({
 		}),
 });
 
-export const collections = { blog, projects, updates };
+const guides = defineCollection({
+	loader: glob({ base: './src/content/guides', pattern: '**/*.{md,mdx}' }),
+	schema: z.object({
+		title: z.string(),
+		description: z.string(),
+		pubDate: z.coerce.date(),
+		updatedDate: z.coerce.date().optional(),
+		// position in the reading order on /guides/
+		step: z.number().int().positive(),
+		audio: z.string().startsWith('/').optional(),
+	}),
+});
+
+export const collections = { blog, projects, updates, guides };

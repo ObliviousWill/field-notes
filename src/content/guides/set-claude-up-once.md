@@ -1,0 +1,52 @@
+---
+title: 'Set Claude up once, so it knows you'
+description: 'Stop explaining yourself every time. How to give Claude a standing brief about you, let it remember things, and keep separate workspaces for separate jobs.'
+pubDate: 'Aug 11 2026'
+step: 3
+---
+
+Imagine hiring a brilliant assistant, then pretending every morning that you'd never met. You'd re-explain your job, your preferences and what you're working on, every single day.
+
+That's what using Claude without any set-up is like. There are three things you can set up once that pay you back every time.
+
+## 1. Tell it about you
+
+In Claude's **settings** there's a place to describe yourself and how you like answers. Claude reads it before every conversation.
+
+Keep it short. Include the few things that change the answer:
+
+- what you do ("I run a small cleaning business" or "I'm a primary school teacher")
+- who you usually write for
+- how you like answers ("Short. British English. Give me your best recommendation, not a list of options.")
+- what you don't want ("Don't flatter me. Tell me if my idea is weak.")
+
+That last kind of line makes a surprising difference. Claude is polite by default. If you want honesty, ask for it once, here.
+
+## 2. Let it remember
+
+Claude can remember useful things from past conversations, so what you told it on Tuesday is still there on Friday. You can switch this on or off in settings, and see or edit what it has remembered.
+
+You can also tell it directly: "Remember that I never use exclamation marks in work emails." Treat it like a new colleague. Tell it the things you'd be annoyed to repeat.
+
+If you want a conversation that doesn't affect its memory, use an incognito chat.
+
+## 3. Use Projects for repeat jobs
+
+A **Project** is a separate workspace with its own instructions and its own files. Every chat inside the project starts with that knowledge already loaded.
+
+Good uses:
+
+- **A side business:** upload your price list and a few past quotes. Then "write a quote for a three-bed house" just works.
+- **A hobby or club:** the rules, the fixtures, the members' list.
+- **A big personal job:** a house move, a wedding, a building project, with every document in one place.
+- **Your writing style:** upload a few things you've written and say "write like this".
+
+Keeping projects separate also stops one job's details muddling another's.
+
+## What not to do
+
+Don't write a life story. Three or four sentences about you beat three pages. Add to it when you notice yourself explaining the same thing twice.
+
+## Try this today
+
+Open settings and write four lines about yourself: what you do, who you write for, how you like answers, and one thing you don't want. Then ask the same question you asked yesterday and see what changes.

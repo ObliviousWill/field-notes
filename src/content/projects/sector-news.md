@@ -19,7 +19,7 @@ This is the simplest thing on this page, and one of the most useful.
 
 Keeping up with your industry's news is one of those jobs everyone means to do and nobody has time for. So every Monday at 7am Claude does it for me. It:
 
-1. searches the web for the last seven days of news about children's activities, childcare and schools in the UK
+1. searches the web for the last seven days of news about the UK education sector
 2. checks the dates, so nothing is old news
 3. picks the three stories that matter most to us
 4. writes each one up: what happened, where it came from, why it matters to us, and an idea for an internal post about it
