@@ -1,20 +1,23 @@
 ---
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 const rssUrl = `${base}/rss.xml`;
+const newsletterUrl = 'https://www.linkedin.com/newsletters/7515924774427136000/';
 ---
 
 <section class="newsletter">
-	<div class="title">Get these in your inbox.</div>
+	<div class="title">Get new posts as they land.</div>
 	<p class="lead">
-		Roughly weekly. No schedule, no spam, just a heads-up when a new note goes up.
+		Every post also goes out as a free newsletter on LinkedIn. Subscribe there and you'll
+		get a heads-up whenever something new goes up.
 	</p>
-	<form action="#" method="post" class="form">
-		<input type="email" name="email" placeholder="you@email.com" aria-label="Email address" />
-		<button type="submit">Subscribe →</button>
+	<div class="form">
+		<a class="subscribe" href={newsletterUrl} target="_blank" rel="noopener">
+			Subscribe on LinkedIn →
+		</a>
 		<span class="rss">
 			or grab the <a class="fn-link" href={rssUrl}>RSS feed ↗</a>
 		</span>
-	</form>
+	</div>
 </section>
 <style>
 	.newsletter {
@@ -43,22 +46,7 @@ const rssUrl = `${base}/rss.xml`;
 		flex-wrap: wrap;
 		align-items: center;
 	}
-	input[type='email'] {
-		flex: 1 1 220px;
-		min-width: 200px;
-		padding: 12px 14px;
-		border: 1px solid var(--hairline);
-		background: var(--bg-soft);
-		color: rgb(var(--text));
-		font-size: 16px;
-		border-radius: 4px;
-		font-family: var(--font-atkinson);
-		outline: none;
-	}
-	input[type='email']:focus {
-		border-color: var(--accent-ink);
-	}
-	button {
+	.subscribe {
 		padding: 12px 18px;
 		background: rgb(var(--text));
 		color: var(--bg-soft);
@@ -68,8 +56,11 @@ const rssUrl = `${base}/rss.xml`;
 		border-radius: 4px;
 		cursor: pointer;
 		font-family: var(--font-atkinson);
+		text-decoration: none;
+		background-image: none;
+		display: inline-block;
 	}
-	button:hover {
+	.subscribe:hover {
 		background: rgb(var(--text-muted));
 	}
 	.rss {
