@@ -1,0 +1,439 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Find Your Perfect Class | Bounce &amp; Breathe Studio</title>
+<meta name="description" content="Six quick questions to find the class at Bounce & Breathe Studio that suits your energy, your joints and your diary.">
+<style>
+  :root{
+    --ink:#22164f; --ink-soft:#4a3f7a; --bg:#fff7ee; --card:#ffffff;
+    --coral:#ff6b5e; --lime:#d4f53c; --sky:#7fd3ff; --grape:#8b5cf6; --sun:#ffc93c;
+    --line:#e8dfd3; --focus:#0a58ff;
+    --radius:22px;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+    background:var(--bg); color:var(--ink); line-height:1.5;
+    background-image:radial-gradient(circle at 10% 0%, #ffe3d6 0, transparent 40%),radial-gradient(circle at 100% 30%, #eef9c8 0, transparent 35%);
+    min-height:100vh; overflow-x:hidden;
+  }
+  .wrap{max-width:640px; margin:0 auto; padding:16px 16px 32px}
+  header.brand{display:flex; align-items:center; gap:10px; padding:6px 0 14px}
+  .logo{width:42px; height:42px; flex:none}
+  .brand-name{font-weight:800; font-size:1.05rem; letter-spacing:-.01em}
+  .brand-tag{font-size:.82rem; color:var(--ink-soft)}
+  .card{
+    background:var(--card); border-radius:var(--radius); padding:22px 20px;
+    box-shadow:0 2px 0 var(--line), 0 14px 40px -18px rgba(34,22,79,.35);
+    position:relative; overflow:hidden;
+  }
+  h1{font-size:clamp(1.7rem,6vw,2.3rem); line-height:1.1; margin:6px 0 10px; letter-spacing:-.02em}
+  h2{font-size:1.35rem; line-height:1.2; margin:4px 0 14px; letter-spacing:-.01em}
+  p{margin:0 0 12px}
+  .muted{color:var(--ink-soft)}
+  .hero-art{display:block; width:100%; max-width:360px; height:auto; margin:4px auto 10px}
+  .chip{display:inline-block; background:var(--lime); color:var(--ink); font-weight:700; font-size:.78rem; padding:4px 10px; border-radius:99px; letter-spacing:.02em}
+  .btn{
+    appearance:none; border:0; cursor:pointer; font:inherit; font-weight:800; font-size:1.05rem;
+    min-height:52px; padding:12px 22px; border-radius:16px;
+    background:var(--ink); color:#fff; box-shadow:0 5px 0 #0f0830;
+    transition:transform .15s cubic-bezier(.3,1.6,.5,1), box-shadow .15s;
+    display:inline-flex; align-items:center; justify-content:center; gap:8px;
+  }
+  .btn:hover{transform:translateY(-2px) rotate(-1deg)}
+  .btn:active{transform:translateY(4px); box-shadow:0 1px 0 #0f0830}
+  .btn.secondary{background:#fff; color:var(--ink); box-shadow:0 0 0 2px var(--ink) inset, 0 5px 0 var(--ink)}
+  .btn.block{width:100%}
+  :focus-visible{outline:3px solid var(--focus); outline-offset:3px; border-radius:10px}
+  /* progress */
+  .progress{margin:0 0 16px}
+  .progress-top{display:flex; justify-content:space-between; font-size:.85rem; font-weight:700; color:var(--ink-soft); margin-bottom:6px}
+  .track{height:16px; background:#f1e9df; border-radius:99px; position:relative; overflow:visible}
+  .fill{height:100%; border-radius:99px; width:0; background:repeating-linear-gradient(45deg,var(--coral) 0 12px,#ff8a6b 12px 24px); transition:width .5s cubic-bezier(.3,1.4,.5,1); background-size:34px 34px; animation:stripe 1s linear infinite}
+  @keyframes stripe{to{background-position:34px 0}}
+  .runner{position:absolute; top:-18px; font-size:24px; transform:translateX(-50%) scaleX(-1); transition:left .5s cubic-bezier(.3,1.4,.5,1); left:0}
+  /* options */
+  .q-emoji{font-size:2.2rem; display:block; margin-bottom:4px}
+  .options{display:grid; gap:10px; margin:0; padding:0; border:0}
+  .opt{
+    display:flex; align-items:center; gap:12px; width:100%; text-align:left;
+    min-height:60px; padding:12px 14px; border-radius:16px; cursor:pointer;
+    background:#fff; color:var(--ink); font:inherit; font-size:1rem;
+    border:2px solid var(--line); transition:transform .18s cubic-bezier(.3,1.6,.5,1), border-color .15s, background .15s;
+  }
+  .opt .ico{font-size:1.6rem; width:36px; text-align:center; flex:none}
+  .opt strong{display:block; font-size:1rem}
+  .opt small{display:block; color:var(--ink-soft); font-size:.86rem}
+  .opt:hover{border-color:var(--ink); transform:translateX(4px)}
+  .opt.picked{background:#f3ffd0; border-color:var(--ink); animation:pop .35s cubic-bezier(.3,1.8,.5,1)}
+  @keyframes pop{0%{transform:scale(1)}40%{transform:scale(1.04) rotate(-1deg)}100%{transform:scale(1)}}
+  .nav-row{display:flex; justify-content:space-between; align-items:center; margin-top:14px}
+  .linkbtn{background:none; border:0; font:inherit; color:var(--ink); font-weight:700; text-decoration:underline; cursor:pointer; min-height:44px; padding:6px 4px}
+  /* step transitions */
+  .step{animation:slideIn .45s cubic-bezier(.2,1.2,.4,1) both}
+  @keyframes slideIn{from{opacity:0; transform:translateX(40px) rotate(1deg)}to{opacity:1; transform:none}}
+  [hidden]{display:none !important}
+  /* result */
+  .result-card{border-radius:26px; padding:24px 20px; color:var(--ink); position:relative; overflow:hidden; animation:reveal .7s cubic-bezier(.2,1.5,.4,1) both}
+  @keyframes reveal{0%{opacity:0; transform:scale(.6) rotate(-6deg)}100%{opacity:1; transform:none}}
+  .result-card .eyebrow{font-weight:800; text-transform:uppercase; letter-spacing:.08em; font-size:.76rem}
+  .result-card h2{font-size:clamp(1.6rem,7vw,2.1rem); margin:4px 0 2px}
+  .result-card .class-name{font-size:1.1rem; font-weight:800; margin-bottom:12px}
+  .result-art{width:120px; height:120px; float:right; margin:-4px -6px 4px 8px; animation:bob 2.6s ease-in-out infinite}
+  @keyframes bob{50%{transform:translateY(-6px) rotate(3deg)}}
+  .result-card h3{font-size:1rem; margin:14px 0 6px}
+  .result-card ul{margin:0; padding-left:20px}
+  .result-card li{margin:3px 0}
+  .pill-row{display:flex; flex-wrap:wrap; gap:6px; margin:10px 0 2px; clear:both}
+  .pill{background:rgba(255,255,255,.75); border-radius:99px; padding:5px 11px; font-size:.84rem; font-weight:700}
+  .gp{background:rgba(255,255,255,.8); border-radius:14px; padding:10px 12px; font-size:.9rem; margin-top:14px}
+  .runner-up{margin-top:14px; font-size:.92rem}
+  .actions{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:16px}
+  .share-msg{font-size:.88rem; min-height:1.3em; margin-top:8px; text-align:center}
+  /* capture */
+  .capture{margin-top:18px; border:3px dashed var(--ink); background:#fffdf8}
+  .capture .ticket{display:flex; gap:12px; align-items:center; margin-bottom:12px}
+  .capture .ticket svg{flex:none}
+  label.field{display:block; font-weight:700; margin:12px 0 4px}
+  input[type=text],input[type=email]{
+    width:100%; font:inherit; font-size:1rem; padding:12px 14px; min-height:50px;
+    border:2px solid #b9aec8; border-radius:14px; background:#fff; color:var(--ink);
+  }
+  input[type=text]:focus,input[type=email]:focus{border-color:var(--ink)}
+  .consent{display:flex; gap:10px; align-items:flex-start; margin:14px 0; font-size:.93rem}
+  .consent input{width:24px; height:24px; margin:2px 0 0; flex:none; accent-color:var(--ink)}
+  .err{color:#b3261e; font-size:.88rem; font-weight:700; min-height:1.2em; margin-top:4px}
+  .demo-done{background:#eefbd1; border:2px solid #5c8a00; border-radius:16px; padding:14px; margin-top:12px; animation:slideIn .4s both}
+  .small-print{font-size:.8rem; color:var(--ink-soft); margin-top:10px}
+  footer{text-align:center; font-size:.82rem; color:var(--ink-soft); margin-top:22px}
+  /* confetti */
+  .confetti{position:fixed; inset:0; pointer-events:none; overflow:hidden; z-index:20}
+  .confetti i{position:absolute; top:-20px; width:10px; height:14px; border-radius:3px; animation:fall linear forwards}
+  @keyframes fall{to{transform:translate(var(--dx),110vh) rotate(var(--r))}}
+  .sr-only{position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap}
+  @media (prefers-reduced-motion: reduce){
+    *,*::before,*::after{animation-duration:.01ms !important; animation-iteration-count:1 !important; transition-duration:.01ms !important}
+    .confetti{display:none}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="brand">
+    <svg class="logo" viewBox="0 0 48 48" aria-hidden="true">
+      <circle cx="24" cy="24" r="22" fill="#22164f"/>
+      <path d="M12 30c4-10 8-10 12 0s8 10 12 0" stroke="#d4f53c" stroke-width="4" fill="none" stroke-linecap="round"/>
+      <circle cx="24" cy="15" r="4" fill="#ff6b5e"/>
+    </svg>
+    <div>
+      <div class="brand-name">Bounce &amp; Breathe Studio</div>
+      <div class="brand-tag">Friendly fitness for every body</div>
+    </div>
+  </header>
+
+  <main class="card" id="app">
+    <!-- Intro -->
+    <section id="intro" class="step" aria-labelledby="intro-h">
+      <span class="chip">60-second quiz</span>
+      <h1 id="intro-h">Find your perfect class</h1>
+      <svg class="hero-art" viewBox="0 0 360 170" aria-hidden="true">
+        <ellipse cx="180" cy="158" rx="160" ry="10" fill="#f1e9df"/>
+        <!-- yoga person -->
+        <g class="wob1"><circle cx="70" cy="62" r="13" fill="#ffb48a"/><path d="M70 76 L70 116" stroke="#8b5cf6" stroke-width="16" stroke-linecap="round"/><path d="M70 88 L38 64 M70 88 L102 64" stroke="#ffb48a" stroke-width="8" stroke-linecap="round"/><path d="M70 114 L48 150 M70 114 L92 150" stroke="#22164f" stroke-width="9" stroke-linecap="round"/></g>
+        <!-- dumbbell -->
+        <g><rect x="145" y="128" width="70" height="8" rx="4" fill="#22164f"/><rect x="138" y="114" width="14" height="36" rx="4" fill="#ff6b5e"/><rect x="208" y="114" width="14" height="36" rx="4" fill="#ff6b5e"/></g>
+        <!-- boxing glove -->
+        <g transform="translate(160 30) rotate(-12)"><rect x="0" y="0" width="44" height="46" rx="20" fill="#ff6b5e"/><rect x="6" y="40" width="32" height="18" rx="5" fill="#fff" stroke="#22164f" stroke-width="3"/><path d="M8 18 q8 -8 20 0" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round"/></g>
+        <!-- spin bike -->
+        <g transform="translate(250 60)"><circle cx="20" cy="76" r="20" fill="none" stroke="#22164f" stroke-width="6"/><circle cx="84" cy="76" r="20" fill="none" stroke="#22164f" stroke-width="6"/><path d="M20 76 L48 30 L84 76 M48 30 L40 12 M30 12 h20 M48 30 L76 22 M70 16 l12 4" stroke="#7fd3ff" stroke-width="7" fill="none" stroke-linecap="round" stroke-linejoin="round"/></g>
+        <!-- sparkles -->
+        <path d="M128 40 l4 10 10 4 -10 4 -4 10 -4 -10 -10 -4 10 -4z" fill="#ffc93c"/>
+        <path d="M310 20 l3 7 7 3 -7 3 -3 7 -3 -7 -7 -3 7 -3z" fill="#d4f53c" stroke="#22164f" stroke-width="1"/>
+      </svg>
+      <p>Bendy or bouncy? Sweaty or serene? Answer six quick questions and we will match you with the class you will actually look forward to.</p>
+      <p class="muted">No wrong answers. No judgement. Biscuits are not a sport, sadly.</p>
+      <button class="btn block" id="start">Let's go <span aria-hidden="true">→</span></button>
+    </section>
+
+    <!-- Quiz -->
+    <section id="quiz" hidden aria-labelledby="q-text">
+      <div class="progress">
+        <div class="progress-top"><span id="q-count">Question 1 of 6</span><span id="q-pct">0%</span></div>
+        <div class="track" role="progressbar" aria-label="Quiz progress" aria-valuemin="0" aria-valuemax="6" aria-valuenow="0" id="track">
+          <div class="fill" id="fill"></div>
+          <span class="runner" id="runner" aria-hidden="true">🏃</span>
+        </div>
+      </div>
+      <div id="q-holder" class="step">
+        <span class="q-emoji" id="q-emoji" aria-hidden="true"></span>
+        <h2 id="q-text" tabindex="-1"></h2>
+        <div class="options" id="options" role="group" aria-labelledby="q-text"></div>
+      </div>
+      <div class="nav-row">
+        <button class="linkbtn" id="back">← Back</button>
+        <span class="muted" style="font-size:.85rem">Pick one to carry on</span>
+      </div>
+    </section>
+
+    <!-- Result -->
+    <section id="result" hidden>
+      <div aria-live="polite" id="result-live"></div>
+      <div id="capture-wrap" hidden>
+        <div class="card capture" id="capture">
+          <div class="ticket">
+            <svg width="56" height="56" viewBox="0 0 56 56" aria-hidden="true"><rect x="4" y="12" width="48" height="32" rx="6" fill="#d4f53c" stroke="#22164f" stroke-width="3"/><path d="M20 12 v32" stroke="#22164f" stroke-width="3" stroke-dasharray="4 3"/><path d="M34 22 l2.5 5 5.5 .8 -4 3.9 .9 5.5 -4.9-2.6 -4.9 2.6 .9-5.5 -4-3.9 5.5-.8z" fill="#ff6b5e"/></svg>
+            <div>
+              <span class="chip" style="background:#ffc93c">Example offer</span>
+              <h2 style="margin:6px 0 0">Book a free taster class</h2>
+            </div>
+          </div>
+          <p>Fancy trying <strong id="cap-class">your match</strong> on the house? Leave your details and we will send you a free taster pass and this week's timetable.</p>
+          <form id="cap-form" novalidate>
+            <label class="field" for="cap-name">Your first name</label>
+            <input type="text" id="cap-name" name="cap-name" autocomplete="off" required>
+            <label class="field" for="cap-email">Your email</label>
+            <input type="email" id="cap-email" name="cap-email" autocomplete="off" required>
+            <div class="err" id="cap-err" role="alert"></div>
+            <div class="consent">
+              <input type="checkbox" id="cap-consent">
+              <label for="cap-consent">Yes, email me my free taster pass and occasional studio news. You can unsubscribe at any time.</label>
+            </div>
+            <button class="btn block" type="submit">Send my free taster pass</button>
+          </form>
+          <div id="cap-done" class="demo-done" hidden tabindex="-1">
+            <strong>This is a demo, so nothing was sent.</strong>
+            <p style="margin:6px 0 0">In a real version, this is where the business would collect your email, with your clear consent.</p>
+          </div>
+          <p class="small-print">Demo only: nothing you type here is sent or saved.</p>
+        </div>
+      </div>
+      <div style="margin-top:16px">
+        <button class="btn secondary block" id="restart">↺ Take the quiz again</button>
+      </div>
+    </section>
+  </main>
+
+  <footer>A fictional business. Demo from Field Notes.</footer>
+</div>
+<div class="confetti" id="confetti" aria-hidden="true"></div>
+
+<script>
+(function(){
+  "use strict";
+  var CLASSES = {
+    yoga:{name:"Yoga Flow", title:"The Calm Commander", color:"#e9ddff", accent:"#8b5cf6",
+      why:"You want to leave feeling looser, calmer and a bit taller. Yoga Flow links gentle movement with steady breathing, and every pose has an easier option.",
+      bring:["A water bottle","Comfy, stretchy clothes","Bare feet (mats provided)","A small towel"],
+      art:'<circle cx="60" cy="30" r="12" fill="#ffb48a"/><path d="M60 44 v34" stroke="#8b5cf6" stroke-width="14" stroke-linecap="round"/><path d="M60 54 L30 30 M60 54 L90 30" stroke="#ffb48a" stroke-width="7" stroke-linecap="round"/><path d="M60 76 L36 100 h48 z" fill="#22164f"/><ellipse cx="60" cy="106" rx="48" ry="6" fill="#d4f53c"/>'},
+    spin:{name:"Spin Social", title:"The Pedal Party Starter", color:"#d6f3ff", accent:"#0a7bb5",
+      why:"You like a beat, a buzz and a clear goal. In Spin you set your own resistance, so it is as hard as you want it to be, and the music does half the work.",
+      bring:["A big water bottle","A sweat towel","Trainers with a firm sole","Padded shorts if you have them"],
+      art:'<circle cx="28" cy="88" r="20" fill="none" stroke="#22164f" stroke-width="6"/><circle cx="92" cy="88" r="20" fill="none" stroke="#22164f" stroke-width="6"/><path d="M28 88 L56 44 L92 88 M56 44 L48 26 M38 26 h20 M56 44 L84 36" stroke="#0a7bb5" stroke-width="7" fill="none" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 20 q6 -8 12 0 M100 14 q6 -8 12 0" stroke="#ff6b5e" stroke-width="4" fill="none" stroke-linecap="round"/>'},
+    hiit:{name:"HIIT Express", title:"The Lightning Bolt", color:"#ffe0dc", accent:"#d63a2f",
+      why:"You have energy to burn and not much time to burn it. HIIT Express is short bursts of hard work with proper rests in between. Done in 30 minutes, buzzing for hours.",
+      bring:["Water, lots of it","A sweat towel","Supportive trainers","A can-do face"],
+      art:'<path d="M66 6 L30 66 h26 L46 114 L92 46 H64 L80 6 z" fill="#ffc93c" stroke="#22164f" stroke-width="4" stroke-linejoin="round"/>'},
+    pilates:{name:"Mat Pilates", title:"The Core Conductor", color:"#fff0c9", accent:"#9a6b00",
+      why:"You like slow, clever moves that do more than they look like they do. Mat Pilates builds core strength and posture with controlled, low-impact exercises.",
+      bring:["Water","Close-fitting comfy clothes","Grippy socks if you like","Mats provided"],
+      art:'<ellipse cx="60" cy="98" rx="52" ry="8" fill="#d4f53c"/><circle cx="24" cy="76" r="11" fill="#ffb48a"/><path d="M34 82 L76 82" stroke="#9a6b00" stroke-width="13" stroke-linecap="round"/><path d="M76 82 L98 52" stroke="#22164f" stroke-width="9" stroke-linecap="round"/><path d="M44 80 L60 58" stroke="#ffb48a" stroke-width="6" stroke-linecap="round"/>'},
+    boxing:{name:"Boxfit", title:"The Fun Fighter", color:"#ffe2ef", accent:"#c2185b",
+      why:"You want to hit something (nicely) and walk out grinning. Boxfit is pad work and fitness drills to music. No sparring, no contact, just a great release.",
+      bring:["Water","A towel","Trainers","Hand wraps if you have them (gloves to borrow)"],
+      art:'<g transform="translate(22 14) rotate(-10)"><rect x="0" y="0" width="64" height="66" rx="28" fill="#ff6b5e"/><rect x="8" y="58" width="46" height="26" rx="6" fill="#fff" stroke="#22164f" stroke-width="4"/><path d="M12 24 q12 -12 30 0" stroke="#fff" stroke-width="4" fill="none" stroke-linecap="round"/></g><path d="M98 20 l6 -10 M104 34 l12 -4 M8 30 l-6 -8" stroke="#22164f" stroke-width="4" stroke-linecap="round"/>'},
+    strength:{name:"Strength Basics", title:"The Quiet Powerhouse", color:"#e3f8c4", accent:"#3d6b00",
+      why:"You like progress you can measure. Strength Basics teaches safe technique with light weights first, so you get stronger week by week without guesswork.",
+      bring:["Water","Flat trainers","Comfortable clothes you can squat in","A notebook if you like tracking"],
+      art:'<rect x="22" y="56" width="76" height="9" rx="4" fill="#22164f"/><rect x="12" y="38" width="16" height="44" rx="5" fill="#ff6b5e"/><rect x="92" y="38" width="16" height="44" rx="5" fill="#ff6b5e"/><rect x="2" y="46" width="12" height="28" rx="4" fill="#8b5cf6"/><rect x="106" y="46" width="12" height="28" rx="4" fill="#8b5cf6"/>'},
+    aqua:{name:"Aqua Fit", title:"The Happy Splasher", color:"#d3f5ee", accent:"#00796b",
+      why:"You want a proper workout that is kind to your joints. In the pool, the water supports you and adds gentle resistance. It is surprisingly good fun too.",
+      bring:["Swimwear","A towel","Flip-flops for poolside","A padlock for the lockers"],
+      art:'<circle cx="60" cy="40" r="13" fill="#ffb48a"/><path d="M40 60 L22 34 M80 60 L98 34" stroke="#ffb48a" stroke-width="7" stroke-linecap="round"/><path d="M0 70 q15 -10 30 0 t30 0 t30 0 t30 0 v50 h-120z" fill="#7fd3ff"/><path d="M0 86 q15 -10 30 0 t30 0 t30 0 t30 0" stroke="#fff" stroke-width="4" fill="none"/><circle cx="96" cy="20" r="4" fill="#7fd3ff"/><circle cx="104" cy="10" r="3" fill="#7fd3ff"/>'}
+  };
+
+  var QUESTIONS = [
+    {emoji:"🔋", text:"How's your battery today, honestly?", opts:[
+      {ico:"🪫", t:"Running on fumes", s:"I'd like to move, gently please", w:{yoga:3,aqua:3,pilates:2}},
+      {ico:"🔋", t:"About half full", s:"Up for something steady", w:{pilates:2,strength:2,yoga:1,aqua:1}},
+      {ico:"⚡", t:"Fully charged", s:"Let me at it", w:{spin:2,boxing:2,hiit:2,strength:1}},
+      {ico:"🚀", t:"Bouncing off the walls", s:"Point me at the hardest thing", w:{hiit:3,boxing:2,spin:2}}]},
+    {emoji:"✨", text:"After class, you want to feel...", opts:[
+      {ico:"🧘", t:"Zen as a sleepy cat", s:"Calm, loose, unbothered", w:{yoga:3,pilates:1,aqua:1}},
+      {ico:"💪", t:"Strong enough to open any jar", s:"Solid and capable", w:{strength:3,pilates:2}},
+      {ico:"🥵", t:"Gloriously sweaty", s:"Like I really did something", w:{hiit:3,spin:2,boxing:1}},
+      {ico:"😁", t:"Like I just let off steam", s:"Stress? Never heard of it", w:{boxing:3,spin:1,aqua:1}}]},
+    {emoji:"🎧", text:"Soundtrack of choice?", opts:[
+      {ico:"🔊", t:"Loud bangers, please", s:"The bassier the better", w:{spin:3,hiit:2,boxing:2}},
+      {ico:"🎶", t:"Feel-good tunes", s:"Something to hum along to", w:{aqua:2,boxing:1,strength:1,pilates:1}},
+      {ico:"🌊", t:"Calm and quiet", s:"Soft music or gentle cues", w:{yoga:3,pilates:2}},
+      {ico:"🤷", t:"Honestly, I won't notice", s:"I'll be concentrating", w:{strength:2,pilates:1,hiit:1}}]},
+    {emoji:"👯", text:"Solo star or part of the crew?", opts:[
+      {ico:"🎉", t:"The more the merrier", s:"I love a group buzz", w:{spin:2,aqua:2,boxing:1,hiit:1}},
+      {ico:"🙂", t:"Group's fine, but let me do my thing", s:"Company without the spotlight", w:{yoga:2,pilates:2,spin:1}},
+      {ico:"🎯", t:"Mostly me and my goals", s:"Small group, lots of tips", w:{strength:3,pilates:1}},
+      {ico:"🤝", t:"I'd like a partner to cheer on", s:"Teamwork makes it fun", w:{boxing:3,hiit:1}}]},
+    {emoji:"🦵", text:"Any joints asking for special treatment?", opts:[
+      {ico:"🦵", t:"My knees have opinions", s:"Low impact please", w:{aqua:3,yoga:1,pilates:2,spin:1,hiit:-2}},
+      {ico:"🔙", t:"My back likes to be looked after", s:"Gentle and controlled", w:{pilates:3,aqua:2,yoga:1,hiit:-2,boxing:-1}},
+      {ico:"🤸", t:"A few creaks, nothing major", s:"Options for easier moves please", w:{yoga:1,pilates:1,strength:1,aqua:1}},
+      {ico:"✅", t:"All good, thanks", s:"Bring it on", w:{hiit:1,boxing:1,spin:1}}]},
+    {emoji:"⏰", text:"When does your body like to move?", opts:[
+      {ico:"🌅", t:"Early bird", s:"Before the world wakes up", slot:"early-morning classes (from 6.30am)", w:{spin:1,hiit:1,yoga:1}},
+      {ico:"☕", t:"Late morning", s:"After a coffee, obviously", slot:"mid-morning classes (around 10am)", w:{aqua:1,pilates:1}},
+      {ico:"🥪", t:"Lunchtime dash", s:"In, out, back to it", slot:"lunchtime express classes (around 12.30pm)", w:{hiit:1,strength:1}},
+      {ico:"🌙", t:"After work", s:"To shake off the day", slot:"evening classes (from 6pm)", w:{boxing:1,spin:1,yoga:1}}]}
+  ];
+
+  var $ = function(id){return document.getElementById(id)};
+  var answers = [], idx = 0;
+  var reduced = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  function show(id){
+    ["intro","quiz","result"].forEach(function(s){ $(s).hidden = (s !== id); });
+  }
+
+  function restartAnim(el){ el.classList.remove("step"); void el.offsetWidth; el.classList.add("step"); }
+
+  function renderQ(){
+    var q = QUESTIONS[idx];
+    $("q-count").textContent = "Question " + (idx+1) + " of " + QUESTIONS.length;
+    var pct = Math.round(idx / QUESTIONS.length * 100);
+    $("q-pct").textContent = pct + "%";
+    $("fill").style.width = pct + "%";
+    $("runner").style.left = Math.max(4, pct) + "%";
+    $("track").setAttribute("aria-valuenow", idx);
+    $("q-emoji").textContent = q.emoji;
+    $("q-text").textContent = q.text;
+    var box = $("options"); box.innerHTML = "";
+    q.opts.forEach(function(o, i){
+      var b = document.createElement("button");
+      b.type = "button"; b.className = "opt";
+      if (answers[idx] === i) { b.classList.add("picked"); b.setAttribute("aria-pressed","true"); } else b.setAttribute("aria-pressed","false");
+      b.innerHTML = '<span class="ico" aria-hidden="true">' + o.ico + '</span><span><strong></strong><small></small></span>';
+      b.querySelector("strong").textContent = o.t;
+      b.querySelector("small").textContent = o.s;
+      b.addEventListener("click", function(){ pick(i, b); });
+      box.appendChild(b);
+    });
+    $("back").style.visibility = idx === 0 ? "hidden" : "visible";
+    restartAnim($("q-holder"));
+    $("q-text").focus({preventScroll:true});
+  }
+
+  var busy = false;
+  function pick(i, btn){
+    if (busy) return; busy = true;
+    answers[idx] = i;
+    Array.prototype.forEach.call($("options").children, function(c){ c.classList.remove("picked"); c.setAttribute("aria-pressed","false"); });
+    btn.classList.add("picked"); btn.setAttribute("aria-pressed","true");
+    var pct = Math.round((idx+1) / QUESTIONS.length * 100);
+    $("fill").style.width = pct + "%"; $("runner").style.left = pct + "%";
+    setTimeout(function(){
+      busy = false;
+      idx++;
+      if (idx >= QUESTIONS.length) finish(); else renderQ();
+    }, reduced ? 80 : 380);
+  }
+
+  function score(){
+    var s = {}; Object.keys(CLASSES).forEach(function(k){ s[k]=0; });
+    answers.forEach(function(a, qi){
+      var w = QUESTIONS[qi].opts[a].w;
+      Object.keys(w).forEach(function(k){ s[k] += w[k]; });
+    });
+    // tie-break order favours gentler classes
+    var order = ["aqua","pilates","yoga","strength","spin","boxing","hiit"];
+    var ranked = order.slice().sort(function(a,b){ return s[b]-s[a] || order.indexOf(a)-order.indexOf(b); });
+    return ranked;
+  }
+
+  var currentResult = null;
+  function esc(t){ var d=document.createElement("div"); d.textContent=t; return d.innerHTML; }
+
+  function finish(){
+    var ranked = score();
+    var top = ranked[0], second = ranked[1];
+    var c = CLASSES[top];
+    var slot = QUESTIONS[5].opts[answers[5]].slot;
+    var joints = answers[4] !== 3;
+    currentResult = c;
+    var html =
+      '<div class="result-card" style="background:' + c.color + '">' +
+        '<svg class="result-art" viewBox="0 0 120 120" aria-hidden="true">' + c.art + '</svg>' +
+        '<div class="eyebrow" style="color:' + c.accent + '">Your perfect class is...</div>' +
+        '<h2 id="res-h" tabindex="-1">' + esc(c.title) + '</h2>' +
+        '<div class="class-name">' + esc(c.name) + '</div>' +
+        '<p>' + esc(c.why) + '</p>' +
+        '<div class="pill-row"><span class="pill">⏰ Try ' + esc(slot) + '</span>' + (joints ? '<span class="pill">🦵 Tell your instructor about any niggles</span>' : '') + '</div>' +
+        '<h3>What to bring</h3><ul>' + c.bring.map(function(b){ return '<li>' + esc(b) + '</li>'; }).join("") + '</ul>' +
+        '<p class="runner-up"><strong>Close runner-up:</strong> ' + esc(CLASSES[second].name) + '. Great for mixing things up.</p>' +
+        '<div class="gp">💚 If you have a health condition, an injury, or are pregnant or new to exercise, it is a good idea to check with your GP before starting a new class.</div>' +
+      '</div>' +
+      '<div class="actions"><button class="btn" id="share" type="button">Share my result</button><button class="btn secondary" id="to-offer" type="button">Free taster ↓</button></div>' +
+      '<p class="share-msg" id="share-msg" aria-live="polite"></p>' +
+      '<p class="small-print">Example timetable times and class names for a fictional studio.</p>';
+    show("result");
+    $("result-live").innerHTML = html;
+    $("cap-class").textContent = c.name;
+    $("capture-wrap").hidden = false;
+    $("share").addEventListener("click", share);
+    $("to-offer").addEventListener("click", function(){ $("capture").scrollIntoView({behavior: reduced ? "auto" : "smooth", block:"start"}); $("cap-name").focus({preventScroll:true}); });
+    $("res-h").focus({preventScroll:true});
+    window.scrollTo({top:0, behavior: reduced ? "auto" : "smooth"});
+    confetti();
+  }
+
+  function share(){
+    var text = "I took the Bounce & Breathe class quiz and I'm " + currentResult.title + "! My perfect class: " + currentResult.name + ". What's yours?";
+    var msg = $("share-msg");
+    if (navigator.share) {
+      navigator.share({title:"My perfect class", text:text}).catch(function(){});
+    } else if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(function(){ msg.textContent = "Copied to your clipboard. Paste it anywhere!"; }, function(){ msg.textContent = text; });
+    } else { msg.textContent = text; }
+  }
+
+  function confetti(){
+    if (reduced) return;
+    var box = $("confetti"); box.innerHTML = "";
+    var cols = ["#ff6b5e","#d4f53c","#7fd3ff","#8b5cf6","#ffc93c"];
+    for (var i=0;i<70;i++){
+      var p = document.createElement("i");
+      p.style.left = (Math.random()*100) + "%";
+      p.style.background = cols[i % cols.length];
+      p.style.setProperty("--dx", (Math.random()*160-80) + "px");
+      p.style.setProperty("--r", (Math.random()*720-360) + "deg");
+      p.style.animationDuration = (1.8 + Math.random()*1.6) + "s";
+      p.style.animationDelay = (Math.random()*0.4) + "s";
+      box.appendChild(p);
+    }
+    setTimeout(function(){ box.innerHTML = ""; }, 4200);
+  }
+
+  $("start").addEventListener("click", function(){ idx=0; answers=[]; show("quiz"); renderQ(); });
+  $("back").addEventListener("click", function(){ if (idx>0){ idx--; renderQ(); } });
+  $("restart").addEventListener("click", function(){
+    answers=[]; idx=0; currentResult=null;
+    $("cap-form").reset(); $("cap-form").hidden=false; $("cap-done").hidden=true; $("cap-err").textContent="";
+    $("capture-wrap").hidden = true; $("result-live").innerHTML = "";
+    show("intro"); restartAnim($("intro")); window.scrollTo(0,0); $("start").focus();
+  });
+
+  $("cap-form").addEventListener("submit", function(e){
+    e.preventDefault();
+    var name = $("cap-name"), email = $("cap-email"), err = $("cap-err");
+    if (!name.value.trim()) { err.textContent = "Please add your first name."; name.focus(); return; }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value.trim())) { err.textContent = "Please check your email address."; email.focus(); return; }
+    err.textContent = "";
+    // Demo: nothing is sent or stored. Clear the fields straight away.
+    $("cap-form").reset();
+    $("cap-form").hidden = true;
+    $("cap-done").hidden = false; $("cap-done").focus();
+  });
+})();
+</script>
+</body>
+</html>
