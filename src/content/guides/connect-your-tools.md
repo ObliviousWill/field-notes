@@ -2,6 +2,7 @@
 title: 'Connect Claude to the tools you already use'
 description: "Delegation, with real information. Without connections, Claude only knows what you paste in. Connected to your email, calendar or documents, it can work on your actual work. Here's how to do that safely."
 pubDate: 'Sep 22 2026'
+audio: '/guides/audio/connect-your-tools.mp3'
 step: 8
 fourD: 'delegation'
 ---

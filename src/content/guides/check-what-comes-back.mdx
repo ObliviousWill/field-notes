@@ -2,6 +2,7 @@
 title: 'Check what comes back'
 description: "The third D is Discernment: telling a good answer from one that only sounds good. Simple checks that catch most mistakes, and how to get Claude to check its own work."
 pubDate: 'Aug 25 2026'
+audio: '/guides/audio/check-what-comes-back.mp3'
 step: 5
 fourD: 'discernment'
 ---

@@ -2,6 +2,7 @@
 title: 'Ask questions of your own files'
 description: "Discernment, with documents and spreadsheets. Claude can read a long document or a big spreadsheet in seconds. You still need to check its answers against the file. Here's how."
 pubDate: 'Sep 29 2026'
+audio: '/guides/audio/ask-your-own-files.mp3'
 step: 9
 fourD: 'discernment'
 ---
