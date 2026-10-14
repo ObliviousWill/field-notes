@@ -14,9 +14,29 @@ const recentPosts = (await getCollection('blog'))
 	.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
 	.slice(0, 3);
 
-const guides = (await getCollection('guides'))
-	.sort((a, b) => a.data.step - b.data.step)
-	.slice(0, 4);
+const doors = [
+	{
+		tab: "I'm new to AI",
+		title: 'Start with the guides',
+		body: 'Short, plain-English guides to using Claude well. One sitting each, with exercises to try.',
+		go: 'Start guide 1',
+		href: '/guides/what-claude-is-and-how-to-start/',
+	},
+	{
+		tab: 'I run a small business',
+		title: 'Steal an idea',
+		body: 'Quizzes, calculators and games that bring in customers. Play one, then copy the prompt.',
+		go: 'See the ideas',
+		href: '/ideas/',
+	},
+	{
+		tab: "Show me what's possible",
+		title: 'See what I build',
+		body: "Things I've built with Claude, from reports that write themselves to 3D demos.",
+		go: 'Browse projects',
+		href: '/projects/',
+	},
+];
 
 const featuredIdeas = (await getCollection('ideas'))
 	.sort((a, b) => a.data.order - b.data.order)
@@ -38,38 +58,27 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 		<Header current="home" />
 		<main>
 			<section class="hero">
-				<p class="kicker">A working notebook</p>
+				<p class="kicker">A working notebook by Will</p>
 				<h1>Field Notes</h1>
-				<p class="tagline">{SITE_DESCRIPTION}</p>
-				<p class="lede">
-					<span>New posts roughly weekly.</span>
-					<a class="fn-link" href={`${base}/about/`}>More about this site →</a>
+				<p class="tagline">
+					What I build with AI, and what I learn doing it. In <span class="hl">plain English</span>,
+					for people who aren't developers.
 				</p>
+				<p class="hand scribble" aria-hidden="true">So, where do you want to start? <span>↓</span></p>
 			</section>
 
-			<hr />
-
-			{
-				guides.length > 0 && (
-					<section class="start">
-						<SectionHeading title="New to AI? Start here" top={false}>
-							<a slot="side-link" class="fn-link" href={`${base}/guides/`}>
-								All guides →
-							</a>
-						</SectionHeading>
-						<ol class="start-list">
-							{guides.map((guide) => (
-								<li>
-									<a href={`${base}/guides/${guide.id}/`}>
-										<span class="start-num">{guide.data.step}</span>
-										<span class="start-title">{guide.data.title}</span>
-									</a>
-								</li>
-							))}
-						</ol>
-					</section>
-				)
-			}
+			<nav class="doors" aria-label="Where to start">
+				{
+					doors.map((d, i) => (
+						<a class={`door door-${i + 1}`} href={`${base}${d.href}`}>
+							<span class="tab hand">{d.tab}</span>
+							<span class="door-title">{d.title}</span>
+							<span class="door-body">{d.body}</span>
+							<span class="door-go">{d.go} →</span>
+						</a>
+					))
+				}
+			</nav>
 
 			{
 				featuredIdeas.length > 0 && (
@@ -265,6 +274,106 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 		.idea-grid li {
 			flex: 0 0 78%;
 			scroll-snap-align: start;
+		}
+	}
+	.scribble {
+		margin: 22px 0 0;
+		font-size: 30px;
+		color: var(--ink);
+		transform: rotate(-1.5deg);
+		transform-origin: left;
+	}
+	.scribble span {
+		display: inline-block;
+		animation: nudge 1.6s ease-in-out infinite;
+	}
+	@keyframes nudge {
+		50% {
+			transform: translateY(5px);
+		}
+	}
+	.doors {
+		display: grid;
+		grid-template-columns: repeat(3, 1fr);
+		gap: 18px;
+		margin: 34px 0 56px;
+	}
+	.door {
+		position: relative;
+		display: flex;
+		flex-direction: column;
+		gap: 8px;
+		padding: 34px 18px 18px;
+		background: var(--bg-soft);
+		border: 1px solid var(--hairline);
+		border-radius: 4px 10px 10px 10px;
+		box-shadow: 0 1px 0 rgba(0, 0, 0, 0.03), 0 8px 18px -10px rgba(44, 59, 77, 0.35);
+		text-decoration: none;
+		background-image: none;
+		color: rgb(var(--text));
+		transition: transform 200ms ease, box-shadow 200ms ease;
+	}
+	.door:nth-child(1) {
+		transform: rotate(-1deg);
+		--tab: var(--kraft);
+	}
+	.door:nth-child(2) {
+		transform: rotate(0.6deg) translateY(6px);
+		--tab: #b9cde4;
+	}
+	.door:nth-child(3) {
+		transform: rotate(-0.4deg);
+		--tab: #efb8a8;
+	}
+	.door:hover,
+	.door:focus-visible {
+		transform: rotate(0deg) translateY(-4px);
+		box-shadow: 0 1px 0 rgba(0, 0, 0, 0.03), 0 16px 26px -12px rgba(44, 59, 77, 0.45);
+		background-size: 0;
+	}
+	.tab {
+		position: absolute;
+		top: -18px;
+		left: 12px;
+		padding: 4px 14px 2px;
+		background: var(--tab);
+		border-radius: 8px 8px 0 0;
+		font-size: 21px;
+		line-height: 1.1;
+		color: #2b2418;
+	}
+	.door-title {
+		font-family: var(--font-display);
+		font-size: 25px;
+		line-height: 1.1;
+	}
+	.door-body {
+		font-size: 15px;
+		line-height: 1.45;
+		color: rgb(var(--text-muted));
+		flex: 1;
+	}
+	.door-go {
+		font-size: 14px;
+		font-weight: 700;
+		color: var(--accent-ink);
+	}
+	@media (max-width: 720px) {
+		.doors {
+			grid-template-columns: 1fr;
+			gap: 30px;
+			margin-top: 34px;
+		}
+		.scribble {
+			font-size: 26px;
+		}
+	}
+	@media (prefers-reduced-motion: reduce) {
+		.scribble span {
+			animation: none;
+		}
+		.door {
+			transition: none;
 		}
 	}
 </style>

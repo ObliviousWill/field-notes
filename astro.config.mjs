@@ -36,6 +36,23 @@ export default defineConfig({
 			},
 		},
 		{
+			// stand-in handwriting until Will's own handwriting font is ready
+			provider: fontProviders.local(),
+			name: 'Hand',
+			cssVariable: '--font-hand',
+			fallbacks: ['cursive'],
+			options: {
+				variants: [
+					{
+						src: ['./src/assets/fonts/caveat-600.woff'],
+						weight: 600,
+						style: 'normal',
+						display: 'swap',
+					},
+				],
+			},
+		},
+		{
 			provider: fontProviders.local(),
 			name: 'Fraunces',
 			cssVariable: '--font-display',

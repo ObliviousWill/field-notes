@@ -50,7 +50,7 @@ const kindLabel = { quiz: 'Quiz', calculator: 'Calculator', checker: 'Checker', 
 					<h2>1. Try it</h2>
 					<a class="fn-link" href={demo} target="_blank" rel="noopener">Open full screen ↗</a>
 				</div>
-				<div class="frame">
+				<div class="frame taped">
 					<iframe src={demo} title={`Demo: ${idea.data.title}`} loading="lazy"></iframe>
 				</div>
 				<p class="small">A made-up business. Nothing you enter is sent anywhere.</p>
@@ -165,12 +165,13 @@ const kindLabel = { quiz: 'Quiz', calculator: 'Calculator', checker: 'Checker', 
 	.frame {
 		border: 1px solid var(--hairline);
 		border-radius: 16px;
-		overflow: hidden;
+		overflow: visible;
 		background: #fff;
 		box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
 	}
 	.frame iframe {
 		display: block;
+		border-radius: 16px;
 		width: 100%;
 		height: 760px;
 		border: 0;
