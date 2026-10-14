@@ -57,6 +57,10 @@ A cloned voice is powerful, and it's easy to use it badly. My rules:
 - **Keep the key safe.** A voice service gives you a private key, like a password, that lets anyone use your account, and your voice. Keep it out of shared documents, chats and code you publish. If one ever slips out, delete it and make a new one.
 - **Check the result.** I listened back to a sample before voicing everything. The AI version of me is good, but it's not perfect, and you only find that out by listening.
 
+## Version three: a professional clone
+
+The quick clone works from a few minutes of audio. ElevenLabs also offers a professional clone, which is trained on a much longer recording and takes longer to make. Once mine was ready, I swapped it in and re-voiced every post and guide with the same script. Changing voice was one setting.
+
 ## Would I recommend it?
 
 If you write regularly and your audience might rather listen, yes. Start with a free voice to see whether anyone presses play. Clone your own voice if your writing is personal enough that it should sound like you.
