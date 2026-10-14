@@ -2,6 +2,7 @@
 title: 'How to get the most out of your AI: lessons from my time with Claude'
 description: 'Three modes (setup, direction, building) that decide whether you get brilliant work or mediocre work out of any AI tool.'
 pubDate: 'May 20 2026'
+audio: '/blog/audio/how-to-get-the-most-out-of-your-ai.mp3'
 tags: ['ai', 'marketing']
 ---
 

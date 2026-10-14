@@ -2,6 +2,7 @@
 title: 'I gave my team AI colleagues. The rules mattered more than the AI.'
 description: 'Six AI helpers, each looking after one number, and a seventh that checks their work. What I learned setting them up, and why the hardest part was protecting my own attention.'
 pubDate: 'Oct 13 2026'
+audio: '/blog/audio/i-gave-my-team-ai-colleagues.mp3'
 tags: ['ai', 'marketing']
 mentions:
   - ai-agent-team
