@@ -177,6 +177,7 @@ button,select,input{font-family:inherit; font-size:inherit; color:inherit}
 
 .keyline{display:flex; flex-wrap:wrap; gap:6px 20px; align-items:center; margin-top:-4px; font-size:12.5px; color:var(--muted)}
 .keyline span{display:inline-flex; align-items:center; gap:7px}
+.keyline span.kx{display:inline}
 .keyline b{font-weight:800; color:var(--ink)}
 .keyline .sw{width:22px; height:7px; border-radius:var(--r-pill); display:block; flex:none; background:var(--fill)}
 .keyline .sw--proj{background-image:repeating-linear-gradient(115deg, rgba(255,255,255,.6) 0 3px, rgba(255,255,255,0) 3px 7px)}
@@ -188,7 +189,8 @@ button,select,input{font-family:inherit; font-size:inherit; color:inherit}
 
 .chart-wrap{position:relative; margin-top:20px}
 .chart-inner{position:relative; padding-left:38px}
-.grid-l{position:absolute; left:38px; right:0; border-top:1px solid var(--hairline)}
+#gridlines,#qgrid{position:relative; height:0}
+.grid-l{position:absolute; left:0; right:0; border-top:1px solid var(--hairline)}
 .grid-l span{position:absolute; left:-38px; top:-8px; font-size:11px; font-weight:700; color:var(--muted)}
 .bars{position:relative; height:176px; display:grid; gap:3px; align-items:end}
 .bars--q{height:86px}
@@ -223,10 +225,10 @@ button,select,input{font-family:inherit; font-size:inherit; color:inherit}
 .fld select,.fld input{background:var(--surface); border:1.5px solid var(--hairline); border-radius:var(--r-btn);
   padding:0 10px; height:44px; font-size:14.5px; font-weight:700; width:100%; min-width:0}
 .rows{list-style:none; margin:16px 0 0; padding:0}
-.rows li{display:flex; align-items:center; gap:10px; padding:12px 0; border-bottom:1px solid var(--hairline); font-size:14.5px; flex-wrap:wrap}
+.rows li{display:flex; align-items:center; gap:10px; padding:12px 0; border-bottom:1px solid var(--hairline); font-size:14.5px}
 .rows li:last-child{border-bottom:none}
 .lv-who{font-weight:700; min-width:70px}
-.lv-when{color:var(--muted); flex:1 1 140px; min-width:0}
+.lv-when{color:var(--muted); flex:1 1 0; min-width:0}
 .x{background:none; border:none; color:var(--muted); cursor:pointer; padding:6px 10px;
   border-radius:var(--r-btn); font-size:18px; line-height:1}
 .x:hover{background:var(--bad-bg); color:var(--bad)}
@@ -302,7 +304,7 @@ button,select,input{font-family:inherit; font-size:inherit; color:inherit}
   <div id="covermenu" data-open="false" role="dialog" aria-label="Add cover"></div>
 
   <p class="keyline">
-    <span><b>&times;</b> is the workload per person on duty, where <b>1.00&times;</b> is a normal day at full cover.</span>
+    <span class="kx"><b>&times;</b> is the workload per person on duty, where <b>1.00&times;</b> is a normal day at full cover.</span>
     <span><i class="sw sw--proj"></i>Striped is projected</span>
     <span><i class="sw"></i>Solid is what actually happened</span>
   </p>
@@ -323,10 +325,10 @@ button,select,input{font-family:inherit; font-size:inherit; color:inherit}
         <div id="qgrid"></div>
         <div class="bars bars--q" id="qbars"></div>
         <div class="xaxis" id="xaxis"></div>
-        <p class="qnote" id="qnote"></p>
       </div>
       <div class="tip" id="tip"></div>
     </div>
+    <p class="qnote" id="qnote"></p>
     <div class="legend">
       <span><i style="background:var(--s2)"></i>Quiet week</span>
       <span><i style="background:var(--s5)"></i>Peak week</span>
@@ -443,7 +445,7 @@ var WEEK_IDX = {};
 })();
 var WEEK_NOTE = {1:"New year", 2:"January rush", 3:"January rush", 14:"Spring break",
   31:"Summer lull", 36:"Autumn rush", 37:"Autumn rush", 38:"Autumn rush",
-  47:"Sales week", 48:"Sales week", 51:"Winter break", 52:"Christmas"};
+  47:"Sales week", 48:"Sales week", 51:"Winter break", 52:"Festive"};
 /* Each weekday's share of the week, times five. Calls lean harder on Monday. */
 var DOW_T = [1.22, 1.12, 1.00, 0.92, 0.74];
 var DOW_C = [1.30, 1.15, 0.98, 0.88, 0.69];
@@ -479,7 +481,7 @@ var PATTERN = {
 
 var AI_MEASURED = 15;
 var DEFAULTS = {baseTickets:60, baseCalls:14, callWeight:2, aiShare:15,
-                target:3, busy:1.3, heavy:1.6, backlog:42, throughput:32};
+                target:3, busy:1.2, heavy:1.4, backlog:42, throughput:32};
 /* What the made-up history was really generated from: a touch busier than the
    default assumptions, so the model check has something to say. */
 var TRUE_T = 63, TRUE_C = 15;
@@ -535,7 +537,7 @@ function seed(){
   state.roster = COVER_SEED.slice();
   state.leave = {
     l1:{person:"grace", start:iso(add(m, 7)), end:iso(add(m, 9)), kind:"Holiday"},
-    l2:{person:"tom",   start:iso(add(m, 3)), end:iso(add(m, 3)), kind:"Training"},
+    l2:{person:"tom",   start:iso(add(m, 4)), end:iso(add(m, 4)), kind:"Training"},
     l3:{person:"priya", start:iso(add(m, 25)), end:iso(add(m, 29)), kind:"Holiday"}
   };
   state.overrides = {};

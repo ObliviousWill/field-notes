@@ -2,7 +2,6 @@
 title: "Show, don't tell: 3D demos for small businesses"
 description: "A boiler you can take apart on your phone. A garden you can walk round before it's dug. Why a small business can now afford to show customers the thing, instead of describing it."
 pubDate: 'Sep 30 2026'
-audio: '/blog/audio/show-dont-tell-small-business.mp3'
 tags: ['building', 'marketing']
 mentions:
   - plumber-demos

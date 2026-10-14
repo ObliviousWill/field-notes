@@ -2,7 +2,6 @@
 title: 'What I learned building a website with AI'
 description: 'One hour, a blank page, and an AI doing the coding. What looking under the bonnet taught me about AI, marketing, and the work.'
 pubDate: 'May 20 2026'
-audio: '/blog/audio/what-i-learned-building-a-website-with-ai.mp3'
 tags: ['building', 'ai']
 mentions:
   - field-notes

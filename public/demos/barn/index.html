@@ -324,7 +324,7 @@
   for (var bz=-0.9; bz<=3.8; bz+=0.75) if (bz<0.0 || bz>1.4) ball(site, 0.46, (Math.random()<0.5?mat.hedge:mat.leaf), -1.15, 0.42, bz, 1,0.9,1); // deeper planting outside the master's west glass
   rbox(yard, 0.2,7.7, 11.3,8.9, 0.0, 0.05, mat.gravel, true);   // 1.2 m path: parking to the doors, set off the bedroom windows
   rbox(yard, 8.6,6.2, 11.4,7.8, 0.0, 0.05, mat.gravel, true);   // forecourt at family + guest doors
-  rbox(yard, 7.9,6.36, 8.65,7.3, 0.0, 0.06, mat.conc, true);      // wash-down pad for Casper and muddy boots
+  rbox(yard, 7.9,6.36, 8.65,7.3, 0.0, 0.06, mat.conc, true);      // wash-down pad for the dog and muddy boots
   rbox(yard, 8.0,7.05, 8.55,7.18, 0.0, 0.065, mat.black, true);   // slot drain
   box(yard, 0.1,0.2,0.1, mat.steel, 8.3, 0.85, 6.4);              // warm outdoor tap (mixer)
   cyl(yard, 0.012,0.012,0.18, mat.steel, 8.3, 0.72, 6.47, 6).rotation.x = Math.PI/2;
@@ -545,7 +545,7 @@
       hit.userData.door = D; doors.push(D); clickables.push(hit);
     }
     function flowers(x0,z0,x1,z1){
-      rbox(P2, x0,z0, x1,z1, 0, 0.3, mat.oakR);                                   // sleeper-edged, raised: Casper learns it's off limits
+      rbox(P2, x0,z0, x1,z1, 0, 0.3, mat.oakR);                                   // sleeper-edged, raised: the dog learns it's off limits
       rbox(P2, x0+0.06,z0+0.06, x1-0.06,z1-0.06, 0.3, 0.02, mat.soilM, true);
       var cols = [0xC45A8C,0x7B5BB0,0xE0B63A,0xF2F0EA,0xD9823B];
       for (var n=0; n<(x1-x0)*(z1-z0)*5; n++) ball(P2, 0.1+Math.random()*0.08, M(cols[n%5],0.8),
@@ -1282,7 +1282,7 @@
   cyl(interior, 0.25,0.25,0.02, mat.frame, 9.65, 0.48, 4.63, 16).rotation.x=Math.PI/2;
   rbox(interior, 8.3,4.2, 10.1,4.55, 1.5, 0.7, mat.white);             // wall cupboards over
   rbox(interior, 8.3,4.75, 8.72,5.9, 0, 0.45, mat.oakPale);            // boot bench, west wall
-  cyl(interior, 0.33,0.38, 0.14, mat.fabricO, 16.45, 0.07, 1.25, 16);   // Casper's bed in the morning sun, off every route
+  cyl(interior, 0.33,0.38, 0.14, mat.fabricO, 16.45, 0.07, 1.25, 16);   // the dog's bed in the morning sun, off every route
   // WC + HALL
   rbox(interior, 11.05,0.15, 11.5,0.6, 0, 0.42, mat.white);   // WC pan on the far wall, clear of the door
   rbox(interior, 10.28,0.08, 10.66,0.38, 0.55, 0.3, mat.white);  // corner hand basin
