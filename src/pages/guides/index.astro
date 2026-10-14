@@ -2,6 +2,7 @@
 import { getCollection } from 'astro:content';
 import BaseHead from '../../components/BaseHead.astro';
 import Footer from '../../components/Footer.astro';
+import FourD from '../../components/FourD.astro';
 import Header from '../../components/Header.astro';
 import NewsletterBlock from '../../components/NewsletterBlock.astro';
 import PageTitle from '../../components/PageTitle.astro';
@@ -29,6 +30,18 @@ const description =
 				subtitle={description}
 			/>
 
+			<section class="framework">
+				<h2>How the guides fit together</h2>
+				<p>
+					After the first guide, each one teaches one of the "four Ds". They come from
+					Anthropic's <a href="https://anthropic.skilljar.com/ai-fluency-framework-foundations" target="_blank" rel="noopener">AI Fluency course</a>,
+					built with Professors Rick Dakan and Joseph Feller. It's the clearest way I've found
+					to describe what being good with AI actually involves. It's four habits, not one
+					trick.
+				</p>
+				<FourD />
+			</section>
+
 			<hr />
 
 			<ol class="guides">
@@ -44,6 +57,11 @@ const description =
 								</a>
 								<p class="desc">{guide.data.description}</p>
 								<p class="meta">
+									{guide.data.fourD && (
+										<span class="d">
+											{guide.data.fourD.charAt(0).toUpperCase() + guide.data.fourD.slice(1)} ·{' '}
+										</span>
+									)}
 									{readingTimeMinutes(guide.body)} min read
 									{guide.data.audio && <span> · audio version</span>}
 								</p>
@@ -59,6 +77,23 @@ const description =
 	</body>
 </html>
 <style>
+	.framework {
+		margin: 8px 0 36px;
+	}
+	.framework h2 {
+		margin: 0 0 10px;
+		font-size: 22px;
+	}
+	.framework p {
+		max-width: 620px;
+		font-size: 16px;
+		color: rgb(var(--text-muted));
+		margin: 0;
+	}
+	.d {
+		color: var(--accent-ink);
+		font-weight: 700;
+	}
 	.guides {
 		list-style: none;
 		margin: 0;

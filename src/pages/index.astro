@@ -13,7 +13,9 @@ const recentPosts = (await getCollection('blog'))
 	.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
 	.slice(0, 3);
 
-const guides = (await getCollection('guides')).sort((a, b) => a.data.step - b.data.step);
+const guides = (await getCollection('guides'))
+	.sort((a, b) => a.data.step - b.data.step)
+	.slice(0, 4);
 
 const recentProjects = (await getCollection('projects'))
 	.sort((a, b) => b.data.startDate.valueOf() - a.data.startDate.valueOf())

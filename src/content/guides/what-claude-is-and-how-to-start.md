@@ -45,8 +45,12 @@ Then **reply to its answer**. This is the bit most people skip. If it's too long
 
 **Think before you paste.** Don't share things you wouldn't want stored somewhere else: passwords, bank details, other people's private information. If you're using it for work, check what your employer allows.
 
-**It doesn't know you yet.** Out of the box it gives the answer it would give anyone. The more you tell it about your situation, the better the answer. That's what the next guide is about.
+**It doesn't know you yet.** Out of the box it gives the answer it would give anyone. The more you tell it about your situation, the better the answer.
 
 ## Try this today
 
 Pick one thing you'd normally spend 20 minutes on: an awkward email, a summary of something long, a plan for the week. Give it to Claude, then go back and forth until it's right. Notice how much of the 20 minutes you got back.
+
+## What's next
+
+The rest of these guides follow four habits Anthropic calls the four Ds of AI fluency: **Delegation**, **Description**, **Discernment** and **Diligence**. The next guide explains them, starting with the first: deciding what to hand over.

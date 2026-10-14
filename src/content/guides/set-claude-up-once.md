@@ -1,14 +1,15 @@
 ---
 title: 'Set Claude up once, so it knows you'
-description: 'Stop explaining yourself every time. How to give Claude a standing brief about you, let it remember things, and keep separate workspaces for separate jobs.'
+description: 'More Description: stop explaining yourself every time. How to give Claude a standing brief about you, let it remember things, and keep separate workspaces for separate jobs.'
 pubDate: 'Aug 11 2026'
 audio: '/guides/audio/set-claude-up-once.mp3'
-step: 3
+step: 4
+fourD: 'description'
 ---
 
 Imagine hiring a brilliant assistant, then pretending every morning that you'd never met. You'd re-explain your job, your preferences and what you're working on, every single day.
 
-That's what using Claude without any set-up is like. There are three things you can set up once that pay you back every time.
+That's what using Claude without any set-up is like. Setting it up is still **Description**, the second D. The difference is that you describe yourself once instead of every time. There are three things you can set up once that pay you back every time.
 
 ## 1. Tell it about you
 

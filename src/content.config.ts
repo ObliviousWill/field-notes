@@ -70,6 +70,8 @@ const guides = defineCollection({
 		updatedDate: z.coerce.date().optional(),
 		// position in the reading order on /guides/
 		step: z.number().int().positive(),
+		// which of the four Ds in Anthropic's AI Fluency framework this guide teaches
+		fourD: z.enum(['delegation', 'description', 'discernment', 'diligence']).optional(),
 		audio: z.string().startsWith('/').optional(),
 	}),
 });

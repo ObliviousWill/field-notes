@@ -1,0 +1,163 @@
+---
+// The four Ds from Anthropic's AI Fluency framework, as a row of tiles.
+// `current` highlights the one a guide is about; omit it to show all four equally.
+export type D = 'delegation' | 'description' | 'discernment' | 'diligence';
+
+interface Props {
+	current?: D;
+	compact?: boolean;
+}
+
+const { current, compact = false } = Astro.props;
+
+const ds: { key: D; name: string; line: string; icon: string }[] = [
+	{
+		key: 'delegation',
+		name: 'Delegation',
+		line: 'Decide what to hand over, and what to keep.',
+		// two hands passing a box
+		icon: '<path d="M4 15h5l3 2h6a2 2 0 0 0 0-4h-4"/><path d="M4 19h6l3 1h5"/><rect x="10" y="4" width="7" height="6" rx="1"/>',
+	},
+	{
+		key: 'description',
+		name: 'Description',
+		line: 'Say clearly what you want, and how.',
+		// speech bubble with lines
+		icon: '<path d="M4 5h16v10H9l-4 4v-4H4z"/><path d="M8 9h8M8 12h5"/>',
+	},
+	{
+		key: 'discernment',
+		name: 'Discernment',
+		line: 'Judge what comes back. Is it right? Is it good?',
+		// magnifying glass with a tick
+		icon: '<circle cx="10.5" cy="10.5" r="6"/><path d="M15 15l5 5"/><path d="M8 10.5l2 2 3.5-3.5"/>',
+	},
+	{
+		key: 'diligence',
+		name: 'Diligence',
+		line: 'Use it responsibly, and own the result.',
+		// shield
+		icon: '<path d="M12 3l7 3v5c0 5-3.5 8-7 10-3.5-2-7-5-7-10V6z"/><path d="M9 12l2 2 4-4"/>',
+	},
+];
+---
+
+<figure class:list={['fourd', { compact }]} aria-label="The four Ds of AI fluency">
+	<ol>
+		{
+			ds.map((d) => (
+				<li class:list={[{ on: d.key === current, off: current && d.key !== current }]}>
+					<svg viewBox="0 0 24 24" aria-hidden="true" set:html={d.icon} />
+					<span class="name">{d.name}</span>
+					{!compact && <span class="line">{d.line}</span>}
+					{d.key === current && <span class="here">This guide</span>}
+				</li>
+			))
+		}
+	</ol>
+	{
+		!compact && (
+			<figcaption>
+				The four Ds of AI fluency, from Anthropic's AI Fluency framework.
+			</figcaption>
+		)
+	}
+</figure>
+<style>
+	.fourd {
+		margin: 28px 0 0;
+		max-width: 680px;
+	}
+	ol {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		display: grid;
+		grid-template-columns: repeat(4, 1fr);
+		gap: 10px;
+	}
+	li {
+		position: relative;
+		display: flex;
+		flex-direction: column;
+		gap: 6px;
+		padding: 14px 12px 14px;
+		background: var(--bg-soft);
+		border: 1px solid var(--hairline-soft);
+		border-radius: 8px;
+		transition: opacity 200ms ease;
+	}
+	li.on {
+		border: 2px solid var(--accent);
+		background: rgba(255, 177, 98, 0.12);
+	}
+	li.off {
+		opacity: 0.55;
+	}
+	svg {
+		width: 30px;
+		height: 30px;
+		fill: none;
+		stroke: rgb(var(--text));
+		stroke-width: 1.6;
+		stroke-linecap: round;
+		stroke-linejoin: round;
+	}
+	li.on svg {
+		stroke: var(--accent-ink);
+	}
+	.name {
+		font-family: var(--font-display);
+		font-size: 18px;
+		line-height: 1.1;
+		color: rgb(var(--text));
+	}
+	.line {
+		font-size: 13px;
+		line-height: 1.35;
+		color: rgb(var(--text-muted));
+	}
+	.here {
+		position: absolute;
+		top: -10px;
+		right: 10px;
+		padding: 2px 8px;
+		border-radius: 999px;
+		background: var(--accent);
+		color: rgb(var(--text));
+		font-size: 10px;
+		font-weight: 700;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+	}
+	figcaption {
+		margin-top: 10px;
+		font-size: 12px;
+		color: rgb(var(--text-muted));
+	}
+	.compact {
+		margin: 8px 0 0;
+	}
+	.compact ol {
+		gap: 6px;
+	}
+	.compact li {
+		padding: 8px;
+		flex-direction: row;
+		align-items: center;
+	}
+	.compact svg {
+		width: 18px;
+		height: 18px;
+	}
+	.compact .name {
+		font-size: 13px;
+		font-family: var(--font-atkinson);
+		font-weight: 700;
+	}
+	@media (max-width: 720px) {
+		ol {
+			grid-template-columns: 1fr 1fr;
+		}
+	}
+</style>

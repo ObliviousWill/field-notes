@@ -4,6 +4,7 @@ import BaseHead from '../components/BaseHead.astro';
 import CategoryChip from '../components/CategoryChip.astro';
 import Footer from '../components/Footer.astro';
 import FormattedDate from '../components/FormattedDate.astro';
+import FourD from '../components/FourD.astro';
 import Header from '../components/Header.astro';
 import NewsletterBlock from '../components/NewsletterBlock.astro';
 import PostRow from '../components/PostRow.astro';
@@ -21,6 +22,7 @@ type Props = Omit<CollectionEntry<'blog'>['data'], 'tags' | 'mentions'> & {
 	step?: number;
 	stepCount?: number;
 	nextGuide?: { href: string; title: string; description: string } | null;
+	fourD?: 'delegation' | 'description' | 'discernment' | 'diligence';
 };
 
 const {
@@ -39,6 +41,7 @@ const {
 	step,
 	stepCount,
 	nextGuide,
+	fourD,
 } = Astro.props;
 
 const byline = author ?? SITE_AUTHOR;
@@ -127,6 +130,7 @@ const resolvedMentions = mentions
 						)
 					}
 				</div>
+				{fourD && <FourD current={fourD} />}
 				{
 					audio && (
 						<figure class="listen">

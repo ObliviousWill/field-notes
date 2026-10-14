@@ -1,14 +1,15 @@
 ---
 title: 'How to ask so you get a good answer'
-description: "The single biggest difference between a so-so answer and a great one is how you ask. A simple way to brief Claude like you'd brief a smart colleague."
+description: "The second D is Description. The biggest difference between a so-so answer and a great one is how you ask. A simple way to brief Claude like you'd brief a smart colleague."
 pubDate: 'Jul 14 2026'
 audio: '/guides/audio/how-to-ask-for-what-you-want.mp3'
-step: 2
+step: 3
+fourD: 'description'
 ---
 
 Most disappointing answers from AI have the same cause: it didn't know something you knew. It can't read your mind. It can only read your message.
 
-The fix is simple. Stop asking questions like you would in Google, and start giving briefs like you would to a smart new colleague.
+This is the second of the four Ds: **Description**. The fix is simple. Stop asking questions like you would in Google, and start giving briefs like you would to a smart new colleague.
 
 ## The difference
 
@@ -35,6 +36,14 @@ You don't need all five every time, but the more you include, the better the ans
 5. **Any limits.** "Under 60 words."
 
 A handy test: if you handed your message to a person, could they do the job without asking you a single question? If not, add what they'd ask.
+
+## Three things to describe
+
+Anthropic's course splits Description into three parts. They're worth knowing because most people only do the first:
+
+- **The result:** what you want back. "A thank-you message, under 60 words."
+- **The method:** how you want it to go about it. "Ask me questions first." "Think it through step by step." "Give me three options, then recommend one."
+- **The manner:** how you want it to behave with you. "Be blunt." "Challenge me if I'm wrong." "Explain it like I'm new to this."
 
 ## Give it the raw material
 

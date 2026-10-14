@@ -1,12 +1,15 @@
 ---
 title: 'Get Claude to make things, not just answer'
-description: 'Claude can make documents, spreadsheets, slides, web pages and small tools, not just chat. What it can make, how to ask for it, and how to teach it your way of doing things.'
+description: 'Delegation, bigger: Claude can make documents, spreadsheets, slides, web pages and small tools, not just chat. What it can make, how to ask for it, and how to teach it your way of doing things.'
 pubDate: 'Sep 08 2026'
 audio: '/guides/audio/let-claude-make-things.mp3'
-step: 4
+step: 6
+fourD: 'delegation'
 ---
 
 Most people only use Claude for answers. But it can also make things you can use straight away. This is the point where it stops being a clever chat and starts saving you real time.
+
+This is **Delegation** again, the first D, at a bigger scale. Knowing what Claude *can* do is half of deciding what to hand over.
 
 ## Documents, spreadsheets and slides
 
@@ -49,4 +52,4 @@ The more Claude makes for you, the more it matters to check what it made. Open t
 
 Think of one thing you keep in your head or on scraps of paper: a list, a budget, a routine, a plan. Ask Claude to turn it into a document or a small tool. Then use it for a week.
 
-That's the end of the starter guides. For a longer read on all of this, try [How to get the most out of your AI](/field-notes/blog/how-to-get-the-most-out-of-your-ai/).
+Next, the last of the four Ds: using all of this responsibly.
