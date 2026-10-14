@@ -61,7 +61,7 @@
   /* builder */
   .builder{display:grid; gap:16px}
   .stage{background:linear-gradient(#fff6f1,#f6efe4); border-radius:20px; padding:10px 10px 12px; text-align:center; position:sticky; top:8px; z-index:2; box-shadow:0 8px 20px -14px rgba(0,0,0,.35)}
-  .stage svg{width:100%; max-width:220px; height:150px; display:block; margin:0 auto}
+  .stage svg{width:100%; max-width:220px; height:130px; display:block; margin:0 auto}
   .total-label{font-size:.78rem; text-transform:uppercase; letter-spacing:.08em; font-weight:700; color:var(--ink-soft)}
   .total{font-family:Georgia,serif; font-size:1.65rem; font-weight:700; line-height:1.2}
   .total.bump{animation:bump .35s cubic-bezier(.3,1.8,.5,1)}
@@ -86,8 +86,9 @@
   .result{border-radius:24px; padding:22px 18px; background:linear-gradient(160deg,#fbe3df,#fff7ef 55%,#e6efe1); animation:reveal .8s cubic-bezier(.2,1.4,.4,1) both; overflow:hidden; position:relative}
   @keyframes reveal{from{opacity:0; transform:scale(.7) rotate(-4deg)}to{opacity:1; transform:none}}
   .result .range{font-family:Georgia,serif; font-size:clamp(1.8rem,8vw,2.4rem); font-weight:700; margin:4px 0}
-  .result .bouquet-big{width:150px; height:150px; float:right; margin:-6px -4px 6px 8px}
-  .sumlist{list-style:none; padding:0; margin:8px 0 0; clear:both}
+  .result .bouquet-big{width:100%; max-width:240px; height:170px; display:block; margin:-4px auto 6px; animation:sway 4s ease-in-out infinite; transform-origin:50% 95%}
+  @keyframes sway{50%{transform:rotate(2deg)}}
+  .sumlist{list-style:none; padding:0; margin:8px 0 0}
   .sumlist li{display:flex; justify-content:space-between; gap:10px; padding:7px 0; border-bottom:1px dashed #d9cbb8; font-size:.93rem}
   .sumlist li span:last-child{white-space:nowrap; font-weight:700}
   .note{font-size:.85rem; background:rgba(255,255,255,.75); border-radius:12px; padding:9px 11px; margin-top:12px}
@@ -329,8 +330,8 @@
   }
   function totals(){
     var m = mults().m, lo=0, hi=0;
-    ITEMS.forEach(function(it){ lo += it.lo*state.counts[it.id]*m; hi += it.hi*state.counts[it.id]*m; });
-    return {lo:round10(lo), hi:round10(hi)};
+    ITEMS.forEach(function(it){ lo += round10(it.lo*state.counts[it.id]*m); hi += round10(it.hi*state.counts[it.id]*m); });
+    return {lo:lo, hi:hi};
   }
 
   var shownLo = 0, shownHi = 0, animId = null;

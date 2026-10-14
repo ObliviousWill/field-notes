@@ -364,13 +364,14 @@ var SPROUTS = [
 ];
 
 /* ---------- Rendering ---------- */
-function swap(html, focusSel){
+function swap(html, focusSel, bind){
   var old = app.firstElementChild;
   var go = function(){
     app.innerHTML = html;
     window.scrollTo({top:0,behavior:reduce?"auto":"smooth"});
     var f = focusSel && app.querySelector(focusSel);
     if(f){ f.setAttribute("tabindex","-1"); f.focus({preventScroll:true}); }
+    if(bind) bind();
   };
   if(old && !reduce){ old.classList.add("leaving"); setTimeout(go,200); } else go();
 }
@@ -383,8 +384,9 @@ function renderIntro(){
     '<h1 id="h-intro">Which houseplant suits your home?</h1>'+
     '<p class="muted">Tell us about your light, your lifestyle and your furry flatmates. We\'ll match you with a plant that will actually thrive with you. No more crispy casualties.</p>'+
     '<ul aria-label="What we ask about"><li>☀️ Light</li><li>🐾 Pets</li><li>💧 Watering habits</li><li>🎨 Style</li></ul>'+
-    '<button class="btn" id="start" type="button">Find my plant match 🌱</button></section>', "#h-intro");
+    '<button class="btn" id="start" type="button">Find my plant match 🌱</button></section>', "#h-intro", function(){
   app.querySelector("#start").addEventListener("click", function(){ step=0; renderQuestion(); });
+  });
 }
 
 function renderQuestion(){
@@ -400,7 +402,7 @@ function renderQuestion(){
     html += '<button type="button" class="opt'+(sel?' picked':'')+'" data-i="'+i+'" aria-pressed="'+sel+'"><span class="emo" aria-hidden="true">'+o.e+'</span><span><b>'+esc(o.t)+'</b>'+(o.s?'<span class="sub">'+esc(o.s)+'</span>':'')+'</span></button>';
   });
   html += '</div><div class="qnav">'+(step>0?'<button type="button" class="btn link" id="back">← Back</button>':'<button type="button" class="btn link" id="back">← Start again</button>')+'</div></section>';
-  swap(html, "#qt");
+  swap(html, "#qt", function(){
   app.querySelectorAll(".opt").forEach(function(b){
     b.addEventListener("click", function(){
       if(app.dataset.busy) return;
@@ -418,6 +420,7 @@ function renderQuestion(){
     });
   });
   app.querySelector("#back").addEventListener("click", function(){ if(step>0){step--;renderQuestion();} else renderIntro(); });
+  });
 }
 
 function score(){
@@ -486,10 +489,9 @@ function renderResult(){
       '<div id="capdone" aria-live="polite"></div>'+
       '<p class="fineprint">Plant facts are general guidance. If a pet eats any plant and seems unwell, call your vet.</p>'+
     '</section></section>';
-  swap(html, "#res-h");
-  live.textContent = "Your plant match is the "+P.name+", "+P.persona+".";
-  setTimeout(confetti, reduce?0:250);
-  setTimeout(function(){
+  swap(html, "#res-h", function(){
+    live.textContent = "Your plant match is the "+P.name+", "+P.persona+".";
+    confetti();
     app.querySelector("#again").addEventListener("click", renderIntro);
     app.querySelector("#share").addEventListener("click", function(){ share(P); });
     app.querySelector("#cap").addEventListener("submit", function(e){
@@ -501,7 +503,7 @@ function renderResult(){
       app.querySelector("#dn").focus();
       app.querySelector("#showform").addEventListener("click", function(){ d.innerHTML=""; f.style.display=""; f.querySelector("input").focus(); });
     });
-  }, reduce?10:230);
+  });
 }
 
 function share(P){
