@@ -1,0 +1,478 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Wedding Flower Budget | Meadowsweet &amp; Moss</title>
+<meta name="description" content="Pick your style and season, add your bouquets and buttonholes, and watch your wedding flower budget bloom.">
+<style>
+  :root{
+    --ink:#2f3b2f; --ink-soft:#56614f; --bg:#fbf6ef; --card:#fffdf9;
+    --sage:#5d7a5f; --sage-dark:#3e5a42; --blush:#f4d3cf; --rose:#c85a6b; --gold:#a5741f;
+    --line:#e7ddcf; --focus:#1f5fd6; --radius:22px;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+    background:var(--bg); color:var(--ink); line-height:1.5; overflow-x:hidden; min-height:100vh;
+    background-image:radial-gradient(circle at 0 0,#f8e4df 0,transparent 35%),radial-gradient(circle at 100% 100%,#e4ede0 0,transparent 40%);
+  }
+  .serif{font-family:Georgia,"Times New Roman",serif}
+  .wrap{max-width:660px; margin:0 auto; padding:16px 16px 32px}
+  header.brand{display:flex; align-items:center; gap:10px; padding:6px 0 14px}
+  .brand-name{font-family:Georgia,serif; font-size:1.2rem; font-style:italic; font-weight:700}
+  .brand-tag{font-size:.8rem; color:var(--ink-soft)}
+  .card{background:var(--card); border-radius:var(--radius); padding:22px 18px; box-shadow:0 2px 0 var(--line),0 16px 40px -20px rgba(47,59,47,.4); position:relative}
+  h1{font-family:Georgia,serif; font-size:clamp(1.75rem,6.5vw,2.4rem); line-height:1.12; margin:6px 0 10px; font-weight:700}
+  h2{font-family:Georgia,serif; font-size:1.4rem; line-height:1.2; margin:2px 0 6px}
+  h3{font-size:1rem; margin:14px 0 6px}
+  p{margin:0 0 12px}
+  .muted{color:var(--ink-soft)}
+  .chip{display:inline-block; background:var(--blush); color:#6d2834; font-weight:700; font-size:.78rem; padding:4px 10px; border-radius:99px}
+  .btn{appearance:none; border:0; cursor:pointer; font:inherit; font-weight:700; font-size:1.05rem; min-height:52px; padding:12px 22px; border-radius:99px; background:var(--sage-dark); color:#fff; box-shadow:0 4px 0 #233526; transition:transform .15s cubic-bezier(.3,1.6,.5,1),box-shadow .15s; display:inline-flex; align-items:center; justify-content:center; gap:8px}
+  .btn:hover{transform:translateY(-2px)}
+  .btn:active{transform:translateY(3px); box-shadow:0 1px 0 #233526}
+  .btn.ghost{background:#fff; color:var(--sage-dark); box-shadow:0 0 0 2px var(--sage-dark) inset}
+  .btn.block{width:100%}
+  .btn[disabled]{opacity:.5; cursor:not-allowed; transform:none}
+  :focus-visible{outline:3px solid var(--focus); outline-offset:3px}
+  [hidden]{display:none !important}
+  .step{animation:petalIn .5s cubic-bezier(.2,1.2,.4,1) both}
+  @keyframes petalIn{from{opacity:0; transform:translateY(18px) scale(.98)}to{opacity:1; transform:none}}
+  /* stepper dots */
+  .dots{display:flex; gap:6px; align-items:center; justify-content:center; margin:0 0 16px}
+  .dot{width:34px; height:34px; border-radius:50%; display:grid; place-items:center; background:#efe7da; color:var(--ink-soft); font-weight:700; font-size:.85rem; transition:all .3s}
+  .dot.on{background:var(--rose); color:#fff; transform:scale(1.12)}
+  .dot.done{background:var(--sage); color:#fff}
+  .dot-line{flex:0 1 26px; height:3px; background:#e7ddcf; border-radius:3px}
+  /* choice tiles */
+  .tiles{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:12px}
+  .tile{appearance:none; font:inherit; color:var(--ink); background:#fff; border:2px solid var(--line); border-radius:18px; padding:10px 8px 12px; cursor:pointer; text-align:center; transition:transform .2s cubic-bezier(.3,1.7,.5,1),border-color .15s,box-shadow .15s; min-height:44px}
+  .tile svg{width:100%; max-width:110px; height:84px; display:block; margin:0 auto 4px}
+  .tile strong{display:block; font-size:.98rem}
+  .tile small{display:block; color:var(--ink-soft); font-size:.8rem; line-height:1.3}
+  .tile:hover{transform:translateY(-3px) rotate(-1deg); border-color:var(--sage)}
+  .tile[aria-pressed=true]{border-color:var(--rose); box-shadow:0 0 0 3px var(--blush); animation:wiggle .45s}
+  @keyframes wiggle{20%{transform:rotate(-3deg) scale(1.03)}50%{transform:rotate(2deg) scale(1.03)}100%{transform:none}}
+  .tip{background:#eef4ea; border-radius:16px; padding:12px 14px; margin-top:14px; font-size:.93rem; animation:petalIn .4s both}
+  .nav-row{display:flex; gap:10px; margin-top:18px}
+  .nav-row .btn{flex:1}
+  /* builder */
+  .builder{display:grid; gap:16px}
+  .stage{background:linear-gradient(#fff6f1,#f6efe4); border-radius:20px; padding:10px 10px 12px; text-align:center; position:sticky; top:8px; z-index:2; box-shadow:0 8px 20px -14px rgba(0,0,0,.35)}
+  .stage svg{width:100%; max-width:220px; height:150px; display:block; margin:0 auto}
+  .total-label{font-size:.78rem; text-transform:uppercase; letter-spacing:.08em; font-weight:700; color:var(--ink-soft)}
+  .total{font-family:Georgia,serif; font-size:1.65rem; font-weight:700; line-height:1.2}
+  .total.bump{animation:bump .35s cubic-bezier(.3,1.8,.5,1)}
+  @keyframes bump{40%{transform:scale(1.08)}}
+  .eg{font-size:.76rem; color:var(--ink-soft)}
+  .bloom{transform-box:fill-box; transform-origin:center; animation:bloomIn .55s cubic-bezier(.3,1.8,.5,1) both}
+  @keyframes bloomIn{from{transform:scale(0) rotate(-90deg)}to{transform:scale(1)}}
+  .rows{display:grid; gap:10px}
+  .row{display:flex; align-items:center; gap:10px; background:#fff; border:2px solid var(--line); border-radius:16px; padding:10px 10px 10px 12px}
+  .row .ico{font-size:1.5rem; flex:none; width:30px; text-align:center}
+  .row .lbl{flex:1; min-width:0}
+  .row .lbl strong{display:block; font-size:.97rem}
+  .row .lbl small{display:block; color:var(--ink-soft); font-size:.8rem}
+  .stepper{display:flex; align-items:center; gap:4px; flex:none}
+  .stepper button{width:44px; height:44px; border-radius:50%; border:2px solid var(--sage-dark); background:#fff; color:var(--sage-dark); font-size:1.4rem; font-weight:700; cursor:pointer; line-height:1; transition:transform .15s cubic-bezier(.3,1.8,.5,1)}
+  .stepper button.plus{background:var(--sage-dark); color:#fff}
+  .stepper button:active{transform:scale(.88)}
+  .stepper button[disabled]{opacity:.35; cursor:not-allowed}
+  .stepper output{min-width:28px; text-align:center; font-weight:800; font-size:1.15rem}
+  .stepper output.pop{animation:bump .3s}
+  /* result */
+  .result{border-radius:24px; padding:22px 18px; background:linear-gradient(160deg,#fbe3df,#fff7ef 55%,#e6efe1); animation:reveal .8s cubic-bezier(.2,1.4,.4,1) both; overflow:hidden; position:relative}
+  @keyframes reveal{from{opacity:0; transform:scale(.7) rotate(-4deg)}to{opacity:1; transform:none}}
+  .result .range{font-family:Georgia,serif; font-size:clamp(1.8rem,8vw,2.4rem); font-weight:700; margin:4px 0}
+  .result .bouquet-big{width:150px; height:150px; float:right; margin:-6px -4px 6px 8px}
+  .sumlist{list-style:none; padding:0; margin:8px 0 0; clear:both}
+  .sumlist li{display:flex; justify-content:space-between; gap:10px; padding:7px 0; border-bottom:1px dashed #d9cbb8; font-size:.93rem}
+  .sumlist li span:last-child{white-space:nowrap; font-weight:700}
+  .note{font-size:.85rem; background:rgba(255,255,255,.75); border-radius:12px; padding:9px 11px; margin-top:12px}
+  .actions{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:16px}
+  .share-msg{font-size:.88rem; min-height:1.3em; margin-top:8px; text-align:center}
+  /* capture */
+  .capture{margin-top:18px; border:2px solid var(--sage); background:#fff}
+  label.field{display:block; font-weight:700; margin:12px 0 4px}
+  input[type=text],input[type=email]{width:100%; font:inherit; font-size:1rem; padding:12px 14px; min-height:50px; border:2px solid #b8b2a4; border-radius:14px; background:#fff; color:var(--ink)}
+  input[type=text]:focus,input[type=email]:focus{border-color:var(--sage-dark)}
+  .consent{display:flex; gap:10px; align-items:flex-start; margin:14px 0; font-size:.93rem}
+  .consent input{width:24px; height:24px; margin:2px 0 0; flex:none; accent-color:var(--sage-dark)}
+  .err{color:#a8231b; font-size:.88rem; font-weight:700; min-height:1.2em; margin-top:4px}
+  .demo-done{background:#eef4ea; border:2px solid var(--sage); border-radius:16px; padding:14px; margin-top:12px; animation:petalIn .4s both}
+  .small-print{font-size:.8rem; color:var(--ink-soft); margin-top:10px}
+  footer{text-align:center; font-size:.82rem; color:var(--ink-soft); margin-top:22px}
+  .petals{position:fixed; inset:0; pointer-events:none; overflow:hidden; z-index:20}
+  .petals i{position:absolute; top:-24px; width:14px; height:10px; border-radius:60% 0 60% 0; animation:drift linear forwards}
+  @keyframes drift{to{transform:translate(var(--dx),110vh) rotate(var(--r))}}
+  @media (min-width:600px){ .tiles{grid-template-columns:repeat(4,1fr)} }
+  @media (prefers-reduced-motion: reduce){
+    *,*::before,*::after{animation-duration:.01ms !important; animation-iteration-count:1 !important; transition-duration:.01ms !important}
+    .petals{display:none}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="brand">
+    <svg width="44" height="44" viewBox="0 0 44 44" aria-hidden="true">
+      <circle cx="22" cy="22" r="21" fill="#5d7a5f"/>
+      <g transform="translate(22 19)"><circle r="5" fill="#f3c36b"/><g fill="#f4d3cf"><circle cx="0" cy="-8" r="5"/><circle cx="8" cy="-2" r="5"/><circle cx="5" cy="7" r="5"/><circle cx="-5" cy="7" r="5"/><circle cx="-8" cy="-2" r="5"/></g><circle r="4" fill="#f3c36b"/></g>
+      <path d="M22 28 v10 M22 34 q-6 -2 -8 -6 M22 33 q6 -1 8 -5" stroke="#dfe9da" stroke-width="2" fill="none" stroke-linecap="round"/>
+    </svg>
+    <div>
+      <div class="brand-name">Meadowsweet &amp; Moss</div>
+      <div class="brand-tag">Wedding and event florist</div>
+    </div>
+  </header>
+
+  <main class="card">
+    <nav class="dots" aria-label="Progress" id="dots"></nav>
+
+    <!-- Step 0 intro -->
+    <section id="s0" class="step" aria-labelledby="h0">
+      <span class="chip">Wedding flower budget</span>
+      <h1 id="h0">Watch your wedding flowers bloom</h1>
+      <svg viewBox="0 0 300 150" style="width:100%;max-width:330px;height:auto;display:block;margin:6px auto 10px" aria-hidden="true">
+        <path d="M150 140 L132 80 M150 140 L150 76 M150 140 L168 80" stroke="#5d7a5f" stroke-width="4" stroke-linecap="round"/>
+        <path d="M136 112 h28 l-6 30 h-16z" fill="#f4d3cf" stroke="#c85a6b" stroke-width="2"/>
+        <g transform="translate(150 62)"><g fill="#e9a3ac"><circle cx="0" cy="-14" r="12"/><circle cx="13" cy="-4" r="12"/><circle cx="8" cy="12" r="12"/><circle cx="-8" cy="12" r="12"/><circle cx="-13" cy="-4" r="12"/></g><circle r="9" fill="#c85a6b"/></g>
+        <g transform="translate(118 78)"><g fill="#fffdf9" stroke="#e7ddcf"><circle cx="0" cy="-9" r="8"/><circle cx="8" cy="-2" r="8"/><circle cx="5" cy="8" r="8"/><circle cx="-5" cy="8" r="8"/><circle cx="-8" cy="-2" r="8"/></g><circle r="5" fill="#f3c36b"/></g>
+        <g transform="translate(184 80)"><g fill="#b9a5d6"><circle cx="0" cy="-9" r="8"/><circle cx="8" cy="-2" r="8"/><circle cx="5" cy="8" r="8"/><circle cx="-5" cy="8" r="8"/><circle cx="-8" cy="-2" r="8"/></g><circle r="5" fill="#f3c36b"/></g>
+        <ellipse cx="96" cy="96" rx="14" ry="6" fill="#8fae8b" transform="rotate(-30 96 96)"/>
+        <ellipse cx="206" cy="98" rx="14" ry="6" fill="#8fae8b" transform="rotate(30 206 98)"/>
+        <path d="M40 30 q6 -10 12 0 q-6 10 -12 0z" fill="#f4d3cf"/><path d="M250 40 q6 -10 12 0 q-6 10 -12 0z" fill="#e4ede0"/>
+      </svg>
+      <p>Pick a style, pick a season, then add your bouquets, buttonholes and table flowers. Your bouquet grows as you go, and you get a ballpark budget at the end.</p>
+      <p class="muted">Takes about a minute. Tissues optional.</p>
+      <button class="btn block" id="go">Start planning <span aria-hidden="true">🌸</span></button>
+    </section>
+
+    <!-- Step 1 style -->
+    <section id="s1" hidden aria-labelledby="h1">
+      <h2 id="h1" tabindex="-1">What's your flower vibe?</h2>
+      <p class="muted">Choose the one that makes you go "ooh".</p>
+      <div class="tiles" id="styles" role="group" aria-labelledby="h1"></div>
+      <div class="nav-row"><button class="btn ghost" data-back>Back</button><button class="btn" id="next1" disabled>Next</button></div>
+    </section>
+
+    <!-- Step 2 season -->
+    <section id="s2" hidden aria-labelledby="h2">
+      <h2 id="h2" tabindex="-1">When's the big day?</h2>
+      <p class="muted">Seasonal flowers tend to look their best and go further.</p>
+      <div class="tiles" id="seasons" role="group" aria-labelledby="h2"></div>
+      <div class="tip" id="season-tip" aria-live="polite" hidden></div>
+      <div class="nav-row"><button class="btn ghost" data-back>Back</button><button class="btn" id="next2" disabled>Next</button></div>
+    </section>
+
+    <!-- Step 3 counts -->
+    <section id="s3" hidden aria-labelledby="h3t">
+      <h2 id="h3t" tabindex="-1">Let's fill your bucket</h2>
+      <p class="muted">Tap + and watch it grow. You can always change your mind.</p>
+      <div class="builder">
+        <div class="stage">
+          <svg viewBox="0 0 220 160" id="bouquet" aria-hidden="true"></svg>
+          <div class="total-label">Example running total</div>
+          <div class="total" id="total">£0</div>
+          <div class="eg">Example prices for illustration</div>
+          <span id="total-sr" aria-live="polite" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)"></span>
+        </div>
+        <div class="rows" id="rows"></div>
+      </div>
+      <div class="nav-row"><button class="btn ghost" data-back>Back</button><button class="btn" id="next3">See my budget</button></div>
+    </section>
+
+    <!-- Step 4 result -->
+    <section id="s4" hidden>
+      <div id="result-live" aria-live="polite"></div>
+      <div class="card capture" id="capture">
+        <span class="chip" style="background:#e4ede0;color:#2f4a33">Example offer</span>
+        <h2 style="margin-top:8px">Get a free personalised quote</h2>
+        <p>Love this? Send it over and our florist will reply with a proper quote based on your date, venue and flowers.</p>
+        <form id="cap-form" novalidate>
+          <label class="field" for="cap-name">Your name</label>
+          <input type="text" id="cap-name" autocomplete="off" required>
+          <label class="field" for="cap-email">Your email</label>
+          <input type="email" id="cap-email" autocomplete="off" required>
+          <div class="err" id="cap-err" role="alert"></div>
+          <div class="consent">
+            <input type="checkbox" id="cap-consent">
+            <label for="cap-consent">Yes, email me my personalised quote and the occasional seasonal flower idea. You can unsubscribe at any time.</label>
+          </div>
+          <button class="btn block" type="submit">Send me my free quote</button>
+        </form>
+        <div id="cap-done" class="demo-done" hidden tabindex="-1">
+          <strong>This is a demo, so nothing was sent.</strong>
+          <p style="margin:6px 0 0">In a real version, this is where the business would collect your email, with your clear consent.</p>
+        </div>
+        <p class="small-print">Demo only: nothing you type here is sent or saved.</p>
+      </div>
+      <div style="margin-top:16px"><button class="btn ghost block" id="restart">↺ Start again</button></div>
+    </section>
+  </main>
+  <footer>A fictional business. Demo from Field Notes.</footer>
+</div>
+<div class="petals" id="petals" aria-hidden="true"></div>
+
+<script>
+(function(){
+  "use strict";
+  var $ = function(id){ return document.getElementById(id); };
+  var reduced = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  function flowerSVG(colours, centre){
+    return '<g transform="translate(55 42)"><g fill="'+colours[0]+'"><circle cx="0" cy="-16" r="13"/><circle cx="15" cy="-5" r="13"/><circle cx="9" cy="13" r="13"/><circle cx="-9" cy="13" r="13"/><circle cx="-15" cy="-5" r="13"/></g><circle r="9" fill="'+centre+'"/></g>'+
+      '<g transform="translate(24 62)"><g fill="'+colours[1]+'"><circle cx="0" cy="-8" r="7"/><circle cx="7" cy="-2" r="7"/><circle cx="4" cy="7" r="7"/><circle cx="-4" cy="7" r="7"/><circle cx="-7" cy="-2" r="7"/></g><circle r="4" fill="'+centre+'"/></g>'+
+      '<g transform="translate(86 62)"><g fill="'+colours[2]+'"><circle cx="0" cy="-8" r="7"/><circle cx="7" cy="-2" r="7"/><circle cx="4" cy="7" r="7"/><circle cx="-4" cy="7" r="7"/><circle cx="-7" cy="-2" r="7"/></g><circle r="4" fill="'+centre+'"/></g>'+
+      '<ellipse cx="55" cy="78" rx="18" ry="5" fill="#8fae8b"/>';
+  }
+
+  var STYLES = [
+    {id:"romantic", name:"Romantic", sub:"Blush, roses, soft and swoony", mult:1.10, palette:["#f2b8c0","#e98a9b","#fbe0e3","#d46a7e","#fff1ee"], centre:"#f3c36b", title:"The Hopeless Romantic"},
+    {id:"meadow", name:"Wild meadow", sub:"Loose, just-picked, joyful", mult:0.95, palette:["#f6d36b","#b9a5d6","#fffdf9","#f29e6d","#9ec9e8"], centre:"#7a5a1f", title:"The Wildflower Wanderer"},
+    {id:"minimal", name:"Modern minimal", sub:"Clean lines, fewer, bolder", mult:1.00, palette:["#ffffff","#e8efe6","#c9d8c5","#ffffff","#f7f3ea"], centre:"#5d7a5f", title:"The Effortlessly Chic"},
+    {id:"classic", name:"Classic white", sub:"Timeless, elegant, all white", mult:1.05, palette:["#ffffff","#fdf6e8","#f4eedf","#fffaf2","#ece3d0"], centre:"#d9b45a", title:"The Timeless Classic"}
+  ];
+  var SEASONS = [
+    {id:"spring", name:"Spring", sub:"March to May", icon:"🌷", mult:1.00, tip:"Spring is great for tulips, ranunculus, narcissi and blossom branches. Peonies usually arrive towards late May."},
+    {id:"summer", name:"Summer", sub:"June to August", icon:"☀️", mult:0.95, tip:"Peonies are in season roughly May to June in the UK, so an early summer date is perfect for them. Sweet peas and British garden roses shine through summer, and dahlias start appearing in late summer."},
+    {id:"autumn", name:"Autumn", sub:"September to November", icon:"🍂", mult:0.95, tip:"Dahlias are at their best from late summer into autumn, usually until the first frosts. Pair them with rich foliage, rosehips and seed heads."},
+    {id:"winter", name:"Winter", sub:"December to February", icon:"❄️", mult:1.10, tip:"Think amaryllis, hellebores, anemones and lots of evergreen foliage and eucalyptus. Fewer British-grown flowers are around, so some blooms may be imported and cost a little more."}
+  ];
+  // Example price ranges (GBP) for illustration only.
+  var ITEMS = [
+    {id:"bridal", name:"Bridal bouquet", ico:"💐", lo:120, hi:250, max:2, start:1, blooms:4},
+    {id:"maids", name:"Bridesmaid bouquets", ico:"🌼", lo:55, hi:110, max:10, start:0, blooms:2},
+    {id:"button", name:"Buttonholes", ico:"🌹", lo:12, hi:25, max:20, start:0, blooms:1},
+    {id:"centre", name:"Table centrepieces", ico:"🕯️", lo:45, hi:110, max:30, start:0, blooms:2},
+    {id:"arch", name:"Ceremony arch", ico:"🌿", lo:350, hi:900, max:1, start:0, blooms:6},
+    {id:"pedestal", name:"Pedestal arrangements", ico:"🏺", lo:180, hi:400, max:4, start:0, blooms:4}
+  ];
+
+  var state = {step:0, style:null, season:null, counts:{}};
+  ITEMS.forEach(function(it){ state.counts[it.id] = it.start; });
+
+  function gbp(n){ return "£" + Math.round(n).toLocaleString("en-GB"); }
+  function round10(n){ return Math.round(n/10)*10; }
+  function esc(t){ var d=document.createElement("div"); d.textContent=t; return d.innerHTML; }
+
+  function dots(){
+    var h = "";
+    for (var i=1;i<=4;i++){
+      var cls = i===state.step ? "dot on" : (i<state.step ? "dot done" : "dot");
+      h += '<span class="'+cls+'"'+(i===state.step?' aria-current="step"':'')+'>' + (i<state.step ? "✓" : i) + '<span style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)"> step ' + i + ' of 4</span></span>';
+      if (i<4) h += '<span class="dot-line" aria-hidden="true"></span>';
+    }
+    $("dots").innerHTML = h;
+    $("dots").hidden = state.step === 0;
+  }
+
+  function go(n){
+    state.step = n;
+    for (var i=0;i<=4;i++){ $("s"+i).hidden = i!==n; }
+    var s = $("s"+n); s.classList.remove("step"); void s.offsetWidth; s.classList.add("step");
+    dots();
+    if (n===3) drawBouquet(false);
+    var h = s.querySelector("h2[tabindex]"); if (h) h.focus({preventScroll:true});
+    window.scrollTo({top:0, behavior: reduced ? "auto" : "smooth"});
+  }
+
+  // Step 1 tiles
+  STYLES.forEach(function(st){
+    var b = document.createElement("button");
+    b.type="button"; b.className="tile"; b.setAttribute("aria-pressed","false");
+    b.innerHTML = '<svg viewBox="0 0 110 84" aria-hidden="true"><path d="M55 80 L50 56 M55 80 L60 56" stroke="#5d7a5f" stroke-width="3"/>' + flowerSVG([st.palette[0],st.palette[1],st.palette[2]], st.centre).replace(/fill="#ffffff"/g,'fill="#ffffff" stroke="#d8cfbf"') + '</svg><strong></strong><small></small>';
+    b.querySelector("strong").textContent = st.name; b.querySelector("small").textContent = st.sub;
+    b.addEventListener("click", function(){
+      state.style = st.id;
+      Array.prototype.forEach.call($("styles").children, function(c){ c.setAttribute("aria-pressed","false"); });
+      b.setAttribute("aria-pressed","true"); $("next1").disabled = false;
+    });
+    $("styles").appendChild(b);
+  });
+  // Step 2 tiles
+  SEASONS.forEach(function(se){
+    var b = document.createElement("button");
+    b.type="button"; b.className="tile"; b.setAttribute("aria-pressed","false");
+    b.innerHTML = '<span style="font-size:2.4rem;display:block;line-height:1.4" aria-hidden="true">'+se.icon+'</span><strong></strong><small></small>';
+    b.querySelector("strong").textContent = se.name; b.querySelector("small").textContent = se.sub;
+    b.addEventListener("click", function(){
+      state.season = se.id;
+      Array.prototype.forEach.call($("seasons").children, function(c){ c.setAttribute("aria-pressed","false"); });
+      b.setAttribute("aria-pressed","true"); $("next2").disabled = false;
+      var t = $("season-tip"); t.hidden = false; t.innerHTML = '<strong>🌿 Seasonal tip:</strong> ' + esc(se.tip);
+      t.style.animation = "none"; void t.offsetWidth; t.style.animation = "";
+    });
+    $("seasons").appendChild(b);
+  });
+  // Step 3 rows
+  ITEMS.forEach(function(it){
+    var row = document.createElement("div"); row.className = "row";
+    row.innerHTML = '<span class="ico" aria-hidden="true">'+it.ico+'</span><div class="lbl"><strong id="lbl-'+it.id+'"></strong><small>Example: '+gbp(it.lo)+' to '+gbp(it.hi)+' each</small></div>'+
+      '<div class="stepper"><button type="button" class="minus" aria-label="Remove one '+it.name.toLowerCase()+'">−</button><output id="out-'+it.id+'" aria-labelledby="lbl-'+it.id+'"></output><button type="button" class="plus" aria-label="Add one '+it.name.toLowerCase()+'">+</button></div>';
+    row.querySelector("strong").textContent = it.name;
+    var minus = row.querySelector(".minus"), plus = row.querySelector(".plus"), out = row.querySelector("output");
+    function sync(){ out.textContent = state.counts[it.id]; minus.disabled = state.counts[it.id] <= 0; plus.disabled = state.counts[it.id] >= it.max; }
+    minus.addEventListener("click", function(){ if (state.counts[it.id]>0){ state.counts[it.id]--; sync(); pop(out); update(); } });
+    plus.addEventListener("click", function(){ if (state.counts[it.id]<it.max){ state.counts[it.id]++; sync(); pop(out); update(true); } });
+    row._sync = sync; sync();
+    $("rows").appendChild(row);
+  });
+  function pop(el){ el.classList.remove("pop"); void el.offsetWidth; el.classList.add("pop"); }
+
+  function mults(){
+    var st = STYLES.filter(function(s){return s.id===state.style;})[0] || STYLES[0];
+    var se = SEASONS.filter(function(s){return s.id===state.season;})[0] || SEASONS[0];
+    return {st:st, se:se, m:st.mult*se.mult};
+  }
+  function totals(){
+    var m = mults().m, lo=0, hi=0;
+    ITEMS.forEach(function(it){ lo += it.lo*state.counts[it.id]*m; hi += it.hi*state.counts[it.id]*m; });
+    return {lo:round10(lo), hi:round10(hi)};
+  }
+
+  var shownLo = 0, shownHi = 0, animId = null;
+  function update(grow){
+    var t = totals();
+    animateTotal(t.lo, t.hi);
+    drawBouquet(grow);
+  }
+  function animateTotal(lo, hi){
+    var el = $("total");
+    if (animId) cancelAnimationFrame(animId);
+    var fromLo = shownLo, fromHi = shownHi, start = null, dur = reduced ? 1 : 450;
+    function frame(ts){
+      if (!start) start = ts;
+      var k = Math.min(1, (ts-start)/dur), e = 1-Math.pow(1-k,3);
+      shownLo = fromLo + (lo-fromLo)*e; shownHi = fromHi + (hi-fromHi)*e;
+      el.textContent = hi === 0 && k===1 ? "£0" : gbp(round10(shownLo)) + " to " + gbp(round10(shownHi));
+      if (k<1) animId = requestAnimationFrame(frame); else { shownLo=lo; shownHi=hi; $("total-sr").textContent = "Example total: " + el.textContent; }
+    }
+    animId = requestAnimationFrame(frame);
+    el.classList.remove("bump"); void el.offsetWidth; el.classList.add("bump");
+  }
+
+  // Fixed bloom positions, filled in order so the bouquet grows outward.
+  var SLOTS = (function(){
+    var s = [], rings = [[0,0,1],[20,6,1],[36,12,1],[50,18,1]];
+    s.push([110,58]);
+    for (var r=1;r<rings.length;r++){
+      var rad = rings[r][0], n = rings[r][1];
+      for (var i=0;i<n;i++){
+        var a = Math.PI + (Math.PI * (i+0.5)/n); // upper half arc
+        a = -Math.PI/2 + (i - (n-1)/2) * (Math.PI*1.25/n);
+        s.push([110 + Math.cos(a)*rad*1.35, 64 + Math.sin(a)*rad*0.95]);
+      }
+    }
+    return s;
+  })();
+  var lastBlooms = 0;
+  function drawBouquet(grow){
+    var st = mults().st, pal = st.palette;
+    var n = 0; ITEMS.forEach(function(it){ n += it.blooms*state.counts[it.id]; });
+    n = Math.min(n, SLOTS.length);
+    var svg = '<ellipse cx="110" cy="152" rx="70" ry="5" fill="#e9e0d2"/>';
+    svg += '<g stroke="#5d7a5f" stroke-width="3" stroke-linecap="round"><path d="M110 150 L96 100"/><path d="M110 150 L110 98"/><path d="M110 150 L124 100"/><path d="M110 150 L84 104"/><path d="M110 150 L136 104"/></g>';
+    svg += '<path d="M92 118 L128 118 L120 146 L100 146 Z" fill="'+(st.id==="meadow"?"#d9c7a3":"#f4d3cf")+'" stroke="#c85a6b" stroke-width="1.5"/><path d="M96 124 q14 8 28 0" stroke="#c85a6b" stroke-width="1.5" fill="none"/>';
+    // leaves
+    if (n>0) svg += '<ellipse cx="72" cy="88" rx="16" ry="6" fill="#8fae8b" transform="rotate(-25 72 88)"/><ellipse cx="148" cy="88" rx="16" ry="6" fill="#8fae8b" transform="rotate(25 148 88)"/>';
+    for (var i=n-1;i>=0;i--){
+      var p = SLOTS[i], big = i===0 ? 15 : (i<7 ? 12 : 10), c = pal[i % pal.length];
+      var isNew = grow && i >= lastBlooms;
+      var stroke = (c==="#ffffff"||c==="#fffaf2"||c==="#fdf6e8") ? ' stroke="#d8cfbf" stroke-width="1"' : '';
+      var pr = big*0.62, off = big*0.62;
+      svg += '<g class="'+(isNew && !reduced ? "bloom" : "")+'" style="animation-delay:'+((i-lastBlooms)*60)+'ms"><g transform="translate('+p[0].toFixed(1)+' '+p[1].toFixed(1)+')"><g fill="'+c+'"'+stroke+'>'+
+        '<circle cx="0" cy="'+(-off).toFixed(1)+'" r="'+pr.toFixed(1)+'"/><circle cx="'+(off*.95).toFixed(1)+'" cy="'+(-off*.3).toFixed(1)+'" r="'+pr.toFixed(1)+'"/><circle cx="'+(off*.6).toFixed(1)+'" cy="'+(off*.8).toFixed(1)+'" r="'+pr.toFixed(1)+'"/><circle cx="'+(-off*.6).toFixed(1)+'" cy="'+(off*.8).toFixed(1)+'" r="'+pr.toFixed(1)+'"/><circle cx="'+(-off*.95).toFixed(1)+'" cy="'+(-off*.3).toFixed(1)+'" r="'+pr.toFixed(1)+'"/></g>'+
+        '<circle r="'+(big*0.38).toFixed(1)+'" fill="'+st.centre+'"/></g></g>';
+    }
+    if (n===0) svg += '<text x="110" y="70" text-anchor="middle" font-size="12" fill="#56614f">Tap + to add flowers</text>';
+    $("bouquet").innerHTML = svg;
+    lastBlooms = n;
+  }
+
+  function result(){
+    var t = totals(), mm = mults(), st = mm.st, se = mm.se;
+    var lines = ITEMS.filter(function(it){ return state.counts[it.id]>0; }).map(function(it){
+      var c = state.counts[it.id];
+      return '<li><span>'+c+' × '+esc(it.name)+'</span><span>'+gbp(round10(it.lo*c*mm.m))+' to '+gbp(round10(it.hi*c*mm.m))+'</span></li>';
+    }).join("");
+    var empty = t.hi === 0;
+    var bq = $("bouquet").innerHTML;
+    var html = '<div class="result">'+
+      '<svg class="bouquet-big" viewBox="0 0 220 160" aria-hidden="true">'+bq.replace(/class="bloom"/g,'')+'</svg>'+
+      '<span class="chip">'+esc(st.name)+' · '+esc(se.name)+'</span>'+
+      '<h2 id="res-h" tabindex="-1" style="margin-top:8px">'+esc(st.title)+'</h2>'+
+      '<p class="total-label" style="margin:10px 0 0">Your example flower budget</p>'+
+      (empty ? '<p class="range">£0</p><p>No flowers yet! Pop back and add a bouquet or two.</p>' : '<p class="range">'+gbp(t.lo)+' to '+gbp(t.hi)+'</p>')+
+      (empty ? '' : '<ul class="sumlist">'+lines+'</ul>')+
+      '<div class="note"><strong>Example prices for illustration. Real prices vary by season and flowers.</strong> Delivery, set-up and VAT may also apply.</div>'+
+      '<h3>🌿 Seasonal tip for '+esc(se.name.toLowerCase())+'</h3><p style="margin:0">'+esc(se.tip)+'</p>'+
+      '<h3>💡 Stretch your budget</h3><p style="margin:0">Ask whether ceremony arrangements can move to the reception. Two jobs, one price.</p>'+
+      '</div>'+
+      '<div class="actions"><button class="btn" id="share" type="button">Share my result</button><button class="btn ghost" id="to-offer" type="button">Free quote ↓</button></div>'+
+      '<p class="share-msg" id="share-msg" aria-live="polite"></p>';
+    $("result-live").innerHTML = html;
+    $("share").addEventListener("click", function(){
+      var text = "My wedding flower style is " + st.title + " (" + st.name + ", " + se.name.toLowerCase() + "). Planning with the Meadowsweet & Moss budget tool!";
+      var msg = $("share-msg");
+      if (navigator.share) navigator.share({title:"My wedding flowers", text:text}).catch(function(){});
+      else if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(function(){ msg.textContent = "Copied to your clipboard. Send it to your bridal party!"; }, function(){ msg.textContent = text; });
+      else msg.textContent = text;
+    });
+    $("to-offer").addEventListener("click", function(){ $("capture").scrollIntoView({behavior: reduced?"auto":"smooth"}); $("cap-name").focus({preventScroll:true}); });
+    petals(st.palette);
+  }
+
+  function petals(pal){
+    if (reduced) return;
+    var box = $("petals"); box.innerHTML = "";
+    var cols = pal.concat(["#f4d3cf","#8fae8b","#c85a6b"]);
+    for (var i=0;i<55;i++){
+      var p = document.createElement("i");
+      p.style.left = Math.random()*100 + "%";
+      p.style.background = cols[i % cols.length];
+      if (/^#f[ef]f/i.test(cols[i % cols.length])) p.style.boxShadow = "0 0 0 1px #d8cfbf";
+      p.style.setProperty("--dx", (Math.random()*200-100) + "px");
+      p.style.setProperty("--r", (Math.random()*720-360) + "deg");
+      p.style.animationDuration = (2.6 + Math.random()*2) + "s";
+      p.style.animationDelay = Math.random()*0.6 + "s";
+      box.appendChild(p);
+    }
+    setTimeout(function(){ box.innerHTML = ""; }, 5500);
+  }
+
+  $("go").addEventListener("click", function(){ go(1); });
+  $("next1").addEventListener("click", function(){ go(2); });
+  $("next2").addEventListener("click", function(){ go(3); var t=totals(); shownLo=0; shownHi=0; animateTotal(t.lo,t.hi); });
+  $("next3").addEventListener("click", function(){ go(4); result(); var h=$("res-h"); if (h) h.focus({preventScroll:true}); });
+  Array.prototype.forEach.call(document.querySelectorAll("[data-back]"), function(b){ b.addEventListener("click", function(){ go(state.step-1); }); });
+
+  $("restart").addEventListener("click", function(){
+    state.style=null; state.season=null; ITEMS.forEach(function(it){ state.counts[it.id]=it.start; });
+    Array.prototype.forEach.call(document.querySelectorAll(".tile"), function(t){ t.setAttribute("aria-pressed","false"); });
+    $("next1").disabled = true; $("next2").disabled = true; $("season-tip").hidden = true;
+    Array.prototype.forEach.call($("rows").children, function(r){ r._sync(); });
+    shownLo=0; shownHi=0; lastBlooms=0;
+    $("cap-form").reset(); $("cap-form").hidden=false; $("cap-done").hidden=true; $("cap-err").textContent="";
+    $("result-live").innerHTML = "";
+    go(0); $("go").focus();
+  });
+
+  $("cap-form").addEventListener("submit", function(e){
+    e.preventDefault();
+    var name=$("cap-name"), email=$("cap-email"), err=$("cap-err");
+    if (!name.value.trim()){ err.textContent="Please add your name."; name.focus(); return; }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value.trim())){ err.textContent="Please check your email address."; email.focus(); return; }
+    err.textContent="";
+    // Demo: nothing is sent or stored. Clear the fields straight away.
+    $("cap-form").reset(); $("cap-form").hidden=true;
+    $("cap-done").hidden=false; $("cap-done").focus();
+  });
+
+  dots();
+})();
+</script>
+</body>
+</html>

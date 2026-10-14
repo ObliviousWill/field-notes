@@ -347,10 +347,10 @@ footer{text-align:center;color:var(--muted);font-size:.85rem;padding:10px 16px 3
     if(has("pilot")) add(2,"💨","Pilot light going out or boiler cutting out","This can have several causes, some simple, some not. Get a registered engineer to take a look rather than relighting it again and again.");
     if(has("noise")) add(2,"🥁","Unusual noises","Banging or gurgling can point to air, sludge, limescale or a pump issue. An engineer can find the cause.");
     if(has("pressure")) add(2,"📉","Pressure keeps dropping","Regularly losing pressure often means a leak somewhere in the system or a faulty valve. Topping up treats the symptom, not the cause.");
-    if(has("coldtop")) add(Math.max(level,1)>=1?1:1,"🧊","Radiators cold at the top","Usually trapped air. Bleeding the radiators often fixes it. If it keeps coming back, mention it at your service.");
-    if((age==="15+"||age==="10-15") && level<3) add(Math.max(1, level),"👴","An older boiler","Older boilers can be more prone to wear. Keeping up with yearly servicing matters even more.");
-    if(co==="no"||co==="unsure") add(level,"🔔","No carbon monoxide alarm (or not sure)","Fit an audible carbon monoxide alarm, ideally in the same room as the boiler, and test it regularly. It's cheap and could save lives.");
-    if(co==="untested") add(level,"🔋","CO alarm not tested lately","Press the test button today, and check it hasn't passed its replacement date.");
+    if(has("coldtop")) add(1,"🧊","Radiators cold at the top","Usually trapped air. Bleeding the radiators often fixes it. If it keeps coming back, mention it at your service.");
+    if((age==="15+"||age==="10-15") && level<3) reasons.push({l:0,ic:"👴",t:"An older boiler",b:"Older boilers can be more prone to wear, so keeping up with yearly servicing matters even more."});
+    if(co==="no"||co==="unsure") add(0,"🔔","No carbon monoxide alarm (or not sure)","Fit an audible carbon monoxide alarm, ideally in the same room as the boiler, and test it regularly. It's cheap and could save lives.");
+    if(co==="untested") add(0,"🔋","CO alarm not tested lately","Press the test button today, and check it hasn't passed its replacement date.");
     if(last==="0-6" && !reasons.some(function(r){return r.l>=1;})) reasons.unshift({l:0,ic:"✨",t:"Serviced in the last 6 months",b:"Lovely. Keep to roughly once a year and Bertie will stay happy."});
     if(co==="yes") reasons.push({l:0,ic:"✅",t:"Working CO alarm",b:"Great. Keep testing it regularly."});
     reasons.sort(function(a,b){return b.l-a.l;});
@@ -400,7 +400,7 @@ footer{text-align:center;color:var(--muted);font-size:.85rem;padding:10px 16px 3
       : "By law, any work on a "+(fuel==="lpg"?"LPG":"gas")+" boiler in the UK must be done by a <b>Gas Safe registered engineer</b>. Ask to see their ID card.";
     var lights = '<div class="lights" aria-hidden="true"><i class="g'+(a.level===0?" on":"")+'"></i><i class="a'+(a.level===1?" on":"")+'"></i><i class="o'+(a.level===2?" on":"")+'"></i><i class="r'+(a.level===3?" on":"")+'"></i></div>';
     var list = a.reasons.map(function(r){return '<li><span class="ic" aria-hidden="true">'+r.ic+'</span><span><b>'+r.t+'</b>'+r.b+'</span></li>';}).join("");
-    var gas = has("smell") ? $("gasAlert").outerHTML.replace('id="gasAlert"','').replace(' hidden','').replace('role="alert"','') : "";
+    var gas = has("smell") ? '<div class="alertbox">'+$("gasAlert").innerHTML.replace("Stop the quiz. Do this now.","Smell gas? Do this now.")+'</div>' : "";
     var co = (has("soot")||has("flame")) ? '<div class="alertbox"><h3>Carbon monoxide: know the signs</h3><p style="margin:0">Headaches, dizziness, nausea, breathlessness or tiredness that ease when you leave the house can be signs of CO poisoning. If you suspect it, turn off the appliance if you can, get into fresh air, call 0800 111 999 for gas, and seek medical help.</p></div>' : "";
     $("resultHost").innerHTML = '<div class="verdict reveal '+V.cls+'">'+lights+'<div class="vtag">'+V.tag+'</div><h2 id="vtitle" tabindex="-1">'+V.title+'</h2><p>'+V.desc+'</p>'+gas+co+'<ul class="reasons">'+list+'</ul><div class="who">'+who+'</div></div>';
     var says = ["Thanks! I feel cosy and loved.","Thanks! I'll pencil in a pamper session.","Thanks for listening. Book me in, please!","Please act now. Your safety matters more than me."];

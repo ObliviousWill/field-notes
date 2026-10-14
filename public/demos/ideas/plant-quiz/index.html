@@ -1,0 +1,530 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Plant Match Quiz</title>
+<meta name="description" content="Which houseplant suits your home? A seven-question quiz from The Green Windowsill garden centre.">
+<style>
+:root{
+  --leaf:#1f4d3a; --leaf-2:#2f6b4f; --leaf-soft:#e3efe6; --sage:#9cc5a1;
+  --cream:#fbf6ec; --card:#ffffff; --ink:#1d2b24; --muted:#4e5f56;
+  --terracotta:#b4532a; --terra-soft:#f6e1d4; --sun:#f3c24f; --pink:#e9a3a0;
+  --line:rgba(29,43,36,.14); --focus:#1957d2;
+  --radius:22px;
+  color-scheme:light;
+}
+*,*::before,*::after{box-sizing:border-box}
+html,body{margin:0}
+body{
+  background:var(--cream);
+  background-image:radial-gradient(circle at 12% 8%, #f3e7cf 0 120px, transparent 121px),
+                   radial-gradient(circle at 92% 30%, #e6f0e2 0 160px, transparent 161px);
+  color:var(--ink);
+  font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  font-size:17px; line-height:1.5; min-height:100vh; overflow-x:hidden;
+}
+.wrap{max-width:560px;margin:0 auto;padding:16px 16px 40px}
+header.brand{display:flex;align-items:center;gap:10px;padding:6px 0 14px}
+.brand-mark{width:40px;height:40px;flex:none}
+.brand-name{font-weight:800;letter-spacing:-.01em;color:var(--leaf);font-size:1.05rem;line-height:1.1}
+.brand-name small{display:block;font-weight:600;color:var(--muted);font-size:.78rem;letter-spacing:.02em}
+.panel{background:var(--card);border-radius:var(--radius);box-shadow:0 2px 0 rgba(31,77,58,.08),0 18px 40px -22px rgba(31,77,58,.35);padding:22px 20px;position:relative}
+h1,h2,h3{line-height:1.15;letter-spacing:-.015em;margin:0}
+h1{font-size:2rem;color:var(--leaf)}
+h2{font-size:1.45rem;color:var(--leaf)}
+p{margin:.6em 0}
+.muted{color:var(--muted)}
+.btn{
+  appearance:none;border:0;cursor:pointer;font:inherit;font-weight:750;
+  min-height:52px;padding:12px 22px;border-radius:999px;
+  background:var(--leaf);color:#fff;box-shadow:0 4px 0 #123426;
+  transition:transform .15s cubic-bezier(.3,1.6,.5,1),box-shadow .15s,background .2s;
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;text-decoration:none;
+}
+.btn:hover{transform:translateY(-2px) scale(1.02);background:var(--leaf-2)}
+.btn:active{transform:translateY(3px);box-shadow:0 1px 0 #123426}
+.btn.alt{background:#fff;color:var(--leaf);box-shadow:0 0 0 2px var(--leaf) inset,0 4px 0 rgba(31,77,58,.25)}
+.btn.alt:hover{background:var(--leaf-soft)}
+.btn.terra{background:var(--terracotta);box-shadow:0 4px 0 #7d3417}
+.btn.terra:hover{background:#a24923}
+.btn.link{background:none;box-shadow:none;color:var(--leaf);min-height:44px;padding:8px 10px;text-decoration:underline;text-underline-offset:3px}
+.btn.link:hover{transform:none;background:var(--leaf-soft)}
+:focus-visible{outline:3px solid var(--focus);outline-offset:3px}
+.btn:focus-visible{outline-offset:4px}
+
+/* Intro */
+.intro{text-align:center;overflow:hidden}
+.intro .hero{width:190px;height:190px;margin:-4px auto 4px;display:block}
+.intro .hero .sway{transform-origin:100px 150px;animation:sway 4s ease-in-out infinite}
+.pill{display:inline-block;background:var(--terra-soft);color:#7d3417;font-weight:700;font-size:.82rem;padding:4px 12px;border-radius:999px;margin-bottom:10px}
+.intro ul{list-style:none;padding:0;margin:14px 0 18px;display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.intro li{background:var(--leaf-soft);color:var(--leaf);border-radius:999px;padding:4px 12px;font-size:.88rem;font-weight:650}
+
+/* Progress */
+.progress{display:flex;align-items:center;gap:10px;margin:0 0 14px}
+.track{flex:1;height:14px;background:#e8e0cf;border-radius:999px;position:relative;overflow:visible}
+.fill{position:absolute;left:0;top:0;bottom:0;width:0;border-radius:999px;background:linear-gradient(90deg,var(--sage),var(--leaf-2));transition:width .5s cubic-bezier(.3,1.4,.5,1)}
+.sprout{position:absolute;top:50%;width:30px;height:30px;transform:translate(-50%,-62%);transition:left .5s cubic-bezier(.3,1.4,.5,1)}
+.sprout svg{width:100%;height:100%;display:block}
+.count{font-weight:750;color:var(--leaf);font-size:.9rem;min-width:44px;text-align:right}
+
+/* Question */
+.qnum{font-weight:750;color:var(--terracotta);font-size:.85rem;letter-spacing:.06em;text-transform:uppercase}
+.qtitle{margin:6px 0 4px;font-size:1.45rem}
+.qhint{color:var(--muted);margin:0 0 14px;font-size:.95rem}
+.options{display:grid;gap:10px}
+.opt{
+  appearance:none;font:inherit;text-align:left;cursor:pointer;color:var(--ink);
+  display:flex;align-items:center;gap:12px;width:100%;min-height:60px;padding:12px 14px;
+  background:#fff;border:2px solid var(--line);border-radius:16px;
+  transition:transform .18s cubic-bezier(.3,1.6,.5,1),border-color .2s,background .2s,box-shadow .2s;
+}
+.opt .emo{font-size:1.5rem;width:44px;height:44px;flex:none;display:grid;place-items:center;background:var(--leaf-soft);border-radius:12px;transition:transform .3s cubic-bezier(.3,1.8,.5,1)}
+.opt b{display:block;font-weight:700}
+.opt span.sub{display:block;color:var(--muted);font-size:.88rem;line-height:1.35}
+.opt:hover{border-color:var(--sage);transform:translateY(-2px);box-shadow:0 8px 18px -12px rgba(31,77,58,.6)}
+.opt:hover .emo{transform:rotate(-10deg) scale(1.12)}
+.opt.picked{border-color:var(--leaf);background:var(--leaf-soft);animation:pop .4s cubic-bezier(.3,1.8,.5,1)}
+.opt.picked .emo{background:var(--leaf);transform:scale(1.15) rotate(8deg)}
+.qnav{display:flex;justify-content:space-between;align-items:center;margin-top:14px;min-height:44px}
+
+.screen{animation:slideIn .45s cubic-bezier(.2,.9,.3,1.15) both}
+.screen.leaving{animation:slideOut .22s ease-in both}
+
+/* Result */
+.result-card{
+  border-radius:26px;overflow:hidden;color:#fff;position:relative;
+  background:var(--leaf);
+  box-shadow:0 22px 50px -24px rgba(31,77,58,.8);
+  animation:reveal .8s cubic-bezier(.2,1.4,.4,1) both;
+}
+.result-top{padding:22px 20px 10px;text-align:center;position:relative;
+  background:radial-gradient(circle at 50% 70%, rgba(255,255,255,.18) 0 90px, transparent 91px),linear-gradient(160deg,var(--leaf-2),var(--leaf))}
+.result-top .tag{display:inline-block;background:var(--sun);color:#3a2b00;font-weight:800;font-size:.8rem;letter-spacing:.06em;text-transform:uppercase;padding:4px 12px;border-radius:999px}
+.result-top h2{color:#fff;font-size:2rem;margin:10px 0 2px}
+.result-top .latin{font-style:italic;color:#d6eadb;font-size:.92rem;margin:0}
+.persona{display:inline-block;margin:10px 0 0;background:#fff;color:var(--leaf);font-weight:800;padding:6px 14px;border-radius:12px;transform:rotate(-2deg);box-shadow:0 4px 0 rgba(0,0,0,.15)}
+.result-art{width:200px;height:200px;display:block;margin:4px auto -6px}
+.result-art .sway{transform-origin:100px 160px;animation:sway 5s ease-in-out infinite}
+.result-body{background:#fff;color:var(--ink);padding:20px;border-radius:24px 24px 0 0;margin-top:-14px;position:relative}
+.result-body h3{font-size:1.05rem;color:var(--leaf);margin:14px 0 8px}
+.why{margin:0;font-size:1rem}
+.tips{list-style:none;padding:0;margin:0;display:grid;gap:8px}
+.tips li{display:flex;gap:10px;align-items:flex-start;background:var(--cream);border-radius:14px;padding:10px 12px}
+.tips li .ti{font-size:1.25rem;line-height:1.2;flex:none}
+.pet{border-radius:14px;padding:12px 14px;margin-top:12px;display:flex;gap:10px;align-items:flex-start;font-size:.95rem}
+.pet.safe{background:#e2f2e5;border:2px solid #7fb98a}
+.pet.toxic{background:#fdeedd;border:2px solid #e2a36c}
+.pet .pi{font-size:1.3rem;flex:none;line-height:1.2}
+.runner{margin-top:12px;font-size:.93rem;color:var(--muted)}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+.actions .btn{flex:1 1 150px}
+.toast{min-height:1.5em;font-weight:650;color:var(--leaf);margin:8px 0 0;font-size:.92rem}
+
+/* Capture */
+.capture{margin-top:18px;border:2px dashed var(--terracotta);background:#fffaf5}
+.capture h3{color:var(--leaf);font-size:1.3rem}
+.offer{display:flex;gap:10px;align-items:center;background:var(--terra-soft);border-radius:14px;padding:10px 12px;margin:12px 0 14px}
+.offer .big{font-size:1.6rem;font-weight:900;color:#7d3417;line-height:1;transform:rotate(-6deg);display:inline-block}
+.offer small{display:block;color:#6b3a20;font-size:.8rem}
+.field{display:grid;gap:4px;margin:0 0 12px}
+.field label{font-weight:700;font-size:.95rem}
+.field input{font:inherit;min-height:50px;padding:10px 14px;border-radius:12px;border:2px solid #8b978f;background:#fff;color:var(--ink);width:100%}
+.field input:focus{border-color:var(--leaf)}
+.check{display:flex;gap:10px;align-items:flex-start;margin:4px 0 16px;font-size:.95rem;cursor:pointer}
+.check input{width:24px;height:24px;flex:none;margin:1px 0 0;accent-color:var(--leaf)}
+.demo-note{background:var(--leaf-soft);border-radius:16px;padding:16px;margin-top:4px;animation:pop .45s cubic-bezier(.3,1.8,.5,1)}
+.demo-note strong{color:var(--leaf)}
+.fineprint{font-size:.82rem;color:var(--muted);margin-top:10px}
+
+footer{text-align:center;color:var(--muted);font-size:.85rem;margin-top:26px}
+
+/* Confetti leaves */
+.confetti{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:50}
+.confetti i{position:absolute;top:-30px;width:14px;height:22px;border-radius:0 100% 0 100%;opacity:.95;animation:fall linear forwards}
+
+@keyframes sway{0%,100%{transform:rotate(-3deg)}50%{transform:rotate(3deg)}}
+@keyframes pop{0%{transform:scale(.96)}60%{transform:scale(1.03)}100%{transform:scale(1)}}
+@keyframes slideIn{from{opacity:0;transform:translateX(28px) scale(.98)}to{opacity:1;transform:none}}
+@keyframes slideOut{to{opacity:0;transform:translateX(-24px) scale(.98)}}
+@keyframes reveal{0%{opacity:0;transform:scale(.6) rotate(-4deg)}70%{opacity:1;transform:scale(1.03) rotate(1deg)}100%{transform:none}}
+@keyframes fall{to{transform:translate3d(var(--dx),110vh,0) rotate(var(--rot))}}
+@keyframes wiggle{0%,100%{transform:rotate(0)}25%{transform:rotate(-6deg)}75%{transform:rotate(6deg)}}
+.wiggle{animation:wiggle .4s ease-in-out}
+
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+  .confetti{display:none}
+}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="brand">
+    <svg class="brand-mark" viewBox="0 0 40 40" aria-hidden="true">
+      <rect x="2" y="2" width="36" height="36" rx="10" fill="#1f4d3a"/>
+      <path d="M11 27h18l-2 7H13z" fill="#d9774a"/>
+      <path d="M20 27c0-7 2-12 8-15-1 6-3 11-8 15z" fill="#9cc5a1"/>
+      <path d="M20 27c0-5-2-9-7-11 0 5 2 9 7 11z" fill="#cfe6d2"/>
+    </svg>
+    <div class="brand-name">The Green Windowsill<small>Garden centre &amp; plant shop</small></div>
+  </header>
+
+  <main id="app" tabindex="-1"></main>
+  <div id="live" class="sr-only" aria-live="polite" aria-atomic="true"></div>
+
+  <footer>A fictional business. Demo from Field Notes.</footer>
+</div>
+
+<script>
+(function(){
+"use strict";
+var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+var app = document.getElementById("app");
+var live = document.getElementById("live");
+
+/* ---------- Plants (facts: light, water, pet safety) ---------- */
+var PLANTS = {
+  snake:{name:"Snake plant",latin:"Dracaena trifasciata (once Sansevieria)",persona:"The Unbothered Icon",toxic:true,
+    why:"Tall, sculptural and almost impossible to upset. It copes with gloomy corners, shrugs off missed waterings and looks sharp doing it.",
+    tips:[["💧","Water only when the soil is completely dry, roughly every 2 to 4 weeks. Even less in winter."],
+          ["☀️","Happiest in bright, indirect light but tolerates low light. It just grows more slowly."],
+          ["🪴","Use free-draining cactus compost. Soggy roots are the one thing it can't forgive."]],
+    pet:"Mildly toxic to cats and dogs if chewed (it can cause drooling, sickness and an upset tummy). Keep it out of reach of nibblers."},
+  zz:{name:"ZZ plant",latin:"Zamioculcas zamiifolia",persona:"The Low-Key Legend",toxic:true,
+    why:"Glossy, upright and built for busy lives. It stores water in chunky underground rhizomes, so forgetting about it for a while is basically part of the plan.",
+    tips:[["💧","Let the compost dry out fully between drinks. Every 2 to 3 weeks is usually plenty."],
+          ["🌥️","Low to bright indirect light. Keep it out of harsh midday sun, which can scorch the leaves."],
+          ["✨","Wipe the leaves with a damp cloth now and then to keep that famous shine."]],
+    pet:"Toxic to cats and dogs if chewed: it contains calcium oxalate crystals that can irritate the mouth and cause drooling or sickness. Keep it out of reach."},
+  pothos:{name:"Golden pothos",latin:"Epipremnum aureum",persona:"The Easy-Going Social Butterfly",toxic:true,
+    why:"A fast-growing trailer with heart-shaped leaves that tumbles off shelves and makes any room feel lived in. Forgiving, cheerful and very easy to take cuttings from.",
+    tips:[["💧","Water when the top few centimetres of compost feel dry, around once a week in summer."],
+          ["🌤️","Bright, indirect light keeps the golden variegation strong. It copes with lower light but goes greener."],
+          ["✂️","Snip long trails just below a leaf node and pop them in water to grow new plants for friends."]],
+    pet:"Toxic to cats and dogs if chewed: calcium oxalate crystals can cause mouth irritation, drooling and sickness. A high shelf works well, as long as trails don't dangle within reach."},
+  peace:{name:"Peace lily",latin:"Spathiphyllum",persona:"The Dramatic Sweetheart",toxic:true,
+    why:"Lush dark leaves and elegant white 'flowers' (really leafy hoods called spathes). It flops dramatically when thirsty, then perks right back up after a drink. Very theatrical, very loveable.",
+    tips:[["💧","Keep the compost lightly moist. A droop is its way of asking for water, so it's hard to forget."],
+          ["🌥️","Medium to bright indirect light. It tolerates shade, but flowers best with a bit more light."],
+          ["🧽","Dust the big leaves now and then, and keep it away from cold draughts and radiators."]],
+    pet:"Toxic to cats and dogs if chewed: calcium oxalate crystals can cause mouth irritation, drooling and sickness. It isn't a true lily, but it still belongs out of reach of pets."},
+  spider:{name:"Spider plant",latin:"Chlorophytum comosum",persona:"The Generous Parent",toxic:false,
+    why:"Arching striped leaves and a habit of sending out baby plantlets on long stems. Tough, cheerful and endlessly giving: you'll be handing out babies to friends in no time.",
+    tips:[["🌤️","Bright, indirect light is ideal. A little gentle morning sun is fine; harsh midday sun can scorch the tips."],
+          ["💧","Water when the top few centimetres of compost are dry, roughly weekly in summer."],
+          ["👶","Pot up the little plantlets once they have roots. Free plants, forever."]],
+    pet:"Generally considered non-toxic to cats and dogs. Heads up: many cats find the leaves irresistible, and nibbling lots of any plant can upset a tummy, so a hanging pot helps."},
+  calathea:{name:"Calathea",latin:"Goeppertia (often sold as Calathea)",persona:"The Fabulous Diva",toxic:false,
+    why:"Show-stopping painted leaves that fold up at night like hands in prayer. It asks for a little attention, but rewards you with the best foliage in the room.",
+    tips:[["🌥️","Medium, indirect light. Direct sun fades and crisps those gorgeous patterns."],
+          ["💧","Keep the compost evenly moist but never soggy. Rainwater or filtered water helps avoid crispy edges."],
+          ["💨","Loves humidity: a bathroom with a window, a pebble tray, or a group of plants together."]],
+    pet:"Generally considered non-toxic to cats and dogs. As with any plant, a big munch might cause a mild tummy upset."},
+  fern:{name:"Boston fern",latin:"Nephrolepis exaltata",persona:"The Spa Day Enthusiast",toxic:false,
+    why:"A big, feathery cloud of fronds that thrives on steam and attention. Perfect for a bright bathroom and someone who enjoys a daily plant check-in.",
+    tips:[["💧","Keep the compost consistently moist. Ferns sulk quickly if they dry out."],
+          ["🌤️","Bright, indirect light. Keep it out of direct sun and away from radiators."],
+          ["🚿","Humidity is everything: a bright bathroom or kitchen is ideal, or mist it regularly."]],
+    pet:"Generally considered non-toxic to cats and dogs, which makes it a lovely choice for a pet-friendly home."},
+  palm:{name:"Parlour palm",latin:"Chamaedorea elegans",persona:"The Chilled-Out Holidaymaker",toxic:false,
+    why:"Soft, feathery fronds that bring permanent holiday vibes. It's happy in lower light than most palms and grows slowly, so it won't take over your home.",
+    tips:[["🌥️","Low to medium indirect light. Keep it out of direct sun, which can scorch the fronds."],
+          ["💧","Water when the top 2 to 3 cm of compost is dry. Less in winter."],
+          ["🍃","Brown tips usually mean dry air or irregular watering. Snip them off with clean scissors."]],
+    pet:"Generally considered non-toxic to cats and dogs, so it's a classic pet-friendly palm."},
+  haworthia:{name:"Zebra haworthia",latin:"Haworthiopsis attenuata (often sold as Haworthia)",persona:"The Tiny Sun Worshipper",toxic:false,
+    why:"A small, spiky succulent with crisp white stripes. It loves a bright windowsill, needs very little water and fits in the tiniest of spaces.",
+    tips:[["☀️","Bright light on a windowsill. Gentle morning sun is great; strong summer midday sun can redden or scorch it."],
+          ["💧","Water thoroughly, then let it dry out completely. Every 2 to 3 weeks in summer, much less in winter."],
+          ["🪴","Gritty cactus compost and a pot with a drainage hole keep its roots happy."]],
+    pet:"Generally considered non-toxic to cats and dogs, so it's a pet-friendly way to get your succulent fix."}
+};
+var ORDER = ["snake","zz","pothos","peace","spider","calathea","fern","palm","haworthia"];
+
+/* ---------- Questions ---------- */
+var QUESTIONS = [
+  {id:"light",q:"Where will your new plant live?",hint:"Be honest about the light. Plants can tell.",opts:[
+    {e:"🌑",t:"A cosy, dim corner",s:"North-facing, or a few metres from the window",p:{snake:3,zz:3,palm:3,pothos:2,peace:2,calathea:0,spider:-1,fern:-1,haworthia:-6}},
+    {e:"🌤️",t:"A bright room, no direct sun",s:"Lovely light, but sunbeams don't land on it",p:{spider:3,calathea:3,fern:3,pothos:2,peace:2,snake:2,zz:2,palm:2,haworthia:0}},
+    {e:"☀️",t:"A sunny windowsill",s:"It gets real sunshine for part of the day",p:{haworthia:5,spider:2,snake:1,zz:0,pothos:-1,palm:-2,peace:-3,fern:-3,calathea:-4}}]},
+  {id:"home",q:"How often are you actually at home?",hint:"No judgement. Your plant just wants to know.",opts:[
+    {e:"🧳",t:"Hardly ever",s:"Work, gym, weekends away, repeat",p:{snake:2,zz:2,haworthia:2,pothos:1,palm:1,calathea:-2,fern:-2,peace:-1}},
+    {e:"🔁",t:"A healthy mix",s:"Some days in, some days out",p:{pothos:1,spider:1,peace:1,palm:1}},
+    {e:"🛋️",t:"I'm basically part of the sofa",s:"Home most days",p:{calathea:2,fern:2,peace:1,spider:1}}]},
+  {id:"pets",q:"Any furry flatmates?",hint:"This one really matters for safety.",opts:[
+    {e:"🐈",t:"A cat who treats plants as salad",s:"",pets:true,p:{}},
+    {e:"🐕",t:"A dog who has eaten a sock before",s:"",pets:true,p:{}},
+    {e:"🐾",t:"Both. It's a zoo in here",s:"",pets:true,p:{}},
+    {e:"🐟",t:"Just me (and maybe a goldfish)",s:"No cats or dogs",pets:false,p:{}}]},
+  {id:"water",q:"Be honest: how are you with watering?",hint:"More plants are loved to death than forgotten to death.",opts:[
+    {e:"🫣",t:"What's a watering can?",s:"I forget for weeks at a time",p:{zz:3,snake:3,haworthia:3,spider:1,pothos:1,palm:0,peace:-1,calathea:-3,fern:-3}},
+    {e:"🗓️",t:"When I remember, which is weekly-ish",s:"Pretty reliable, with the odd lapse",p:{pothos:2,spider:2,palm:2,peace:1,zz:1,snake:1}},
+    {e:"🥰",t:"Daily doting",s:"I'd water it every morning if I could",p:{fern:3,calathea:2,peace:2,spider:0,snake:-2,zz:-2,haworthia:-3}}]},
+  {id:"space",q:"How much room have you got?",hint:"Think about where it'll actually go.",opts:[
+    {e:"📚",t:"A tiny gap on a shelf or desk",s:"",p:{haworthia:3,spider:1,pothos:1,calathea:0,palm:0}},
+    {e:"🪟",t:"A windowsill spot",s:"",p:{haworthia:2,spider:1,calathea:1,pothos:1}},
+    {e:"🛋️",t:"A floor corner that needs a friend",s:"",p:{snake:2,zz:2,palm:2,peace:1,fern:1}},
+    {e:"🧗",t:"Up high, somewhere to trail or hang",s:"",p:{pothos:3,spider:3,fern:2}}]},
+  {id:"style",q:"Pick your interior vibe",hint:"Your plant should match your energy.",opts:[
+    {e:"🤍",t:"Clean, minimal, calm",s:"Fewer things, nicer things",p:{snake:2,zz:2,haworthia:1}},
+    {e:"🌴",t:"Indoor jungle, more is more",s:"",p:{fern:2,palm:2,peace:1,pothos:1}},
+    {e:"🧶",t:"Boho, macramé, trailing everything",s:"",p:{pothos:2,spider:2,fern:1}},
+    {e:"🎨",t:"Bold patterns and statement pieces",s:"",p:{calathea:3,peace:1}}]},
+  {id:"air",q:"What's the air like in that room?",hint:"Some plants want a spa, others want a desert.",opts:[
+    {e:"🚿",t:"Steamy: bathroom or busy kitchen",s:"",p:{fern:3,calathea:2,peace:1,spider:1,pothos:1}},
+    {e:"🌡️",t:"Normal living room or bedroom",s:"",p:{snake:1,zz:1,palm:1,pothos:1,spider:1}},
+    {e:"🏜️",t:"Dry, near a radiator",s:"",p:{haworthia:2,snake:1,zz:1,fern:-2,calathea:-2,palm:-1}}]}
+];
+
+var answers = [];
+var step = -1;
+
+function esc(s){return String(s).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];});}
+
+/* ---------- SVG illustrations ---------- */
+function pot(w){
+  w = w||1;
+  var x1=100-40*w,x2=100+40*w,x3=100+32*w,x4=100-32*w;
+  return '<path d="M'+(x1-4)+' 150h'+(88*w)+'v12h-'+(88*w)+'z" fill="#a8461f"/>'+
+         '<path d="M'+x1+' 162L'+x2+' 162L'+x3+' 212L'+x4+' 212z" fill="#c8643b"/>'+
+         '<path d="M'+(x1+8)+' 172h'+(30*w)+'" stroke="#e08a5f" stroke-width="4" stroke-linecap="round"/>';
+}
+function plantSVG(k){
+  var g = "";
+  if(k==="snake"){
+    var L=[[-30,-14,96],[-14,-5,118],[2,3,128],[18,10,110],[32,16,88]];
+    L.forEach(function(l,i){var bx=100+l[0],tx=bx+l[1],h=150-l[2];
+      g+='<path d="M'+(bx-9)+' 152 C'+(bx-12)+' 110 '+(tx-6)+' '+(h+30)+' '+tx+' '+h+' C'+(tx+6)+' '+(h+30)+' '+(bx+12)+' 110 '+(bx+9)+' 152z" fill="'+(i%2?"#2e6b45":"#3c7d4f")+'" stroke="#e7c95a" stroke-width="2.5"/>';
+      g+='<path d="M'+(bx-4)+' 140 q4 -6 8 0 M'+(bx-5)+' 120 q5 -6 9 0 M'+(bx-3)+' 100 q3 -5 6 0" stroke="#1f4d33" stroke-width="2" fill="none" opacity=".7"/>';});
+  } else if(k==="zz"){
+    [[-26,-24,-20],[0,-2,0],[26,22,18]].forEach(function(s){
+      var bx=100+s[0]/2,tx=100+s[1]*1.4,top=34+Math.abs(s[2]);
+      g+='<path d="M'+bx+' 152 Q'+(bx+s[1]*.3)+' 100 '+tx+' '+top+'" stroke="#3d5f2e" stroke-width="4" fill="none"/>';
+      for(var i=0;i<6;i++){var t=i/6,y=152-(152-top)*t-14,x=bx+(tx-bx)*t;
+        g+='<ellipse cx="'+(x-12)+'" cy="'+y+'" rx="11" ry="6" transform="rotate(-30 '+(x-12)+' '+y+')" fill="#2f6b3a"/><ellipse cx="'+(x+12)+'" cy="'+y+'" rx="11" ry="6" transform="rotate(30 '+(x+12)+' '+y+')" fill="#3a8044"/>';}
+      g+='<ellipse cx="'+tx+'" cy="'+(top-6)+'" rx="6" ry="11" fill="#3a8044"/>';});
+  } else if(k==="pothos"){
+    function heart(x,y,s,r,c){return '<path transform="translate('+x+' '+y+') rotate('+r+') scale('+s+')" d="M0 12 C-14 2 -12 -12 0 -6 C12 -12 14 2 0 12z" fill="'+c+'"/><path transform="translate('+x+' '+y+') rotate('+r+') scale('+s+')" d="M0 10 L0 -5 M0 2 L-5 -3" stroke="#f2df7c" stroke-width="1.6" fill="none"/>';}
+    g+='<path d="M64 154 C40 170 44 196 36 214" stroke="#4e8a3a" stroke-width="3" fill="none"/><path d="M136 154 C162 172 156 192 166 214" stroke="#4e8a3a" stroke-width="3" fill="none"/>';
+    [[46,170,1.1,-30],[40,192,1,20],[36,212,.9,-10],[154,172,1.1,30],[160,194,1,-20],[166,212,.9,10]].forEach(function(h,i){g+=heart(h[0],h[1],h[2],h[3],i%2?"#4a9a46":"#3d8a3d");});
+    [[80,126,1.5,-20],[100,112,1.7,0],[120,126,1.5,20],[70,142,1.3,-40],[130,142,1.3,40],[100,136,1.4,6]].forEach(function(h,i){g+=heart(h[0],h[1],h[2],h[3],i%2?"#4a9a46":"#3d8a3d");});
+  } else if(k==="peace"){
+    [[-40,-60,"#1f5c34"],[40,-60,"#24683b"],[-22,-80,"#2a7442"],[22,-82,"#1f5c34"],[0,-96,"#24683b"],[-48,-30,"#2a7442"],[48,-30,"#2a7442"]].forEach(function(l){
+      var tx=100+l[0],ty=152+l[1];
+      g+='<path d="M100 152 Q'+(100+l[0]*.2)+' '+(152+l[1]*.5)+' '+tx+' '+ty+'" stroke="#2c5c34" stroke-width="3" fill="none"/>';
+      g+='<path d="M'+tx+' '+ty+' q'+(-12)+' 10 0 28 q12 -18 0 -28z" transform="rotate('+(l[0]*.8)+' '+tx+' '+ty+')" fill="'+l[2]+'"/>';});
+    [[78,58],[124,50]].forEach(function(f){
+      g+='<path d="M100 150 Q'+(f[0]+(100-f[0])*.4)+' 100 '+f[0]+' '+(f[1]+30)+'" stroke="#3b7a45" stroke-width="3" fill="none"/>';
+      g+='<path d="M'+f[0]+' '+(f[1]+32)+' C'+(f[0]-16)+' '+(f[1]+20)+' '+(f[0]-10)+' '+f[1]+' '+f[0]+' '+(f[1]-6)+' C'+(f[0]+10)+' '+f[1]+' '+(f[0]+16)+' '+(f[1]+20)+' '+f[0]+' '+(f[1]+32)+'z" fill="#fffdf6" stroke="#d9e6d6" stroke-width="2"/>';
+      g+='<rect x="'+(f[0]-3)+'" y="'+(f[1]+8)+'" width="6" height="20" rx="3" fill="#f1d77a"/>';});
+  } else if(k==="spider"){
+    for(var i=0;i<11;i++){var a=-80+i*16,r=70+((i*37)%25),rad=a*Math.PI/180,tx=100+Math.sin(rad)*r*1.05,ty=150-Math.cos(rad)*r*.85+Math.abs(a)*.5;
+      var cx=100+Math.sin(rad)*r*.4,cy=150-r*.9;
+      g+='<path d="M100 152 Q'+cx+' '+cy+' '+tx+' '+ty+'" stroke="#3f8a43" stroke-width="8" fill="none" stroke-linecap="round"/><path d="M100 152 Q'+cx+' '+cy+' '+tx+' '+ty+'" stroke="#eef4d8" stroke-width="2.5" fill="none" stroke-linecap="round"/>';}
+    g+='<path d="M120 140 C170 120 182 160 176 190" stroke="#8aa85a" stroke-width="2" fill="none"/>';
+    for(var j=0;j<5;j++){var aa=-60+j*30,rr=aa*Math.PI/180;g+='<path d="M176 192 q'+(Math.sin(rr)*8)+' -10 '+(Math.sin(rr)*16)+' '+(-Math.cos(rr)*14)+'" stroke="#3f8a43" stroke-width="4" fill="none" stroke-linecap="round"/>';}
+  } else if(k==="calathea"){
+    [[-46,-44,-40],[46,-44,40],[-24,-82,-18],[24,-84,18],[0,-104,0]].forEach(function(l,i){
+      var tx=100+l[0],ty=150+l[1];
+      g+='<path d="M100 152 L'+tx+' '+(ty+26)+'" stroke="#7a3550" stroke-width="3"/>';
+      g+='<g transform="rotate('+l[2]+' '+tx+' '+ty+')"><ellipse cx="'+tx+'" cy="'+ty+'" rx="20" ry="30" fill="#2f6a3e"/>'+
+         '<ellipse cx="'+tx+'" cy="'+ty+'" rx="13" ry="23" fill="#8cc48b"/><path d="M'+tx+' '+(ty-28)+' V'+(ty+28)+'" stroke="#1f4d2b" stroke-width="2"/>';
+      for(var s=-2;s<=2;s++){g+='<path d="M'+tx+' '+(ty+s*9)+' l-11 -5 M'+tx+' '+(ty+s*9)+' l11 -5" stroke="#2f6a3e" stroke-width="3" stroke-linecap="round"/>';}
+      g+='</g>';});
+  } else if(k==="fern"){
+    for(var f=0;f<9;f++){var ang=-85+f*21,rd=ang*Math.PI/180,len=80,ex=100+Math.sin(rd)*len*1.1,ey=150-Math.cos(rd)*len*.9+Math.abs(ang)*.55;
+      var mx=100+Math.sin(rd)*len*.5,my=150-len*.95;
+      g+='<path d="M100 152 Q'+mx+' '+my+' '+ex+' '+ey+'" stroke="#3a7d36" stroke-width="2.5" fill="none"/>';
+      for(var t=.2;t<1;t+=.1){var px=(1-t)*(1-t)*100+2*(1-t)*t*mx+t*t*ex,py=(1-t)*(1-t)*152+2*(1-t)*t*my+t*t*ey,sz=7*(1-t*.6);
+        g+='<ellipse cx="'+(px-3)+'" cy="'+(py-2)+'" rx="'+sz+'" ry="2.6" transform="rotate(-40 '+px+' '+py+')" fill="#58a14a"/><ellipse cx="'+(px+3)+'" cy="'+(py-2)+'" rx="'+sz+'" ry="2.6" transform="rotate(40 '+px+' '+py+')" fill="#4b9442"/>';}}
+  } else if(k==="palm"){
+    [[-60,-50],[60,-50],[-34,-96],[34,-96],[0,-118]].forEach(function(l){
+      var ex=100+l[0],ey=150+l[1],mx=100+l[0]*.3,my=150+l[1]*.8;
+      g+='<path d="M100 152 Q'+mx+' '+my+' '+ex+' '+ey+'" stroke="#4d7a37" stroke-width="3" fill="none"/>';
+      for(var t=.3;t<1;t+=.09){var px=(1-t)*(1-t)*100+2*(1-t)*t*mx+t*t*ex,py=(1-t)*(1-t)*152+2*(1-t)*t*my+t*t*ey,ln=18*(1-t*.5),dir=l[0]<0?-1:(l[0]>0?1:0);
+        g+='<path d="M'+px+' '+py+' l'+(-ln*.8+dir*4)+' '+(ln*.6)+'" stroke="#3f8f45" stroke-width="3.5" stroke-linecap="round"/><path d="M'+px+' '+py+' l'+(ln*.8+dir*4)+' '+(ln*.6)+'" stroke="#4fa152" stroke-width="3.5" stroke-linecap="round"/>';}});
+  } else if(k==="haworthia"){
+    for(var h=0;h<10;h++){var an=-75+h*16.5,ra=an*Math.PI/180,ln2=h%2?44:56,tipx=100+Math.sin(ra)*ln2,tipy=150-Math.cos(ra)*ln2;
+      var bl=100+Math.cos(ra)*9,br=100-Math.cos(ra)*9;
+      g+='<path d="M'+bl+' 152 L'+tipx+' '+tipy+' L'+br+' 152z" fill="'+(h%2?"#2c6a3d":"#24593a")+'"/>';
+      for(var d=.25;d<.9;d+=.18){g+='<circle cx="'+(100+(tipx-100)*d)+'" cy="'+(150+(tipy-150)*d)+'" r="1.8" fill="#f4f7ee"/>';}}
+  }
+  var small = k==="haworthia";
+  return '<g class="sway">'+g+'</g>'+pot(small?.75:1);
+}
+function svgWrap(k,cls,label){return '<svg class="'+cls+'" viewBox="0 0 200 220" role="img" aria-label="'+esc(label)+'">'+plantSVG(k)+'</svg>';}
+
+var SPROUTS = [
+  '<svg viewBox="0 0 30 30" aria-hidden="true"><circle cx="15" cy="22" r="6" fill="#8a5a3c"/><path d="M15 18v-4" stroke="#2f6b4f" stroke-width="2.5" stroke-linecap="round"/><ellipse cx="18" cy="13" rx="4" ry="2.4" fill="#5ea56b"/></svg>',
+  '<svg viewBox="0 0 30 30" aria-hidden="true"><circle cx="15" cy="24" r="5" fill="#8a5a3c"/><path d="M15 21V9" stroke="#2f6b4f" stroke-width="2.5" stroke-linecap="round"/><ellipse cx="10" cy="12" rx="5" ry="3" transform="rotate(25 10 12)" fill="#5ea56b"/><ellipse cx="20" cy="9" rx="5" ry="3" transform="rotate(-25 20 9)" fill="#3e8a52"/></svg>',
+  '<svg viewBox="0 0 30 30" aria-hidden="true"><circle cx="15" cy="25" r="4.5" fill="#8a5a3c"/><path d="M15 22V5" stroke="#2f6b4f" stroke-width="2.5" stroke-linecap="round"/><ellipse cx="9" cy="14" rx="6" ry="3" transform="rotate(25 9 14)" fill="#5ea56b"/><ellipse cx="21" cy="11" rx="6" ry="3" transform="rotate(-25 21 11)" fill="#3e8a52"/><circle cx="15" cy="5" r="4" fill="#f3c24f"/><circle cx="15" cy="5" r="1.6" fill="#b4532a"/></svg>'
+];
+
+/* ---------- Rendering ---------- */
+function swap(html, focusSel){
+  var old = app.firstElementChild;
+  var go = function(){
+    app.innerHTML = html;
+    window.scrollTo({top:0,behavior:reduce?"auto":"smooth"});
+    var f = focusSel && app.querySelector(focusSel);
+    if(f){ f.setAttribute("tabindex","-1"); f.focus({preventScroll:true}); }
+  };
+  if(old && !reduce){ old.classList.add("leaving"); setTimeout(go,200); } else go();
+}
+
+function renderIntro(){
+  step=-1; answers=[];
+  swap('<section class="panel intro screen" aria-labelledby="h-intro">'+
+    svgWrap("pothos","hero","A cheerful trailing plant in a terracotta pot")+
+    '<span class="pill">7 questions · about 1 minute</span>'+
+    '<h1 id="h-intro">Which houseplant suits your home?</h1>'+
+    '<p class="muted">Tell us about your light, your lifestyle and your furry flatmates. We\'ll match you with a plant that will actually thrive with you. No more crispy casualties.</p>'+
+    '<ul aria-label="What we ask about"><li>☀️ Light</li><li>🐾 Pets</li><li>💧 Watering habits</li><li>🎨 Style</li></ul>'+
+    '<button class="btn" id="start" type="button">Find my plant match 🌱</button></section>', "#h-intro");
+  app.querySelector("#start").addEventListener("click", function(){ step=0; renderQuestion(); });
+}
+
+function renderQuestion(){
+  var Q = QUESTIONS[step], n = QUESTIONS.length, pct = (step/n)*100;
+  var sprout = SPROUTS[Math.min(2, Math.floor(step/ (n/3)))];
+  var html = '<section class="panel screen" aria-labelledby="qt">'+
+    '<div class="progress"><div class="track" role="progressbar" aria-label="Quiz progress" aria-valuemin="0" aria-valuemax="'+n+'" aria-valuenow="'+step+'"><div class="fill" style="width:'+pct+'%"></div><div class="sprout" style="left:'+Math.max(3,pct)+'%">'+sprout+'</div></div><div class="count">'+(step+1)+' / '+n+'</div></div>'+
+    '<div class="qnum">Question '+(step+1)+'</div>'+
+    '<h2 class="qtitle" id="qt">'+esc(Q.q)+'</h2><p class="qhint">'+esc(Q.hint)+'</p>'+
+    '<div class="options" role="group" aria-labelledby="qt">';
+  Q.opts.forEach(function(o,i){
+    var sel = answers[step]===i;
+    html += '<button type="button" class="opt'+(sel?' picked':'')+'" data-i="'+i+'" aria-pressed="'+sel+'"><span class="emo" aria-hidden="true">'+o.e+'</span><span><b>'+esc(o.t)+'</b>'+(o.s?'<span class="sub">'+esc(o.s)+'</span>':'')+'</span></button>';
+  });
+  html += '</div><div class="qnav">'+(step>0?'<button type="button" class="btn link" id="back">← Back</button>':'<button type="button" class="btn link" id="back">← Start again</button>')+'</div></section>';
+  swap(html, "#qt");
+  app.querySelectorAll(".opt").forEach(function(b){
+    b.addEventListener("click", function(){
+      if(app.dataset.busy) return;
+      app.dataset.busy="1";
+      answers[step] = +b.dataset.i;
+      app.querySelectorAll(".opt").forEach(function(x){x.classList.remove("picked");x.setAttribute("aria-pressed","false");});
+      b.classList.add("picked"); b.setAttribute("aria-pressed","true");
+      var fill = app.querySelector(".fill"), sp = app.querySelector(".sprout"), np=((step+1)/n)*100;
+      fill.style.width=np+"%"; sp.style.left=np+"%";
+      setTimeout(function(){
+        delete app.dataset.busy;
+        step++;
+        if(step<QUESTIONS.length) renderQuestion(); else renderResult();
+      }, reduce?60:380);
+    });
+  });
+  app.querySelector("#back").addEventListener("click", function(){ if(step>0){step--;renderQuestion();} else renderIntro(); });
+}
+
+function score(){
+  var s = {}; ORDER.forEach(function(k){s[k]=0;});
+  var pets = false;
+  answers.forEach(function(ai,qi){
+    var o = QUESTIONS[qi].opts[ai];
+    if(o.pets) pets = true;
+    Object.keys(o.p).forEach(function(k){ s[k]+=o.p[k]; });
+  });
+  var pool = ORDER.filter(function(k){ return !(pets && PLANTS[k].toxic); });
+  pool.sort(function(a,b){ return (s[b]-s[a]) || (ORDER.indexOf(a)-ORDER.indexOf(b)); });
+  return {top:pool[0], runner:pool[1], pets:pets};
+}
+
+function confetti(){
+  if(reduce) return;
+  var box = document.createElement("div"); box.className="confetti"; box.setAttribute("aria-hidden","true");
+  var cols=["#5ea56b","#2f6b4f","#9cc5a1","#f3c24f","#e9a3a0","#c8643b"];
+  for(var i=0;i<60;i++){
+    var el=document.createElement("i");
+    el.style.left=(Math.random()*100)+"vw";
+    el.style.background=cols[i%cols.length];
+    el.style.setProperty("--dx",(Math.random()*160-80)+"px");
+    el.style.setProperty("--rot",(Math.random()*720-360)+"deg");
+    el.style.animationDuration=(1.8+Math.random()*1.6)+"s";
+    el.style.animationDelay=(Math.random()*.5)+"s";
+    box.appendChild(el);
+  }
+  document.body.appendChild(box);
+  setTimeout(function(){box.remove();},4200);
+}
+
+function renderResult(){
+  var r = score(), P = PLANTS[r.top], R = PLANTS[r.runner];
+  var petNote;
+  if(P.toxic){
+    petNote = '<div class="pet toxic"><span class="pi" aria-hidden="true">⚠️</span><div><strong>Pet safety:</strong> '+esc(P.pet)+' Worth remembering if pets or small children visit.</div></div>';
+  } else {
+    petNote = '<div class="pet safe"><span class="pi" aria-hidden="true">🐾</span><div><strong>Pet safety:</strong> '+esc(P.pet)+(r.pets?' Because you have pets, we only matched you with pet-friendly plants.':'')+'</div></div>';
+  }
+  var html = '<section class="screen" aria-labelledby="res-h">'+
+    '<div class="result-card" id="card">'+
+      '<div class="result-top"><span class="tag">Your plant match</span>'+
+      '<h2 id="res-h">'+esc(P.name)+'</h2><p class="latin">'+esc(P.latin)+'</p>'+
+      '<span class="persona">'+esc(P.persona)+'</span>'+
+      svgWrap(r.top,"result-art","Illustration of a "+P.name)+'</div>'+
+      '<div class="result-body"><p class="why">'+esc(P.why)+'</p>'+
+      '<h3>3 tips to keep it thriving</h3><ul class="tips">'+
+      P.tips.map(function(t){return '<li><span class="ti" aria-hidden="true">'+t[0]+'</span><span>'+esc(t[1])+'</span></li>';}).join("")+
+      '</ul>'+petNote+
+      '<p class="runner">Runner-up: <strong>'+esc(R.name)+'</strong>, '+esc(R.persona.replace(/^The /,"the ")).replace(/^the/,"aka the")+'.</p>'+
+      '<div class="actions"><button type="button" class="btn terra" id="share">Share my result 📣</button><button type="button" class="btn alt" id="again">Take it again ↺</button></div>'+
+      '<p class="toast" id="toast" role="status"></p></div>'+
+    '</div>'+
+    '<section class="panel capture" aria-labelledby="cap-h">'+
+      '<h3 id="cap-h">Email me a care guide for my new plant</h3>'+
+      '<p class="muted" style="margin:.4em 0 0">A friendly, step-by-step guide for your '+esc(P.name.toLowerCase())+': watering, repotting and how to fix droopy days.</p>'+
+      '<div class="offer"><span class="big" aria-hidden="true">10%</span><span><strong>Plus 10% off your first plant</strong><small>Example offer for this demo</small></span></div>'+
+      '<form id="cap" novalidate>'+
+        '<div class="field"><label for="nm">First name</label><input id="nm" name="nm" type="text" autocomplete="off"></div>'+
+        '<div class="field"><label for="em">Email address</label><input id="em" name="em" type="email" autocomplete="off" inputmode="email"></div>'+
+        '<label class="check" for="ok"><input id="ok" type="checkbox"><span>Yes, email me my plant care guide and occasional offers from The Green Windowsill. You can unsubscribe at any time.</span></label>'+
+        '<button class="btn" type="submit">Send my care guide 🌿</button>'+
+      '</form>'+
+      '<div id="capdone" aria-live="polite"></div>'+
+      '<p class="fineprint">Plant facts are general guidance. If a pet eats any plant and seems unwell, call your vet.</p>'+
+    '</section></section>';
+  swap(html, "#res-h");
+  live.textContent = "Your plant match is the "+P.name+", "+P.persona+".";
+  setTimeout(confetti, reduce?0:250);
+  setTimeout(function(){
+    app.querySelector("#again").addEventListener("click", renderIntro);
+    app.querySelector("#share").addEventListener("click", function(){ share(P); });
+    app.querySelector("#cap").addEventListener("submit", function(e){
+      e.preventDefault();
+      var f = e.target; f.reset();
+      f.style.display="none";
+      var d = app.querySelector("#capdone");
+      d.innerHTML = '<div class="demo-note" tabindex="-1" id="dn"><strong>Thanks! 🌱</strong><p style="margin:.4em 0 0">This is a demo, so nothing was sent. In a real version, this is where the business would collect your email, with your clear consent.</p><button type="button" class="btn link" id="showform">Show the form again</button></div>';
+      app.querySelector("#dn").focus();
+      app.querySelector("#showform").addEventListener("click", function(){ d.innerHTML=""; f.style.display=""; f.querySelector("input").focus(); });
+    });
+  }, reduce?10:230);
+}
+
+function share(P){
+  var text = "My houseplant match is the "+P.name+": "+P.persona+"! 🌿 Take the Green Windowsill plant quiz.";
+  var toast = app.querySelector("#toast");
+  var btn = app.querySelector("#share");
+  btn.classList.remove("wiggle"); void btn.offsetWidth; btn.classList.add("wiggle");
+  if(navigator.share){
+    navigator.share({title:"My plant match", text:text}).catch(function(){});
+    return;
+  }
+  var done = function(){ toast.textContent = "Copied! Paste it anywhere to share your plant match."; };
+  var fail = function(){ toast.textContent = "Couldn't copy automatically. Here it is: "+text; };
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(text).then(done, function(){ fallbackCopy(text)?done():fail(); });
+  } else { fallbackCopy(text)?done():fail(); }
+}
+function fallbackCopy(t){
+  try{ var ta=document.createElement("textarea"); ta.value=t; ta.setAttribute("readonly",""); ta.style.position="fixed"; ta.style.opacity="0"; document.body.appendChild(ta); ta.select(); var ok=document.execCommand("copy"); ta.remove(); return ok; }catch(e){ return false; }
+}
+
+renderIntro();
+})();
+</script>
+</body>
+</html>

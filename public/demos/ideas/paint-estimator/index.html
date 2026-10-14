@@ -1,0 +1,619 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Second Coat Decorating: room paint estimator</title>
+<meta name="description" content="Work out how much emulsion your room needs, pick a colour and see it painted. A demo from Field Notes.">
+<style>
+:root{
+  --bg:#fbf7f1; --card:#ffffff; --ink:#1f2430; --muted:#555c6b; --line:#e7e0d5;
+  --brand:#c2452d; --brand-dark:#9f3420; --on-brand:#ffffff; --soft:#fbe9e3; --teal:#1f6f6a;
+  --paint:#9caf88; --paint-ink:#1f2430;
+  --radius:18px; --shadow:0 10px 30px rgba(31,36,48,.08);
+}
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;overflow-x:hidden}
+a{color:var(--brand-dark)}
+.wrap{max-width:980px;margin:0 auto;padding:16px 16px 40px}
+header.top{display:flex;align-items:center;gap:12px;padding:6px 0 14px}
+.logo{width:46px;height:46px;flex:none}
+.brand-name{font-weight:800;font-size:1.15rem;letter-spacing:-.01em;margin:0;line-height:1.1}
+.brand-tag{margin:0;color:var(--muted);font-size:.9rem}
+.hero h1{font-size:clamp(1.6rem,5.5vw,2.4rem);line-height:1.1;margin:.2em 0 .3em;letter-spacing:-.02em}
+.hero p{margin:0 0 16px;color:var(--muted);max-width:60ch}
+.hero h1 .squiggle{background:linear-gradient(transparent 62%, var(--paint) 62%);transition:background .6s ease;padding:0 .1em;border-radius:4px}
+.grid{display:grid;gap:16px}
+@media (min-width:820px){.grid{grid-template-columns:1.05fr 1fr;align-items:start}.stage{position:sticky;top:16px}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px}
+.stage{padding:12px}
+.stage svg{display:block;width:100%;height:auto;border-radius:12px}
+.stage .caption{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:10px 6px 2px;font-size:.92rem;color:var(--muted);flex-wrap:wrap}
+.stage .caption strong{color:var(--ink)}
+.chip{display:inline-flex;align-items:center;gap:6px;background:var(--soft);color:var(--brand-dark);border-radius:999px;padding:4px 10px;font-weight:700;font-size:.85rem}
+fieldset{border:0;margin:0 0 6px;padding:0}
+legend,.sec-title{font-weight:800;font-size:1.05rem;margin:0 0 10px;padding:0}
+.field{margin:0 0 16px}
+.field-head{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-bottom:6px}
+.field-head label,.field-head .lbl{font-weight:650}
+.field-head output{font-variant-numeric:tabular-nums;font-weight:800;color:var(--brand-dark);min-width:5ch;text-align:right}
+.hint{color:var(--muted);font-size:.85rem;margin:2px 0 0}
+.stepper{display:flex;align-items:center;gap:10px}
+.stepper input[type=range]{flex:1;min-width:0}
+.btn-step{flex:none;width:44px;height:44px;border-radius:50%;border:2px solid var(--line);background:#fff;color:var(--ink);font-size:1.4rem;font-weight:700;line-height:1;cursor:pointer;display:grid;place-items:center;transition:transform .15s cubic-bezier(.3,1.6,.6,1),border-color .2s,background .2s}
+.btn-step:hover{border-color:var(--brand);background:var(--soft)}
+.btn-step:active{transform:scale(.88)}
+.btn-step[disabled]{opacity:.4;cursor:not-allowed}
+.counters{display:grid;grid-template-columns:1fr;gap:12px}
+@media (min-width:480px){.counters{grid-template-columns:1fr 1fr 1fr}}
+.counter{border:1px solid var(--line);border-radius:14px;padding:10px;text-align:center}
+.counter .lbl{display:block;font-weight:650;margin-bottom:6px}
+.counter .stepper{justify-content:center}
+.counter output{font-size:1.5rem;font-weight:800;min-width:2ch;font-variant-numeric:tabular-nums;display:inline-block}
+.counter output.bump{animation:bump .35s cubic-bezier(.3,1.6,.6,1)}
+@keyframes bump{0%{transform:scale(1)}40%{transform:scale(1.35)}100%{transform:scale(1)}}
+input[type=range]{-webkit-appearance:none;appearance:none;height:34px;background:transparent;cursor:pointer}
+input[type=range]::-webkit-slider-runnable-track{height:10px;border-radius:999px;background:linear-gradient(90deg,var(--paint) var(--fill,50%),#ece5da var(--fill,50%))}
+input[type=range]::-moz-range-track{height:10px;border-radius:999px;background:#ece5da}
+input[type=range]::-moz-range-progress{height:10px;border-radius:999px;background:var(--paint)}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:28px;height:28px;margin-top:-9px;border-radius:50%;background:#fff;border:3px solid var(--brand);box-shadow:0 2px 6px rgba(0,0,0,.2);transition:transform .15s}
+input[type=range]::-moz-range-thumb{width:24px;height:24px;border-radius:50%;background:#fff;border:3px solid var(--brand);box-shadow:0 2px 6px rgba(0,0,0,.2)}
+input[type=range]:active::-webkit-slider-thumb{transform:scale(1.2)}
+:focus-visible{outline:3px solid var(--teal);outline-offset:3px}
+input[type=range]:focus-visible{outline-offset:0;border-radius:8px}
+.swatches{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.swatch{position:relative;border:2px solid var(--line);background:#fff;border-radius:14px;padding:6px 4px 8px;cursor:pointer;text-align:center;font:inherit;font-size:.78rem;font-weight:650;line-height:1.2;color:var(--ink);transition:transform .18s cubic-bezier(.3,1.6,.6,1),border-color .2s;min-height:44px}
+.swatch .blob{display:block;width:100%;aspect-ratio:1.4;border-radius:10px 10px 10px 10px / 14px 14px 8px 8px;margin-bottom:6px;box-shadow:inset 0 -6px 0 rgba(0,0,0,.08)}
+.swatch:hover{transform:translateY(-3px) rotate(-1.5deg)}
+.swatch[aria-checked=true]{border-color:var(--ink);transform:translateY(-2px)}
+.swatch[aria-checked=true]::after{content:"";position:absolute;top:-8px;right:-8px;width:24px;height:24px;border-radius:50%;background:var(--ink) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M6 12.5l4 4 8-9' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/16px no-repeat;animation:pop .3s cubic-bezier(.3,1.6,.6,1)}
+@keyframes pop{0%{transform:scale(0)}100%{transform:scale(1)}}
+.colour-blurb{margin:12px 0 0;padding:10px 12px;border-radius:12px;background:var(--soft);font-size:.92rem}
+.colour-blurb strong{color:var(--brand-dark)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:50px;padding:12px 22px;border-radius:999px;border:0;background:var(--brand);color:var(--on-brand);font:inherit;font-weight:800;font-size:1.05rem;cursor:pointer;box-shadow:0 6px 0 var(--brand-dark);transition:transform .15s cubic-bezier(.3,1.6,.6,1),box-shadow .15s,background .2s}
+.btn:hover{background:var(--brand-dark);transform:translateY(-2px)}
+.btn:active{transform:translateY(4px);box-shadow:0 2px 0 var(--brand-dark)}
+.btn.ghost{background:#fff;color:var(--ink);border:2px solid var(--ink);box-shadow:0 4px 0 var(--ink)}
+.btn.ghost:hover{background:var(--soft)}
+.btn.wide{width:100%}
+.actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:14px}
+#result{margin-top:16px;scroll-margin-top:12px}
+.result-card{overflow:hidden;padding:0}
+.result-band{background:var(--paint);color:var(--paint-ink);padding:20px 18px 22px;z-index:1;position:relative;transition:background .5s ease,color .3s}
+.result-band .kicker{margin:0;font-weight:700;font-size:.9rem;opacity:.9}
+.result-band h2{margin:.15em 0 .2em;font-size:clamp(1.5rem,6vw,2.1rem);line-height:1.1;letter-spacing:-.02em}
+.result-band p{margin:0;max-width:52ch}
+.drips{position:absolute;left:0;right:0;top:100%;height:22px;display:block;width:100%;transition:fill .5s}
+.result-body{padding:26px 18px 18px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:0 0 16px}
+.stat{background:var(--bg);border-radius:12px;padding:10px 8px;text-align:center}
+.stat b{display:block;font-size:clamp(1.15rem,5vw,1.5rem);font-variant-numeric:tabular-nums;line-height:1.15}
+.stat span{font-size:.78rem;color:var(--muted)}
+.tins{display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end;margin:6px 0 10px;min-height:90px}
+.tin{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:.8rem;font-weight:700;animation:tinIn .5s cubic-bezier(.3,1.6,.6,1) both}
+@keyframes tinIn{0%{transform:translateY(-40px) scale(.6);opacity:0}100%{transform:none;opacity:1}}
+.tin-line{font-weight:700;margin:0 0 4px}
+.small{font-size:.85rem;color:var(--muted)}
+.assume{margin-top:14px;border-top:1px dashed var(--line);padding-top:12px}
+.assume summary{cursor:pointer;font-weight:700;min-height:44px;display:flex;align-items:center}
+.assume ul{margin:6px 0 0;padding-left:20px;font-size:.9rem;color:var(--muted)}
+.capture{margin-top:16px}
+.capture h3{margin:0 0 4px;font-size:1.25rem}
+.capture p{margin:0 0 12px;color:var(--muted)}
+.form-row{margin-bottom:12px}
+.form-row label{display:block;font-weight:650;margin-bottom:4px}
+.form-row input[type=text],.form-row input[type=email]{width:100%;min-height:48px;padding:10px 12px;border:2px solid #c9c0b3;border-radius:12px;font:inherit;background:#fff;color:var(--ink)}
+.form-row input:focus-visible{border-color:var(--teal);outline-offset:1px}
+.check{display:flex;gap:10px;align-items:flex-start;margin:4px 0 14px;font-size:.92rem}
+.check input{width:24px;height:24px;flex:none;margin:1px 0 0;accent-color:var(--brand)}
+.demo-note{margin-top:12px;padding:14px;border-radius:14px;background:#e7f3f1;border:2px solid var(--teal);color:#123f3c;animation:tinIn .45s cubic-bezier(.3,1.6,.6,1)}
+.demo-note strong{display:block;margin-bottom:2px}
+.err{color:#a3241a;font-size:.88rem;margin:4px 0 0;font-weight:600}
+footer{margin-top:28px;text-align:center;color:var(--muted);font-size:.85rem}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.toast{position:fixed;left:50%;bottom:20px;transform:translate(-50%,120px);background:var(--ink);color:#fff;padding:10px 16px;border-radius:999px;font-weight:700;transition:transform .35s cubic-bezier(.3,1.6,.6,1);z-index:10;max-width:calc(100% - 32px);text-align:center}
+.toast.show{transform:translate(-50%,0)}
+.splat{animation:splat .6s cubic-bezier(.3,1.6,.6,1) both}
+@keyframes splat{0%{transform:scale(.85) rotate(-1deg);opacity:0}100%{transform:none;opacity:1}}
+#roller{transition:opacity .2s}
+.room-wall{transition:fill .7s ease}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <svg class="logo" viewBox="0 0 48 48" aria-hidden="true">
+      <rect x="4" y="6" width="30" height="14" rx="4" fill="#c2452d"/>
+      <rect x="8" y="9" width="22" height="3" rx="1.5" fill="#fff" opacity=".5"/>
+      <path d="M34 13h6v12H20v6" fill="none" stroke="#1f2430" stroke-width="3" stroke-linejoin="round"/>
+      <rect x="16" y="30" width="8" height="15" rx="3" fill="#1f2430"/>
+      <path d="M10 20v5a2.5 2.5 0 0 0 5 0v-5" fill="#c2452d"/>
+    </svg>
+    <div>
+      <p class="brand-name">Second Coat Decorating</p>
+      <p class="brand-tag">Friendly painters and decorators, since forever (well, nearly)</p>
+    </div>
+  </header>
+
+  <section class="hero">
+    <h1>How much paint does your room <span class="squiggle">really</span> need?</h1>
+    <p>Pop in your measurements, pick a colour you love and we'll work out the litres and the tins. No maths homework, no fourth trip to the DIY shop.</p>
+  </section>
+
+  <div class="grid">
+    <div class="card stage" aria-label="Preview of your room">
+      <svg id="room" viewBox="0 0 400 300" role="img" aria-labelledby="roomTitle">
+        <title id="roomTitle">A drawing of your room painted in Sage Advice</title>
+        <defs>
+          <pattern id="boards" width="40" height="300" patternUnits="userSpaceOnUse">
+            <rect width="40" height="300" fill="#c99a68"/>
+            <rect x="38" width="2" height="300" fill="#a87a4a"/>
+          </pattern>
+          <linearGradient id="ceilGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f4f1ec"/><stop offset="1" stop-color="#fffdf9"/></linearGradient>
+          <linearGradient id="sun" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#cfe8ff"/><stop offset="1" stop-color="#fff5d6"/></linearGradient>
+          <clipPath id="backClip"><rect id="backClipRect" x="0" y="0" width="0" height="0"/></clipPath>
+        </defs>
+        <rect width="400" height="300" fill="#efe8dd"/>
+        <polygon id="ceiling" fill="url(#ceilGrad)"/>
+        <polygon id="floor" fill="#c99a68"/>
+        <polygon id="leftWall" class="room-wall"/>
+        <polygon id="rightWall" class="room-wall"/>
+        <rect id="backWall" class="room-wall"/>
+        <g id="openings"></g>
+        <rect id="skirting" fill="#ffffff"/>
+        <g id="rug"></g>
+        <g id="roller" opacity="0" clip-path="url(#backClip)">
+          <rect id="wetStripe" x="0" y="0" width="34" height="0" opacity=".45" fill="#fff"/>
+        </g>
+        <g id="rollerTool" opacity="0">
+          <rect x="-20" y="-8" width="40" height="16" rx="6" fill="#c2452d"/>
+          <rect x="-16" y="-5" width="32" height="4" rx="2" fill="#fff" opacity=".45"/>
+          <path d="M20 0h8v18H0v14" fill="none" stroke="#1f2430" stroke-width="3" stroke-linejoin="round"/>
+          <rect x="-4" y="30" width="8" height="22" rx="3" fill="#1f2430"/>
+        </g>
+      </svg>
+      <div class="caption">
+        <span>Painted in <strong id="capColour">Sage Advice</strong></span>
+        <span class="chip" id="capArea">32.6 m² of wall</span>
+      </div>
+    </div>
+
+    <form class="card" id="calc" novalidate>
+      <fieldset>
+        <legend>1. Your room</legend>
+        <div class="field">
+          <div class="field-head"><label for="w">Width</label><output id="wOut" for="w">4.0 m</output></div>
+          <div class="stepper">
+            <button type="button" class="btn-step" data-step="w" data-dir="-1" aria-label="Decrease width">−</button>
+            <input type="range" id="w" min="1.5" max="10" step="0.1" value="4">
+            <button type="button" class="btn-step" data-step="w" data-dir="1" aria-label="Increase width">+</button>
+          </div>
+        </div>
+        <div class="field">
+          <div class="field-head"><label for="l">Length</label><output id="lOut" for="l">3.5 m</output></div>
+          <div class="stepper">
+            <button type="button" class="btn-step" data-step="l" data-dir="-1" aria-label="Decrease length">−</button>
+            <input type="range" id="l" min="1.5" max="10" step="0.1" value="3.5">
+            <button type="button" class="btn-step" data-step="l" data-dir="1" aria-label="Increase length">+</button>
+          </div>
+        </div>
+        <div class="field">
+          <div class="field-head"><label for="h">Ceiling height</label><output id="hOut" for="h">2.4 m</output></div>
+          <div class="stepper">
+            <button type="button" class="btn-step" data-step="h" data-dir="-1" aria-label="Decrease height">−</button>
+            <input type="range" id="h" min="2" max="4" step="0.05" value="2.4">
+            <button type="button" class="btn-step" data-step="h" data-dir="1" aria-label="Increase height">+</button>
+          </div>
+          <p class="hint">Most UK homes are around 2.3 to 2.5 m. Victorian terraces like to show off.</p>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>2. The bits we don't paint</legend>
+        <div class="counters">
+          <div class="counter">
+            <span class="lbl" id="dLbl">Doors</span>
+            <div class="stepper">
+              <button type="button" class="btn-step" data-count="doors" data-dir="-1" aria-label="One fewer door">−</button>
+              <output id="doorsOut" aria-labelledby="dLbl" aria-live="polite">1</output>
+              <button type="button" class="btn-step" data-count="doors" data-dir="1" aria-label="One more door">+</button>
+            </div>
+          </div>
+          <div class="counter">
+            <span class="lbl" id="wiLbl">Windows</span>
+            <div class="stepper">
+              <button type="button" class="btn-step" data-count="windows" data-dir="-1" aria-label="One fewer window">−</button>
+              <output id="windowsOut" aria-labelledby="wiLbl" aria-live="polite">1</output>
+              <button type="button" class="btn-step" data-count="windows" data-dir="1" aria-label="One more window">+</button>
+            </div>
+          </div>
+          <div class="counter">
+            <span class="lbl" id="cLbl">Coats</span>
+            <div class="stepper">
+              <button type="button" class="btn-step" data-count="coats" data-dir="-1" aria-label="One fewer coat">−</button>
+              <output id="coatsOut" aria-labelledby="cLbl" aria-live="polite">2</output>
+              <button type="button" class="btn-step" data-count="coats" data-dir="1" aria-label="One more coat">+</button>
+            </div>
+          </div>
+        </div>
+        <p class="hint" id="coatHint">Two coats is the sweet spot for most colours.</p>
+      </fieldset>
+
+      <fieldset style="margin-top:14px">
+        <legend id="swLbl">3. Pick a colour</legend>
+        <div class="swatches" role="radiogroup" aria-labelledby="swLbl" id="swatches"></div>
+        <p class="colour-blurb" id="blurb" aria-live="polite"></p>
+      </fieldset>
+
+      <div class="actions">
+        <button type="submit" class="btn wide" id="go">Mix my paint plan</button>
+      </div>
+    </form>
+  </div>
+
+  <section id="result" hidden aria-live="polite" tabindex="-1">
+    <div class="card result-card splat" id="resultCard">
+      <div class="result-band" id="band">
+        <p class="kicker">Your paint plan</p>
+        <h2 id="resTitle">A proper weekend job</h2>
+        <p id="resDesc"></p>
+        <svg class="drips" viewBox="0 0 400 22" preserveAspectRatio="none" aria-hidden="true"><g fill="var(--paint)"><rect x="30" y="-6" width="9" height="20" rx="4.5"/><rect x="84" y="-6" width="7" height="12" rx="3.5"/><rect x="150" y="-6" width="10" height="26" rx="5"/><rect x="232" y="-6" width="7" height="14" rx="3.5"/><rect x="300" y="-6" width="9" height="22" rx="4.5"/><rect x="362" y="-6" width="7" height="10" rx="3.5"/></g></svg>
+      </div>
+      <div class="result-body">
+        <div class="stats">
+          <div class="stat"><b id="sArea">0</b><span>m² of wall</span></div>
+          <div class="stat"><b id="sLitres">0</b><span>litres needed</span></div>
+          <div class="stat"><b id="sTins">0</b><span>litres to buy</span></div>
+        </div>
+        <p class="tin-line" id="tinLine"></p>
+        <div class="tins" id="tins" aria-hidden="true"></div>
+        <p class="small" id="spare"></p>
+        <div class="actions">
+          <button type="button" class="btn" id="share">Share my plan</button>
+          <button type="button" class="btn ghost" id="restart">Start again</button>
+        </div>
+        <details class="assume" open>
+          <summary>The small print (typical figures; check the tin)</summary>
+          <ul>
+            <li>Walls only: four walls, width × length × height. Ceilings, woodwork and alcoves are not included.</li>
+            <li>Each door takes off about 1.9 m² and each window about 1.5 m². Big patio doors or bay windows will change things.</li>
+            <li>Coverage is about 12 m² per litre per coat, a typical figure for standard emulsion on smooth, previously painted walls. Fresh plaster, rough or very dark walls drink more, so check your tin.</li>
+            <li>Tins come in 1, 2.5 and 5 litre sizes. We pick the combination that is likely to cost least using example prices (1 L £14, 2.5 L £26, 5 L £42). Real prices vary by brand and shop.</li>
+          </ul>
+        </details>
+      </div>
+    </div>
+
+    <div class="card capture" id="capture">
+      <h3>Rather put your feet up?</h3>
+      <p>Get a free, no-pressure quote for us to paint it for you. We'll bring the dust sheets and the good biscuits.</p>
+      <form id="leadForm" novalidate>
+        <div class="form-row"><label for="name">Your name</label><input type="text" id="name" name="name" autocomplete="off"></div>
+        <div class="form-row"><label for="email">Email address</label><input type="email" id="email" name="email" autocomplete="off" aria-describedby="emailErr"><p class="err" id="emailErr" hidden>Please enter an email address that looks like name@example.com.</p></div>
+        <label class="check"><input type="checkbox" id="consent" name="consent"><span>Yes, email me my free quote and the occasional decorating tip from Second Coat Decorating. You can unsubscribe at any time.</span></label>
+        <button type="submit" class="btn">Get my free quote</button>
+      </form>
+      <div class="demo-note" id="demoNote" hidden role="status" tabindex="-1">
+        <strong>Thanks! Brushes down.</strong>
+        This is a demo, so nothing was sent. In a real version, this is where the business would collect your email, with your clear consent.
+      </div>
+    </div>
+  </section>
+
+  <footer>A fictional business. Demo from Field Notes.</footer>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function(){
+  'use strict';
+  var DOOR = 1.9, WINDOW = 1.5, COVER = 12;
+  var TINS = [{l:5,p:42},{l:2.5,p:26},{l:1,p:14}];
+  var COLOURS = [
+    {id:'sage',name:'Sage Advice',hex:'#9caf88',blurb:'Calm, green and wiser than it looks. Goes with oak, plants and long Sunday mornings.'},
+    {id:'brew',name:"Builder's Brew",hex:'#c9a27c',blurb:'A warm, biscuity neutral. Like a good cuppa, it goes with absolutely everything.'},
+    {id:'duck',name:'Duck Egg Boogie',hex:'#a6d1cc',blurb:'Fresh, breezy and a little bit seaside. Makes small rooms feel like they have been on holiday.'},
+    {id:'terra',name:'Terracotta Tantrum',hex:'#c8643b',blurb:'Bold, earthy and full of opinions. Lovely with linen and lamplight.'},
+    {id:'mustard',name:'Mustard Keen',hex:'#e0a526',blurb:'Sunshine in a tin. Not for the shy, perfect for a gloomy north-facing room.'},
+    {id:'pink',name:'Pink Gin Fizz',hex:'#f1b6bf',blurb:'Soft, cheerful and a bit fancy. Warmer than you think in the evening.'},
+    {id:'navy',name:'Midnight Feast',hex:'#26335c',blurb:'Deep, cosy and dramatic. Dark colours may need an extra coat, so we have nudged you to three.'},
+    {id:'cloud',name:'Cloud Nine',hex:'#eef1f4',blurb:'A clean, bright, barely-there white. The little black dress of paint.'}
+  ];
+  var state = {w:4,l:3.5,h:2.4,doors:1,windows:1,coats:2,colour:COLOURS[0]};
+  var shown = false;
+  var $ = function(id){return document.getElementById(id);};
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function fmt(n,d){return n.toFixed(d===undefined?1:d);}
+  function litreStr(n){return (n%1===0? String(n) : n.toFixed(1)) + ' L';}
+
+  // --- colour helpers
+  function hexRgb(h){h=h.replace('#','');return [parseInt(h.substr(0,2),16),parseInt(h.substr(2,2),16),parseInt(h.substr(4,2),16)];}
+  function shade(h,f){var c=hexRgb(h).map(function(v){return Math.max(0,Math.min(255,Math.round(v*f)));});return 'rgb('+c.join(',')+')';}
+  function lum(h){var c=hexRgb(h).map(function(v){v/=255;return v<=0.03928?v/12.92:Math.pow((v+0.055)/1.055,2.4);});return 0.2126*c[0]+0.7152*c[1]+0.0722*c[2];}
+  function inkFor(h){return lum(h)>0.22?'#1f2430':'#ffffff';}
+
+  // --- swatches
+  var sw = $('swatches');
+  COLOURS.forEach(function(c,i){
+    var b=document.createElement('button');
+    b.type='button';b.className='swatch';b.setAttribute('role','radio');
+    b.setAttribute('aria-checked', i===0?'true':'false');
+    b.tabIndex = i===0?0:-1;b.dataset.id=c.id;
+    b.innerHTML='<span class="blob" style="background:'+c.hex+'"></span>'+c.name;
+    b.addEventListener('click',function(){pickColour(i,true);});
+    b.addEventListener('keydown',function(e){
+      var k=e.key, n=null;
+      if(k==='ArrowRight'||k==='ArrowDown') n=(i+1)%COLOURS.length;
+      if(k==='ArrowLeft'||k==='ArrowUp') n=(i-1+COLOURS.length)%COLOURS.length;
+      if(k==='Home') n=0; if(k==='End') n=COLOURS.length-1;
+      if(n!==null){e.preventDefault();pickColour(n,true);sw.children[n].focus();}
+    });
+    sw.appendChild(b);
+  });
+
+  function pickColour(i,animate){
+    var c=COLOURS[i]; var prev=state.colour; state.colour=c;
+    Array.prototype.forEach.call(sw.children,function(b,j){b.setAttribute('aria-checked',j===i?'true':'false');b.tabIndex=j===i?0:-1;});
+    if(c.id==='navy' && state.coats<3 && prev.id!=='navy'){state.coats=3;bump('coatsOut');}
+    $('blurb').innerHTML='<strong>'+c.name+'.</strong> '+c.blurb;
+    document.documentElement.style.setProperty('--paint',c.hex);
+    document.documentElement.style.setProperty('--paint-ink',inkFor(c.hex));
+    paintRoom(animate);
+    update();
+  }
+
+  // --- sliders and steppers
+  ['w','l','h'].forEach(function(k){
+    var el=$(k);
+    el.addEventListener('input',function(){state[k]=parseFloat(el.value);update();});
+  });
+  document.querySelectorAll('[data-step]').forEach(function(b){
+    b.addEventListener('click',function(){
+      var k=b.dataset.step, el=$(k), st=parseFloat(el.step)*(k==='h'?1:1);
+      var inc = k==='h'?0.05:0.1;
+      var v=Math.round((parseFloat(el.value)+inc*Number(b.dataset.dir))*100)/100;
+      v=Math.max(parseFloat(el.min),Math.min(parseFloat(el.max),v));
+      el.value=v;state[k]=v;update();
+    });
+  });
+  var LIMITS={doors:[0,6],windows:[0,6],coats:[1,3]};
+  document.querySelectorAll('[data-count]').forEach(function(b){
+    b.addEventListener('click',function(){
+      var k=b.dataset.count, lim=LIMITS[k];
+      var v=Math.max(lim[0],Math.min(lim[1],state[k]+Number(b.dataset.dir)));
+      if(v!==state[k]){state[k]=v;bump(k+'Out');update();}
+    });
+  });
+  function bump(id){var o=$(id);o.classList.remove('bump');void o.offsetWidth;o.classList.add('bump');}
+
+  // --- maths
+  function calc(){
+    var wall=2*(state.w+state.l)*state.h;
+    var gaps=state.doors*DOOR+state.windows*WINDOW;
+    var area=Math.max(0,wall-gaps);
+    var litres=area*state.coats/COVER;
+    return {wall:wall,area:area,litres:litres,plan:bestTins(litres)};
+  }
+  function bestTins(L){
+    if(L<=0) return {n5:0,n25:0,n1:0,total:0,cost:0};
+    var best=null, max5=Math.ceil(L/5)+1;
+    for(var a=0;a<=max5;a++)for(var b=0;b<=3;b++)for(var c=0;c<=4;c++){
+      var tot=a*5+b*2.5+c; if(tot+1e-9<L) continue;
+      var cost=a*42+b*26+c*14, n=a+b+c;
+      if(!best||cost<best.cost||(cost===best.cost&&(tot<best.total||(tot===best.total&&n<best.n)))) best={n5:a,n25:b,n1:c,total:tot,cost:cost,n:n};
+    }
+    return best;
+  }
+
+  function planText(p){
+    var parts=[];
+    if(p.n5) parts.push(p.n5+' × 5 L');
+    if(p.n25) parts.push(p.n25+' × 2.5 L');
+    if(p.n1) parts.push(p.n1+' × 1 L');
+    return parts.join(' + ');
+  }
+  function titleFor(L){
+    if(L<=0) return 'Nothing to paint!';
+    if(L<=2.5) return 'A cosy little touch-up';
+    if(L<=5) return 'A one-tin wonder';
+    if(L<=10) return 'A proper weekend job';
+    if(L<=15) return 'A big brush with destiny';
+    return 'The grand makeover';
+  }
+
+  function update(){
+    $('wOut').textContent=fmt(state.w)+' m';
+    $('lOut').textContent=fmt(state.l)+' m';
+    $('hOut').textContent=fmt(state.h,2).replace(/0$/,'')+' m';
+    ['w','l','h'].forEach(function(k){var el=$(k);var pc=(el.value-el.min)/(el.max-el.min)*100;el.style.setProperty('--fill',pc+'%');});
+    $('doorsOut').textContent=state.doors;$('windowsOut').textContent=state.windows;$('coatsOut').textContent=state.coats;
+    document.querySelectorAll('[data-count]').forEach(function(b){var k=b.dataset.count,lim=LIMITS[k];b.disabled=(b.dataset.dir==='-1'?state[k]<=lim[0]:state[k]>=lim[1]);});
+    $('coatHint').textContent = state.coats===1?'One coat? Brave. Fine for a refresh in the same colour.':state.coats===2?'Two coats is the sweet spot for most colours.':'Three coats: ideal for big colour changes and deep shades.';
+    var r=calc();
+    $('capArea').textContent=fmt(r.area)+' m² of wall';
+    $('capColour').textContent=state.colour.name;
+    $('roomTitle').textContent='A drawing of your '+fmt(state.w)+' by '+fmt(state.l)+' metre room with '+state.doors+' door'+(state.doors===1?'':'s')+' and '+state.windows+' window'+(state.windows===1?'':'s')+', painted in '+state.colour.name;
+    target={w:state.w,l:state.l,h:state.h};
+    if(!animating) requestAnimationFrame(tick);
+    if(shown) renderResult(r,false);
+  }
+
+  function renderResult(r,fresh){
+    var p=r.plan;
+    $('resTitle').textContent=titleFor(r.litres);
+    $('resDesc').textContent = r.area<=0 ? 'Your doors and windows cover every wall. That is a greenhouse, not a room!' :
+      'About '+fmt(r.litres)+' litres of '+state.colour.name+' for '+state.coats+' coat'+(state.coats===1?'':'s')+' over '+fmt(r.area)+' m². '+(r.litres>10?'Put the kettle on, this one is a marathon.':r.litres>5?'Very doable with a good playlist.':'You could be done by lunch.');
+    $('sArea').textContent=fmt(r.area);
+    $('sLitres').textContent=fmt(r.litres);
+    $('sTins').textContent=p.total%1===0?p.total:p.total.toFixed(1);
+    $('tinLine').textContent = p.total? 'Buy: '+planText(p)+' (about £'+p.cost+' at our example prices)':'No tins needed.';
+    var spare=p.total-r.litres;
+    $('spare').textContent = p.total? 'That leaves about '+fmt(Math.max(0,spare))+' L spare for touch-ups'+(spare<0.5?'. Tight! Consider a small extra tin for scuffs later.':'. Keep it somewhere frost-free.') : '';
+    var key=p.n5+'-'+p.n25+'-'+p.n1+'-'+state.colour.id;
+    var t=$('tins');
+    if(fresh||t.dataset.key!==key){
+      t.dataset.key=key;t.innerHTML='';var d=0;
+      [[p.n5,5],[p.n25,2.5],[p.n1,1]].forEach(function(x){
+        for(var i=0;i<x[0];i++){t.appendChild(tinEl(x[1],d));d++;}
+      });
+    }
+  }
+  function tinEl(size,i){
+    var s=size===5?1:size===2.5?0.82:0.64;
+    var w=Math.round(56*s),h=Math.round(66*s);
+    var div=document.createElement('div');div.className='tin';div.style.animationDelay=(i*0.08)+'s';
+    var c=state.colour.hex;
+    div.innerHTML='<svg width="'+w+'" height="'+(h+10)+'" viewBox="0 0 56 76"><path d="M14 8 Q28 -4 42 8" fill="none" stroke="#6b7280" stroke-width="2.5"/><rect x="4" y="10" width="48" height="62" rx="6" fill="#d1d5db"/><rect x="4" y="10" width="48" height="8" rx="4" fill="#9ca3af"/><rect x="8" y="28" width="40" height="30" rx="4" fill="'+c+'" stroke="rgba(0,0,0,.15)"/><rect x="10" y="62" width="36" height="4" rx="2" fill="#9ca3af"/></svg><span>'+(size===2.5?'2.5':size)+' L</span>';
+    return div;
+  }
+
+  // --- room drawing (one-point perspective, tweened)
+  var cur={w:4,l:3.5,h:2.4}, target={w:4,l:3.5,h:2.4}, animating=false;
+  function tick(){
+    animating=true;var done=true;
+    ['w','l','h'].forEach(function(k){var d=target[k]-cur[k];if(Math.abs(d)>0.002&&!reduce){cur[k]+=d*0.2;done=false;}else cur[k]=target[k];});
+    draw();
+    if(!done) requestAnimationFrame(tick); else animating=false;
+  }
+  function pts(a){return a.map(function(p){return p[0].toFixed(1)+','+p[1].toFixed(1);}).join(' ');}
+  function draw(){
+    var k=Math.max(0.3,Math.min(0.66,0.7-(cur.l-1.5)*0.04));
+    var iw=Math.min(340,380*k*(0.55+cur.w/9));
+    var ih=Math.min(250,280*k*(0.45+cur.h/4.4));
+    var cx=200, cy=140;
+    var x0=cx-iw/2,x1=cx+iw/2,y0=cy-ih/2,y1=cy+ih/2;
+    var O=[[0,0],[400,0],[400,300],[0,300]];
+    $('ceiling').setAttribute('points',pts([O[0],O[1],[x1,y0],[x0,y0]]));
+    $('floor').setAttribute('points',pts([[x0,y1],[x1,y1],O[2],O[3]]));
+    $('leftWall').setAttribute('points',pts([O[0],[x0,y0],[x0,y1],O[3]]));
+    $('rightWall').setAttribute('points',pts([[x1,y0],O[1],O[2],[x1,y1]]));
+    var bw=$('backWall');bw.setAttribute('x',x0);bw.setAttribute('y',y0);bw.setAttribute('width',iw);bw.setAttribute('height',ih);
+    var cr=$('backClipRect');cr.setAttribute('x',x0);cr.setAttribute('y',y0);cr.setAttribute('width',iw);cr.setAttribute('height',ih);
+    var sk=$('skirting');sk.setAttribute('x',x0);sk.setAttribute('y',y1-Math.max(3,ih*0.035));sk.setAttribute('width',iw);sk.setAttribute('height',Math.max(3,ih*0.035));
+    geom={x0:x0,y0:y0,iw:iw,ih:ih};
+    // openings
+    var g=$('openings'), n=state.doors+state.windows, pxm=ih/cur.h;
+    var html='';
+    if(n){
+      var slot=iw/n;
+      var dW=Math.min(0.9*pxm, slot*0.78), dH=Math.min(ih*0.9, 2.0*pxm);
+      var wW=Math.min(1.2*pxm, slot*0.8), wH=Math.min(ih*0.5, 1.2*pxm);
+      var items=[];
+      // interleave windows and doors for a pleasing layout
+      var dd=state.doors, ww=state.windows;
+      while(dd||ww){ if(ww){items.push('w');ww--;} if(dd){items.push('d');dd--;} }
+      items.forEach(function(t,i){
+        var cxi=x0+slot*(i+0.5);
+        if(t==='d'){
+          var x=cxi-dW/2,y=y1-dH;
+          html+='<rect x="'+x+'" y="'+y+'" width="'+dW+'" height="'+dH+'" fill="#fffaf2" stroke="#e7dccb" stroke-width="2"/>';
+          html+='<rect x="'+(x+dW*0.14)+'" y="'+(y+dH*0.08)+'" width="'+(dW*0.72)+'" height="'+(dH*0.36)+'" fill="none" stroke="#e7dccb" stroke-width="1.5"/>';
+          html+='<rect x="'+(x+dW*0.14)+'" y="'+(y+dH*0.52)+'" width="'+(dW*0.72)+'" height="'+(dH*0.38)+'" fill="none" stroke="#e7dccb" stroke-width="1.5"/>';
+          html+='<circle cx="'+(x+dW*0.82)+'" cy="'+(y+dH*0.52)+'" r="'+Math.max(1.5,dW*0.05)+'" fill="#c2a14d"/>';
+        } else {
+          var wx=cxi-wW/2, wy=y0+Math.max(4,(ih-wH)*0.35);
+          html+='<rect x="'+wx+'" y="'+wy+'" width="'+wW+'" height="'+wH+'" fill="url(#sun)" stroke="#fffaf2" stroke-width="4"/>';
+          html+='<line x1="'+(wx+wW/2)+'" y1="'+wy+'" x2="'+(wx+wW/2)+'" y2="'+(wy+wH)+'" stroke="#fffaf2" stroke-width="3"/>';
+          html+='<line x1="'+wx+'" y1="'+(wy+wH/2)+'" x2="'+(wx+wW)+'" y2="'+(wy+wH/2)+'" stroke="#fffaf2" stroke-width="3"/>';
+          html+='<rect x="'+(wx-3)+'" y="'+(wy+wH)+'" width="'+(wW+6)+'" height="4" fill="#fffaf2"/>';
+        }
+      });
+    }
+    g.innerHTML=html;
+  }
+  var geom=null;
+
+  function paintRoom(animate){
+    var c=state.colour.hex;
+    $('backWall').style.fill=c;
+    $('leftWall').style.fill=shade(c,0.82);
+    $('rightWall').style.fill=shade(c,0.9);
+    if(animate && !reduce && geom) rollerSweep();
+  }
+  var rollAnim=null;
+  function rollerSweep(){
+    var tool=$('rollerTool'), wet=$('wetStripe'), wrap=$('roller');
+    if(rollAnim) cancelAnimationFrame(rollAnim);
+    var start=null, dur=900;
+    wrap.setAttribute('opacity','1');tool.setAttribute('opacity','1');
+    function step(ts){
+      if(!start) start=ts;
+      var t=Math.min(1,(ts-start)/dur), e=1-Math.pow(1-t,3);
+      var x=geom.x0+geom.iw*e, y=geom.y0+geom.ih*0.45+Math.sin(t*Math.PI*4)*geom.ih*0.18;
+      tool.setAttribute('transform','translate('+x+','+(y-6)+') scale('+Math.max(0.6,geom.ih/200)+')');
+      wet.setAttribute('x',x-17);wet.setAttribute('y',geom.y0);wet.setAttribute('height',geom.ih);
+      if(t<1) rollAnim=requestAnimationFrame(step);
+      else{tool.setAttribute('opacity','0');wrap.setAttribute('opacity','0');rollAnim=null;}
+    }
+    rollAnim=requestAnimationFrame(step);
+  }
+
+  // --- reveal
+  $('calc').addEventListener('submit',function(e){
+    e.preventDefault();
+    var r=calc();var res=$('result');
+    shown=true;res.hidden=false;
+    var card=$('resultCard');card.classList.remove('splat');void card.offsetWidth;card.classList.add('splat');
+    renderResult(r,true);
+    res.scrollIntoView({behavior:reduce?'auto':'smooth',block:'start'});
+    setTimeout(function(){res.focus({preventScroll:true});},reduce?0:400);
+    if(!reduce) splash();
+  });
+
+  function splash(){
+    var cv=document.createElement('canvas');
+    cv.setAttribute('aria-hidden','true');
+    cv.style.cssText='position:fixed;inset:0;pointer-events:none;z-index:20';
+    var W=cv.width=innerWidth,H=cv.height=innerHeight;document.body.appendChild(cv);
+    var ctx=cv.getContext('2d'), cols=[state.colour.hex,'#c2452d','#e0a526','#1f6f6a','#f1b6bf'];
+    var ps=[];for(var i=0;i<90;i++){ps.push({x:W/2,y:H*0.45,vx:(Math.random()-0.5)*14,vy:-Math.random()*12-4,r:Math.random()*6+3,c:cols[i%cols.length]});}
+    var f=0;
+    (function loop(){
+      ctx.clearRect(0,0,W,H);
+      ps.forEach(function(p){p.x+=p.vx;p.y+=p.vy;p.vy+=0.45;p.vx*=0.99;ctx.fillStyle=p.c;ctx.beginPath();ctx.ellipse(p.x,p.y,p.r,p.r*1.3,0,0,Math.PI*2);ctx.fill();});
+      if(++f<90) requestAnimationFrame(loop); else cv.remove();
+    })();
+  }
+
+  // --- share
+  $('share').addEventListener('click',function(){
+    var r=calc();
+    var text='My room needs about '+fmt(r.litres)+' litres of '+state.colour.name+' ('+planText(r.plan)+'). Worked out with the Second Coat Decorating paint estimator.';
+    if(navigator.share){navigator.share({title:'My paint plan',text:text}).catch(function(){});}
+    else if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(text).then(function(){toast('Copied to your clipboard');},function(){toast('Could not copy, sorry');});}
+    else toast('Sharing is not available here');
+  });
+  var tt;function toast(m){var t=$('toast');t.textContent=m;t.classList.add('show');clearTimeout(tt);tt=setTimeout(function(){t.classList.remove('show');},2200);}
+
+  // --- restart
+  $('restart').addEventListener('click',function(){
+    state.w=4;state.l=3.5;state.h=2.4;state.doors=1;state.windows=1;state.coats=2;
+    $('w').value=4;$('l').value=3.5;$('h').value=2.4;
+    shown=false;$('result').hidden=true;
+    $('leadForm').reset();$('leadForm').hidden=false;$('demoNote').hidden=true;$('emailErr').hidden=true;
+    pickColour(0,false);
+    window.scrollTo({top:0,behavior:reduce?'auto':'smooth'});
+    $('w').focus({preventScroll:true});
+  });
+
+  // --- demo capture (nothing stored or sent)
+  $('leadForm').addEventListener('submit',function(e){
+    e.preventDefault();
+    var em=$('email'), ok=/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em.value.trim());
+    $('emailErr').hidden=ok;em.setAttribute('aria-invalid',ok?'false':'true');
+    if(!ok){em.focus();return;}
+    this.reset();this.hidden=true;
+    var n=$('demoNote');n.hidden=false;n.focus();
+  });
+
+  pickColour(0,false);
+  draw();
+})();
+</script>
+</body>
+</html>

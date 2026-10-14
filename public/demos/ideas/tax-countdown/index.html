@@ -1,0 +1,325 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Self Assessment countdown | Tidy Sums Accountancy</title>
+<style>
+:root{
+  --ink:#1d1b33; --muted:#514e6b; --bg:#f6f3ff; --card:#ffffff;
+  --plum:#4b2a8f; --plum-dark:#341d66; --plum-soft:#ece5fb;
+  --mint:#14806b; --mint-soft:#dcf4ee; --sun:#ffcf3f; --coral:#d9465c;
+  --line:#ddd3f2; --focus:#0b63ce;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;color:var(--ink);background:var(--bg);line-height:1.5;font-size:17px;overflow-x:hidden}
+.wrap{max-width:660px;margin:0 auto;padding:0 16px}
+header.top{background:var(--plum);color:#fff}
+header.top .wrap{display:flex;align-items:center;gap:10px;padding-top:12px;padding-bottom:12px}
+.logo{display:flex;align-items:center;gap:9px;font-weight:800;font-size:1.05rem}
+.logo svg{width:34px;height:34px;flex:none}
+main{padding:20px 0 40px}
+.card{background:var(--card);border:2px solid var(--line);border-radius:22px;padding:22px 18px;box-shadow:0 8px 0 var(--line);margin-bottom:22px}
+h1{font-size:1.8rem;line-height:1.15;margin:.1em 0 .3em}
+h2{font-size:1.35rem;line-height:1.2;margin:0 0 .4em}
+p{margin:.4em 0 .8em}
+.muted{color:var(--muted)}
+.kicker{display:inline-block;background:var(--sun);color:var(--ink);font-weight:800;font-size:.8rem;padding:4px 10px;border-radius:99px;letter-spacing:.04em;text-transform:uppercase;transform:rotate(-2deg)}
+/* countdown */
+.tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:16px 0 8px}
+.tile{perspective:400px;text-align:center}
+.face{position:relative;background:var(--plum);color:#fff;border-radius:14px;padding:14px 4px 10px;font-variant-numeric:tabular-nums;font-weight:900;font-size:clamp(1.6rem,8vw,2.6rem);line-height:1;box-shadow:0 6px 0 var(--plum-dark);overflow:hidden}
+.face::after{content:"";position:absolute;left:0;right:0;top:50%;height:2px;background:rgba(0,0,0,.25)}
+.face.flip{animation:flip .45s cubic-bezier(.3,1.5,.5,1)}
+@keyframes flip{0%{transform:rotateX(0)}45%{transform:rotateX(-80deg)}100%{transform:rotateX(0)}}
+.tile:nth-child(2) .face{background:var(--mint);box-shadow:0 6px 0 #0c5547}
+.tile:nth-child(3) .face{background:var(--coral);box-shadow:0 6px 0 #a12f42}
+.tile:nth-child(4) .face{background:#2b2f56;box-shadow:0 6px 0 #171a36}
+.tile .lab{display:block;margin-top:10px;font-size:.82rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.quip{background:var(--plum-soft);border-radius:14px;padding:10px 14px;font-weight:700;color:var(--plum-dark);margin-top:12px}
+.dates{display:grid;gap:10px;margin-top:14px}
+.date{display:flex;gap:12px;align-items:flex-start;border:2px solid var(--line);border-radius:14px;padding:10px 12px}
+.date .cal{flex:none;width:54px;text-align:center;border-radius:10px;overflow:hidden;border:2px solid var(--ink);font-weight:900;line-height:1.1}
+.date .cal b{display:block;background:var(--coral);color:#fff;font-size:.7rem;padding:2px 0;text-transform:uppercase}
+.date .cal span{display:block;font-size:1.3rem;padding:3px 0}
+.date strong{display:block}
+/* checklist */
+.meterwrap{position:sticky;top:0;z-index:5;background:var(--card);padding:10px 0 12px;margin:0 0 6px;border-bottom:2px dashed var(--line)}
+.meterhead{display:flex;justify-content:space-between;align-items:baseline;font-weight:800;gap:8px}
+.meter{height:22px;background:#eee8fb;border-radius:99px;overflow:hidden;margin-top:6px;border:2px solid var(--ink)}
+.meter span{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--coral),var(--sun) 50%,var(--mint));background-size:660px 100%;transition:width .6s cubic-bezier(.3,1.5,.5,1)}
+.msg{min-height:3em;margin-top:8px;font-weight:600;color:var(--plum-dark)}
+.msg.pop{animation:pop .35s ease}
+@keyframes pop{0%{transform:scale(.95)}60%{transform:scale(1.03)}100%{transform:scale(1)}}
+.list{list-style:none;padding:0;margin:8px 0 0;display:grid;gap:10px}
+.item input{position:absolute;opacity:0;width:1px;height:1px}
+.item{position:relative}
+.item label{display:flex;gap:12px;align-items:flex-start;padding:12px 14px;border:2px solid var(--line);border-radius:16px;cursor:pointer;min-height:56px;transition:transform .15s,border-color .15s,background .15s}
+.item label:hover{transform:translateY(-2px);border-color:#b9a6e6}
+.box{flex:none;width:30px;height:30px;border-radius:9px;border:3px solid var(--ink);display:grid;place-items:center;background:#fff;transition:background .2s,transform .2s}
+.box svg{width:18px;height:18px;stroke:#fff;stroke-width:4;fill:none;stroke-dasharray:30;stroke-dashoffset:30;transition:stroke-dashoffset .3s .05s}
+.item input:checked + label{border-color:var(--mint);background:var(--mint-soft)}
+.item input:checked + label .box{background:var(--mint);border-color:var(--mint);animation:boing .4s ease}
+.item input:checked + label .box svg{stroke-dashoffset:0}
+@keyframes boing{0%{transform:scale(1)}40%{transform:scale(1.3) rotate(-8deg)}100%{transform:scale(1)}}
+.item input:focus-visible + label{outline:3px solid var(--focus);outline-offset:3px}
+.item b{display:block}
+.item small{display:block;color:var(--muted);font-size:.88rem}
+button{font:inherit;font-weight:800;border:0;border-radius:14px;min-height:52px;padding:12px 20px;cursor:pointer;transition:transform .12s,box-shadow .12s}
+.primary{background:var(--plum);color:#fff;box-shadow:0 5px 0 var(--plum-dark)}
+.primary:hover{transform:translateY(-2px);box-shadow:0 7px 0 var(--plum-dark)}
+.primary:active{transform:translateY(3px);box-shadow:0 2px 0 var(--plum-dark)}
+.ghost{background:#fff;color:var(--ink);border:2px solid var(--line)}
+.ghost:hover{border-color:#b9a6e6}
+button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid var(--focus);outline-offset:3px}
+.row{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+.row button{flex:1 1 160px}
+.hidden{display:none!important}
+/* result */
+.result{border-radius:22px;padding:20px 18px;background:linear-gradient(135deg,#fff7d6,#ffe9f0 60%,#e9e1ff);border:3px solid var(--ink);position:relative;overflow:hidden}
+.result.reveal{animation:reveal .7s cubic-bezier(.2,1.4,.4,1)}
+@keyframes reveal{from{opacity:0;transform:scale(.8) rotate(2deg)}to{opacity:1;transform:none}}
+.badge{display:flex;align-items:center;gap:14px}
+.badge svg{width:84px;height:84px;flex:none}
+.score{font-size:.85rem;font-weight:900;text-transform:uppercase;letter-spacing:.08em;color:var(--plum)}
+.result h2{font-size:1.6rem;margin:.1em 0 .2em}
+.todo{margin:12px 0 0;padding:0;list-style:none;display:grid;gap:6px}
+.todo li{background:rgba(255,255,255,.8);border-radius:12px;padding:8px 12px}
+.todo li::before{content:"→ ";font-weight:900;color:var(--coral)}
+.toast{font-size:.92rem;color:var(--mint);font-weight:700;min-height:1.4em;margin-top:6px}
+.capture{margin-top:18px;background:var(--plum);color:#fff;border-radius:22px;padding:20px 18px}
+.capture h2{color:#fff}
+.capture p{color:#ece5fb}
+.field{margin:10px 0}
+.field label{display:block;font-weight:700;margin-bottom:4px}
+.field input{width:100%;font:inherit;padding:12px 14px;border-radius:12px;border:2px solid #c8b8ef;min-height:50px;color:var(--ink)}
+.check{display:flex;gap:10px;align-items:flex-start;margin:12px 0}
+.check input{width:24px;height:24px;flex:none;margin-top:2px;accent-color:var(--sun)}
+.check label{font-size:.95rem}
+.capture .primary{width:100%;background:var(--sun);color:var(--ink);box-shadow:0 5px 0 #b38c12}
+.capture .primary:hover{box-shadow:0 7px 0 #b38c12}
+.capture button:focus-visible,.capture input:focus-visible{outline-color:var(--sun)}
+.demo-note{background:#fff;color:var(--ink);border-radius:16px;padding:14px 16px;margin-top:12px;font-weight:600}
+.example{font-size:.8rem;background:rgba(255,255,255,.18);padding:2px 8px;border-radius:99px;font-weight:700}
+footer{text-align:center;color:var(--muted);font-size:.85rem;padding:0 16px 30px}
+#confetti{position:fixed;inset:0;pointer-events:none;z-index:50;overflow:hidden}
+#confetti i{position:absolute;top:-20px;width:10px;height:14px;border-radius:2px;animation:fall linear forwards}
+@keyframes fall{to{transform:translateY(110vh) rotate(720deg)}}
+.calc{width:64px;height:64px;flex:none}
+.calc .arm{transform-origin:12px 40px;animation:wave 1.4s ease-in-out infinite}
+@keyframes wave{0%,100%{transform:rotate(0)}50%{transform:rotate(-18deg)}}
+.hero{display:flex;gap:12px;align-items:center}
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+  #confetti{display:none}
+}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <div class="logo">
+      <svg viewBox="0 0 40 40" aria-hidden="true"><rect x="2" y="2" width="36" height="36" rx="10" fill="#ffcf3f"/><path d="M11 21l6 6 12-14" stroke="#4b2a8f" stroke-width="4.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Tidy Sums Accountancy
+    </div>
+  </div>
+</header>
+
+<main>
+  <div class="wrap">
+    <section class="card" aria-labelledby="h1">
+      <div class="hero">
+        <svg class="calc" viewBox="0 0 64 64" aria-hidden="true">
+          <g class="arm"><path d="M12 40 L4 26" stroke="#1d1b33" stroke-width="4" stroke-linecap="round"/><circle cx="4" cy="24" r="4" fill="#ffcf3f" stroke="#1d1b33" stroke-width="2"/></g>
+          <rect x="12" y="6" width="42" height="54" rx="9" fill="#4b2a8f" stroke="#1d1b33" stroke-width="3"/>
+          <rect x="18" y="12" width="30" height="14" rx="4" fill="#dcf4ee"/>
+          <circle cx="27" cy="19" r="2.5" fill="#1d1b33"/><circle cx="39" cy="19" r="2.5" fill="#1d1b33"/>
+          <path d="M28 22 q5 4 10 0" stroke="#1d1b33" stroke-width="2" fill="none" stroke-linecap="round"/>
+          <g fill="#ffcf3f"><rect x="18" y="32" width="8" height="7" rx="2"/><rect x="29" y="32" width="8" height="7" rx="2"/><rect x="40" y="32" width="8" height="7" rx="2"/><rect x="18" y="43" width="8" height="7" rx="2"/><rect x="29" y="43" width="8" height="7" rx="2"/><rect x="40" y="43" width="8" height="12" rx="2" fill="#d9465c"/></g>
+        </svg>
+        <div>
+          <span class="kicker">Tax year 2025/26</span>
+          <h1 id="h1">The Self Assessment countdown</h1>
+        </div>
+      </div>
+      <p>Time left to file your online return and pay what you owe, before the end of <strong>31 January 2027</strong>.</p>
+      <div class="tiles" role="timer" aria-live="off" aria-label="Countdown to 31 January 2027">
+        <div class="tile"><div class="face" id="tD">--</div><span class="lab">Days</span></div>
+        <div class="tile"><div class="face" id="tH">--</div><span class="lab">Hours</span></div>
+        <div class="tile"><div class="face" id="tM">--</div><span class="lab">Mins</span></div>
+        <div class="tile"><div class="face" id="tS">--</div><span class="lab">Secs</span></div>
+      </div>
+      <p class="sr-only" id="cdText" style="position:absolute;left:-9999px"></p>
+      <div class="quip" id="quip">Plenty of time. Famous last words, mind.</div>
+
+      <div class="dates">
+        <div class="date"><div class="cal" aria-hidden="true"><b>Oct</b><span>31</span></div><div><strong>Paper returns: 31 October 2026</strong><span class="muted" id="paperNote">Sending a paper return for 2025/26? That deadline comes first.</span></div></div>
+        <div class="date"><div class="cal" aria-hidden="true"><b>Jan</b><span>31</span></div><div><strong>Online returns and payment: 31 January 2027</strong><span class="muted">File online and pay any tax you owe for 2025/26.</span></div></div>
+        <div class="date"><div class="cal" aria-hidden="true"><b>£</b><span>100</span></div><div><strong>Miss it: £100 penalty to start</strong><span class="muted">The initial late filing penalty is £100, even if you have no tax to pay. It goes up the later you are.</span></div></div>
+      </div>
+    </section>
+
+    <section class="card" aria-labelledby="h2c" id="checkCard">
+      <h2 id="h2c">How ready are you, really?</h2>
+      <p class="muted">Tick what's sorted. No judgement. Well, a tiny bit of judgement.</p>
+      <div class="meterwrap">
+        <div class="meterhead"><span>Readiness</span><span id="pct">0%</span></div>
+        <div class="meter" role="progressbar" aria-label="Readiness" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="meter"><span id="fill"></span></div>
+        <div class="msg" id="msg" aria-live="polite">Nothing ticked yet. Your receipts are probably in a shoebox having a lovely time.</div>
+      </div>
+      <ul class="list" id="list"></ul>
+      <div class="row">
+        <button type="button" class="primary" id="resultBtn">Show my readiness verdict</button>
+      </div>
+    </section>
+
+    <section id="resultCard" class="card hidden" aria-live="polite" aria-atomic="true">
+      <div id="resultHost"></div>
+      <div class="row">
+        <button type="button" class="ghost" id="shareBtn">Share my result</button>
+        <button type="button" class="ghost" id="restartBtn">Start again</button>
+      </div>
+      <div class="toast" id="toast" role="status"></div>
+
+      <div class="capture">
+        <h2>Get a free 15-minute call before the rush</h2>
+        <p><span class="example">Example offer</span> A quick chat with one of our team to spot gaps before January gets frantic.</p>
+        <form id="capForm">
+          <div class="field"><label for="capName">First name</label><input id="capName" type="text" autocomplete="off" required></div>
+          <div class="field"><label for="capEmail">Email</label><input id="capEmail" type="email" autocomplete="off" required></div>
+          <div class="check"><input id="capConsent" type="checkbox"><label for="capConsent">Yes, email me to arrange my call and send occasional tax deadline reminders from Tidy Sums Accountancy. You can unsubscribe at any time.</label></div>
+          <button type="submit" class="primary">Book my free call</button>
+        </form>
+        <div class="demo-note hidden" id="demoNote" role="status" tabindex="-1">This is a demo, so nothing was sent. In a real version, this is where the business would collect your email, with your clear consent.</div>
+      </div>
+    </section>
+  </div>
+</main>
+<footer>A fictional business. Demo from Field Notes.<br>General information only, not tax advice. Check your own position on GOV.UK or with an accountant.</footer>
+<div id="confetti" aria-hidden="true"></div>
+
+<script>
+(function(){
+  "use strict";
+  var $=function(id){return document.getElementById(id);};
+  var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  // Deadline: end of 31 January 2027, UK time (GMT in winter, so UTC+0)
+  var DEADLINE = Date.UTC(2027,1,1,0,0,0);
+  var PAPER = Date.UTC(2026,10,1,0,0,0); // end of 31 October 2026, UK time (GMT after clocks change on 25 Oct)
+  var last = {};
+  function pad(n){return n<10?"0"+n:""+n;}
+  function setTile(id, val){
+    var e=$(id); if(last[id]===val) return; last[id]=val; e.textContent=val;
+    if(!reduce){ e.classList.remove("flip"); void e.offsetWidth; e.classList.add("flip"); }
+  }
+  function tick(){
+    var now=Date.now(); var diff=Math.max(0, DEADLINE-now);
+    var d=Math.floor(diff/864e5), h=Math.floor(diff/36e5)%24, m=Math.floor(diff/6e4)%60, s=Math.floor(diff/1e3)%60;
+    setTile("tD", ""+d); setTile("tH", pad(h)); setTile("tM", pad(m)); setTile("tS", pad(s));
+    $("cdText").textContent = d+" days, "+h+" hours and "+m+" minutes to go.";
+    var q;
+    if(diff===0) q="The online deadline for 2025/26 has passed. If you haven't filed, do it as soon as you can: penalties grow the longer you leave it.";
+    else if(d>90) q="Plenty of time. Famous last words, mind.";
+    else if(d>60) q="Still comfy. The sensible folk are starting now. Be sensible folk.";
+    else if(d>30) q="Christmas will eat at least a week of this. Just saying.";
+    else if(d>7) q="January is here. Time to find that shoebox of receipts.";
+    else if(d>1) q="Final week! Pop the kettle on and get it done.";
+    else q="It's today-ish. Deep breath. You can do this.";
+    if($("quip").textContent!==q) $("quip").textContent=q;
+    var pd=Math.ceil((PAPER-now)/864e5);
+    $("paperNote").textContent = pd>0 ? "Sending a paper return for 2025/26? That deadline comes first: "+pd+" day"+(pd===1?"":"s")+" to go." : "The paper deadline for 2025/26 has passed, so file online instead.";
+  }
+  tick(); setInterval(tick, 1000);
+
+  var ITEMS=[
+    {t:"Records gathered", s:"Bank statements, invoices and receipts for 6 April 2025 to 5 April 2026. The shoebox counts if it's all in there."},
+    {t:"UTR number to hand", s:"Your 10-digit Unique Taxpayer Reference. It's on letters from HMRC and in your HMRC online account."},
+    {t:"HMRC online account set up", s:"You can sign in without a password-reset saga. Setting up for the first time? Codes can arrive by post, so don't leave it late."},
+    {t:"Income from all sources listed", s:"Self-employment, employment (your P60), property, savings interest, dividends, and anything else."},
+    {t:"Allowable expenses totted up", s:"The business costs you can claim. Your accountant can help you check what counts."},
+    {t:"Pension contributions noted", s:"Payments into personal pensions during the tax year."},
+    {t:"Gift Aid donations noted", s:"Charity donations you made with Gift Aid."},
+    {t:"Last year's return handy", s:"Brilliant for spotting anything you've forgotten."},
+    {t:"A plan to pay what you owe", s:"Know roughly what's due by 31 January 2027 and how you'll pay it."}
+  ];
+  var MSGS=[
+    [0,"Nothing ticked yet. Your receipts are probably in a shoebox having a lovely time."],
+    [1,"A start! Every legend begins with a single tick."],
+    [25,"Getting warmer. The shoebox is nervous."],
+    [45,"Nearly halfway. Treat yourself to a biscuit. One biscuit."],
+    [60,"Over halfway! HMRC can sense your organisation from here."],
+    [80,"So close you can smell the relief."],
+    [100,"Fully ready! Go and file it before the feeling wears off."]
+  ];
+  var list=$("list");
+  ITEMS.forEach(function(it,i){
+    var li=document.createElement("li"); li.className="item";
+    li.innerHTML='<input type="checkbox" id="c'+i+'"><label for="c'+i+'"><span class="box" aria-hidden="true"><svg viewBox="0 0 20 20"><path d="M4 10l4 4 8-9"/></svg></span><span><b>'+it.t+'</b><small>'+it.s+'</small></span></label>';
+    list.appendChild(li);
+    li.querySelector("input").addEventListener("change", update);
+  });
+  function count(){ return document.querySelectorAll("#list input:checked").length; }
+  var lastMsg="";
+  function update(){
+    var c=count(), p=Math.round(c/ITEMS.length*100);
+    $("fill").style.width=p+"%"; $("pct").textContent=p+"%"; $("meter").setAttribute("aria-valuenow",p);
+    var m=MSGS[0][1]; MSGS.forEach(function(x){ if(p>=x[0]) m=x[1]; });
+    if(c>0 && p<25) m=MSGS[1][1];
+    if(m!==lastMsg){ lastMsg=m; var e=$("msg"); e.textContent=m; e.classList.remove("pop"); void e.offsetWidth; e.classList.add("pop"); }
+    if(p===100) confetti();
+  }
+
+  var LEVELS=[
+    {min:0, title:"Shoebox Survivor", desc:"Right now it's you, a shoebox and a vague sense of dread. Good news: you've got time, and it all starts with one small job.", col:"#d9465c"},
+    {min:34, title:"Spreadsheet Apprentice", desc:"You've made a proper start. A few more bits to pull together and you'll be filing with your feet up.", col:"#e08a00"},
+    {min:67, title:"Nearly Sorted Superstar", desc:"So close! Tie up the last loose ends and you'll beat the January rush with ease.", col:"#4b2a8f"},
+    {min:100, title:"Return Ready Rockstar", desc:"Everything's ticked. You're more prepared than most. File it and enjoy a smug January.", col:"#14806b"}
+  ];
+  function showResult(){
+    var c=count(), p=Math.round(c/ITEMS.length*100);
+    var L=LEVELS[0]; LEVELS.forEach(function(x){ if(p>=x.min) L=x; });
+    var todo=[]; document.querySelectorAll("#list input").forEach(function(inp,i){ if(!inp.checked) todo.push(ITEMS[i].t); });
+    var d=Math.max(0,Math.floor((DEADLINE-Date.now())/864e5));
+    var todoHtml = todo.length ? '<p style="margin:12px 0 0"><strong>Still to do:</strong></p><ul class="todo">'+todo.map(function(t){return "<li>"+t+"</li>";}).join("")+'</ul>' : '<p style="margin:12px 0 0"><strong>Next step:</strong> file online, and pay anything you owe by 31 January 2027.</p>';
+    var stars=Math.max(1,Math.round(p/25));
+    var star=''; for(var i=0;i<4;i++){ star+='<path transform="translate('+(6+i*18)+',66) scale(.7)" d="M10 0l3 7 7 .6-5.4 4.6 1.7 7L10 15.5 3.7 19.2l1.7-7L0 7.6 7 7z" fill="'+(i<stars?"#ffcf3f":"#e3dcf5")+'" stroke="#1d1b33" stroke-width="1.5"/>'; }
+    $("resultHost").innerHTML='<div class="result reveal"><div class="badge"><svg viewBox="0 0 84 84" aria-hidden="true"><circle cx="42" cy="34" r="30" fill="'+L.col+'" stroke="#1d1b33" stroke-width="3"/><text x="42" y="42" text-anchor="middle" font-size="22" font-weight="900" fill="#fff" font-family="system-ui,sans-serif">'+p+'%</text>'+star+'</svg><div><div class="score">'+c+' of '+ITEMS.length+' ticked</div><h2 id="rtitle" tabindex="-1">'+L.title+'</h2></div></div><p>'+L.desc+'</p><p><strong>'+d+' days</strong> until the online deadline. Remember: miss it and the penalty starts at £100, even with no tax to pay.</p>'+todoHtml+'</div>';
+    $("resultCard").classList.remove("hidden"); $("resultCard").dataset.title=L.title; $("resultCard").dataset.pct=p;
+    $("resultCard").scrollIntoView({behavior:reduce?"auto":"smooth", block:"start"});
+    $("rtitle").focus({preventScroll:true});
+    if(p>=67) confetti();
+  }
+  function confetti(){
+    if(reduce) return;
+    var c=$("confetti"); c.innerHTML="";
+    var cols=["#4b2a8f","#14806b","#ffcf3f","#d9465c","#7fd1ff","#ff9ec4"];
+    for(var i=0;i<70;i++){ var e=document.createElement("i"); e.style.left=Math.random()*100+"%"; e.style.background=cols[i%cols.length]; e.style.animationDuration=(1.6+Math.random()*1.6)+"s"; e.style.animationDelay=(Math.random()*.4)+"s"; c.appendChild(e); }
+    setTimeout(function(){c.innerHTML="";},3800);
+  }
+
+  $("resultBtn").addEventListener("click", showResult);
+  $("restartBtn").addEventListener("click", function(){
+    document.querySelectorAll("#list input").forEach(function(i){i.checked=false;});
+    update(); $("resultCard").classList.add("hidden");
+    $("capForm").reset(); $("capForm").classList.remove("hidden"); $("demoNote").classList.add("hidden"); $("toast").textContent="";
+    $("checkCard").scrollIntoView({behavior:reduce?"auto":"smooth"}); $("c0").focus({preventScroll:true});
+  });
+  $("shareBtn").addEventListener("click", function(){
+    var r=$("resultCard").dataset;
+    var text="I'm "+r.pct+"% ready for the 31 January Self Assessment deadline: "+r.title+". How ready are you?";
+    if(navigator.share){ navigator.share({title:"Self Assessment countdown", text:text}).catch(function(){}); return; }
+    var done=function(){ $("toast").textContent="Copied to your clipboard. Go on, shame a friend into starting."; };
+    var fail=function(){ $("toast").textContent=text; };
+    try{ if(navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done,fail); else fail(); }catch(e){ fail(); }
+  });
+  $("capForm").addEventListener("submit", function(e){
+    e.preventDefault(); var f=$("capForm");
+    if(!f.checkValidity()){ f.reportValidity(); return; }
+    f.reset(); f.classList.add("hidden"); var n=$("demoNote"); n.classList.remove("hidden"); n.focus();
+  });
+})();
+</script>
+</body>
+</html>
