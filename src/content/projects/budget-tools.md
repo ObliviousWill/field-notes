@@ -4,6 +4,9 @@ summary: 'Two tools that make budgets easier to work with. One shows my team’s
 status: 'shipped'
 area: 'work'
 startDate: 'Jul 29 2026'
+links:
+  - label: 'Try the budget tracker (made-up data)'
+    url: '/demos/budget/'
 facts:
   - label: 'What it is'
     value: 'A spend tracker and a budget checker'
@@ -26,3 +29,7 @@ Most budget questions are simple: are we on track, and is this plan realistic? T
 - writing a short summary for each, with suggested questions for the review conversation
 
 That means the people reviewing them can spend their time on the conversations, not the arithmetic. A person reads every review and makes every decision.
+
+## Try it
+
+There's a [demo of the spend tracker](/field-notes/demos/budget/) you can play with. Every figure in it is made up, and anything you change is saved only in your own browser.

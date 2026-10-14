@@ -1,39 +1,39 @@
 ---
-title: 'Garden designer'
-summary: 'A tool for a landscape gardener to design a garden on screen and show it to the client in 3D, through the seasons and as the plants grow. Clients can see the finished garden before anyone picks up a spade.'
+title: 'Garden visualiser'
+summary: "A handy tool for visualising ideas in your own garden after you find them on Pinterest. Sketch your plot, drop in the patio, path or planting you've fallen for, and walk round it in 3D, through the seasons and as the plants grow."
 status: 'building'
-area: 'local'
+area: 'personal'
 startDate: 'Sep 26 2026'
 links:
-  - label: 'Try the garden designer'
+  - label: 'Try the garden visualiser'
     url: '/demos/garden/'
 facts:
   - label: 'What it is'
     value: 'Draw a garden in 2D, walk round it in 3D'
   - label: 'Who it is for'
-    value: 'A landscape gardener and their clients'
+    value: 'Anyone planning changes to their garden'
   - label: 'The problem'
-    value: "\"I can't picture it, and I don't trust a sketch\""
+    value: "Will that idea from Pinterest actually work in my garden?"
   - label: 'Works on'
     value: 'A computer or tablet, in the browser'
 ---
 
-Ask anyone thinking about a new garden what holds them back, and it often comes down to one line: *"I can't picture it, and I don't trust a sketch."* People are being asked to spend thousands on something they can only imagine.
+You know the feeling. You've saved twenty gardens on Pinterest: a gravel path, a sunken seating area, a border full of grasses. They all look wonderful. But will any of them actually work in *your* garden, with its odd shape, its shady corner and its slope?
 
-So I built a garden designer.
+That's what this is for.
 
-**Design.** You draw the plot, then add patio, lawn, decking, gravel and flower beds, as rectangles or any shape you like. Then you add trees, arches, a pergola, steps, a table and chairs, a fire bowl.
+**Sketch your garden.** Draw the plot, then add the things you've been dreaming about: patio, lawn, decking, gravel and flower beds, as rectangles or any shape you like. Add trees, an arch, a pergola, steps, a table and chairs, a fire bowl.
 
-**Present.** This is where the client comes in:
+**Walk round it.** This is the fun part:
 
 - Choose a planting style: modern grasses, cottage, prairie, Mediterranean or woodland.
-- Slide through the months and watch the garden change: blossom in spring, snow in winter.
+- Slide through the months and watch the garden change, from blossom in spring to snow in winter.
 - Slide through the years and watch the plants grow, from planting day to year five.
 - Switch between daytime, golden hour and evening, with the garden lights on.
-- Walk round it, and sit down on the bench.
+- Walk round it at head height, and sit down on the bench.
 
-It also makes the plant list for you, ready to copy.
+It even writes the plant list for you, ready to take to the garden centre.
 
-You can save several versions of the same garden ("Option A", "Option B") and compare them with the client.
+You can save several versions ("Option A", "Option B") and compare them, which is handy when you can't decide between two ideas.
 
 [Try it yourself](/field-notes/demos/garden/). It works best on a bigger screen. Anything you design is saved only in your own browser.

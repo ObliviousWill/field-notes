@@ -16,7 +16,7 @@ Every small business has the same problem. The customer can't see what they're b
 - A garden designer shows a flat plan. The customer nods, and quietly can't picture it.
 - An architect hands over drawings. They're accurate, and almost nobody can read them.
 
-Showing people the real thing used to be expensive. 3D models and interactive tools were for big companies with big budgets. That's changed. In one week I built three, for local businesses and projects, with Claude doing the coding. Each one is a single web page that works on a phone, with nothing to install.
+Showing people the real thing used to be expensive. 3D models and interactive tools were for big companies with big budgets. That's changed. In one week I built three, with Claude doing the coding. Each one is a single web page that works on a phone, with nothing to install.
 
 ## A boiler you can take apart
 
@@ -26,7 +26,7 @@ It doesn't turn customers into plumbers. It helps them describe the problem when
 
 ## A garden you can walk round
 
-Ask anyone thinking about a new garden what holds them back, and it often comes down to one line: *"I can't picture it, and I don't trust a sketch."* So I built a designer that shows the garden in 3D as you draw it. You can slide through the months to see it in spring and in snow, and through the years to see it grow. [Try it](/field-notes/demos/garden/).
+We all save garden ideas on Pinterest, then struggle to picture them in our own space. So I built a visualiser: sketch your plot, add the ideas you love, and walk round them in 3D. You can slide through the months to see it in spring and in snow, and through the years to see it grow. [Try it](/field-notes/demos/garden/).
 
 ## A building before it's built
 
@@ -34,7 +34,7 @@ A barn conversion, built in 3D from the planning drawings. You can walk round it
 
 ## What I've learned
 
-**Start from the customer's worry, not the product.** The garden designer exists because of one line about what customers fear. The boiler exists because nobody understands their boiler until it breaks.
+**Start from the worry, not the product.** The garden visualiser exists because a photo on Pinterest doesn't tell you how an idea will look in your own garden. The boiler exists because nobody understands their boiler until it breaks.
 
 **Make it work on a phone.** That's where customers will open it: on the sofa, or standing next to a broken boiler.
 

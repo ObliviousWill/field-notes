@@ -4,6 +4,11 @@ summary: 'Two simple planning pages for my teams. One helps share the customer s
 status: 'shipped'
 area: 'work'
 startDate: 'Sep 18 2026'
+links:
+  - label: 'Try the cover rota (made-up data)'
+    url: '/demos/rota/'
+  - label: 'Try the holiday planner (made-up data)'
+    url: '/demos/holiday/'
 facts:
   - label: 'What it is'
     value: 'A shared cover rota and a holiday planner'
@@ -36,3 +41,7 @@ Rotas and holidays are about people, so I kept the information to a minimum:
 - Only first names are used.
 - A reason for leave is only ever "holiday", "training" or "unavailable", so no personal details end up in there.
 - Only I can edit. Anyone I share it with can look but not change anything.
+
+## Try them
+
+There are demo versions of both: the [cover rota](/field-notes/demos/rota/) and the [holiday planner](/field-notes/demos/holiday/). Every name and number in them is made up, and anything you change is saved only in your own browser.

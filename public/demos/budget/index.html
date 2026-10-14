@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Marketing budget tracker (demo)</title>
+<meta name="description" content="A demo marketing budget tracker with made-up data for a fictional small business.">
+<style>
+/* ===========================================================================
+   Marketing budget tracker, public demo.
+   Every figure, name and entry on this page is invented. Data lives only in
+   the visitor's own browser (localStorage), with an in-memory fallback.
+   =========================================================================== */
+:root{
+  color-scheme:light;
+  --bg:#EEE9DF; --ink:#2C3B4D; --muted:#4F5D6F; --accent:#FFB162; --accent-ink:#B86A1E;
+  --soft:#F7F3EC; --card:#FFFFFF; --hairline:#DDD5C7;
+  --track:#E4DDD0; --fill:#4F5D6F; --near:#E39B2D; --over:#B4382A;
+  --warn-fg:#8A4F12; --warn-bg:#FCEBD6; --err-fg:#9E2F23; --err-bg:#F8E1DD;
+  --row-hover:#F7F3EC; --accent-hover:#F5A04A;
+  --font-sans:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --radius-btn:6px; --radius-card:12px; --radius-pill:999px;
+  --shadow-sm:0 1px 2px rgba(44,59,77,.08);
+  --shadow-md:0 4px 14px rgba(44,59,77,.08);
+  --shadow-lg:0 12px 32px rgba(44,59,77,.16);
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{
+  margin:0; background:var(--bg); color:var(--ink);
+  font-family:var(--font-sans); font-weight:400; font-size:15px; line-height:1.5;
+  -webkit-font-smoothing:antialiased; font-variant-numeric:tabular-nums;
+  overflow-x:hidden;
+}
+[hidden]{display:none!important}
+h1,h2,h3{margin:0; text-wrap:balance}
+p{margin:0}
+button,select,input{font-family:inherit; font-size:inherit; color:inherit}
+:focus-visible{outline:3px solid var(--accent-ink); outline-offset:2px; border-radius:4px}
+
+.t-big{font-weight:800; font-size:33px; letter-spacing:-.02em; line-height:1.08; color:var(--ink)}
+.t-h2{font-weight:800; font-size:22px; letter-spacing:-.015em; line-height:1.15; color:var(--ink)}
+.t-label{font-size:12px; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:.07em}
+
+/* ---- demo banner ---- */
+.demo{background:var(--soft); border-bottom:1px solid var(--hairline)}
+.demo__in{max-width:1100px; margin:0 auto; padding:10px 20px; display:flex; flex-wrap:wrap;
+  gap:8px 16px; align-items:center; justify-content:space-between; font-size:13.5px; color:var(--ink)}
+.demo__in p b{font-weight:700}
+.demo__btn{border:1.5px solid var(--accent-ink); background:transparent; color:var(--accent-ink);
+  border-radius:var(--radius-btn); font-weight:700; font-size:13px; min-height:34px; padding:0 12px;
+  cursor:pointer}
+.demo__btn:hover{background:var(--warn-bg)}
+
+.wrap{max-width:1100px; margin:0 auto; padding:22px 20px 40px;
+  display:flex; flex-direction:column; gap:18px}
+
+.mast{display:flex; flex-wrap:wrap; gap:16px 24px; align-items:flex-end; justify-content:space-between}
+.mast__sub{font-size:14px; color:var(--muted); margin-top:5px}
+
+.btn{display:inline-flex; align-items:center; justify-content:center; gap:8px;
+  min-height:46px; padding:0 18px; border-radius:var(--radius-btn);
+  font-weight:700; font-size:14.5px; line-height:1; cursor:pointer;
+  border:2px solid transparent; background:var(--card); color:var(--ink);
+  transition:background .15s ease, color .15s ease, transform .08s ease}
+.btn:active{transform:translateY(1px)}
+.btn:hover{background:var(--soft)}
+.btn--primary{background:var(--accent); color:var(--ink)}
+.btn--primary:hover{background:var(--accent-hover)}
+.btn--quiet{background:none; color:var(--muted)}
+.btn--quiet:hover{background:var(--soft); color:var(--ink)}
+.acts{display:flex; gap:10px; align-items:center; flex-wrap:wrap}
+
+.state{display:inline-flex; align-items:center; gap:8px; height:32px; padding:0 13px;
+  border-radius:var(--radius-pill); font-size:12.5px; font-weight:700;
+  background:var(--card); color:var(--muted); white-space:nowrap}
+.state--warn{background:var(--warn-bg); color:var(--warn-fg)}
+.dot{width:8px; height:8px; border-radius:50%; flex:none; background:currentColor}
+
+.card{background:var(--card); border-radius:var(--radius-card); box-shadow:var(--shadow-md); padding:22px; min-width:0}
+
+.sum{display:flex; flex-wrap:wrap; gap:20px 44px; align-items:flex-end}
+.sum__n{display:flex; flex-direction:column; gap:4px}
+.sum__n b{font-weight:800; font-size:30px; letter-spacing:-.025em; line-height:1; color:var(--ink)}
+.sum__n b.over{color:var(--err-fg)}
+.sum__bar{flex:1 1 260px; min-width:0; display:flex; flex-direction:column; gap:7px}
+.sum__cap{font-size:12.5px; color:var(--muted)}
+
+.track{height:9px; border-radius:var(--radius-pill); background:var(--track); overflow:hidden}
+.track--sm{height:7px}
+.fill{height:100%; display:block; border-radius:var(--radius-pill); background:var(--fill)}
+.fill--near{background:var(--near)}
+.fill--over{background:var(--over)}
+
+.fhead,.frow{display:grid; grid-template-columns:minmax(0,2.4fr) 104px 104px 108px 150px 36px;
+  gap:16px; align-items:center}
+.fhead{padding:16px 0 10px; border-bottom:1px solid var(--hairline)}
+.fhead span{font-size:11px; font-weight:700; letter-spacing:.07em; text-transform:uppercase; color:var(--muted)}
+.fhead .r{text-align:right}
+.frow{padding:15px 0; border-bottom:1px solid var(--hairline); width:100%; text-align:left;
+  background:none; border-left:none; border-right:none; border-top:none; cursor:pointer;
+  font:inherit; color:inherit}
+.frow:hover{background:var(--row-hover)}
+.fname{min-width:0}
+.fname strong{display:block; font-weight:700; font-size:15px; color:var(--ink)}
+.fname small{display:block; font-size:12.5px; color:var(--muted); margin-top:2px; line-height:1.4}
+.fnum{font-weight:800; font-size:15.5px; color:var(--ink); text-align:right; letter-spacing:-.01em}
+.fnum--quiet{color:var(--muted); font-weight:700}
+.fnum--over{color:var(--err-fg)}
+.fbar{display:flex; align-items:center; gap:10px; min-width:0}
+.fbar .track{flex:1; min-width:0}
+.fbar span{font-size:12px; font-weight:700; color:var(--muted); flex:none; width:38px; text-align:right}
+.fchev{color:var(--muted); font-size:17px; text-align:center; transition:transform .15s ease}
+.frow[aria-expanded="true"] .fchev,.crow[aria-expanded="true"] .fchev{transform:rotate(90deg)}
+
+.ghead{display:flex; flex-wrap:wrap; gap:4px 14px; align-items:baseline;
+  padding:20px 0 10px; border-bottom:1px solid var(--hairline)}
+.ghead b{font-weight:800; font-size:14px; color:var(--accent-ink); letter-spacing:-.01em}
+.ghead span{font-size:12.5px; color:var(--muted)}
+
+.spend{padding:6px 0 18px; border-bottom:1px solid var(--hairline)}
+.srow{display:grid; grid-template-columns:82px minmax(0,2fr) minmax(0,1.5fr) 104px 36px;
+  gap:14px; align-items:center; padding:10px 0 10px 18px; font-size:14px;
+  border-left:2px solid var(--track)}
+.sdate{font-size:12.5px; color:var(--muted); font-weight:700}
+.sdesc{font-weight:700; color:var(--ink); min-width:0; overflow-wrap:anywhere}
+.scat{font-size:12.5px; color:var(--muted); min-width:0}
+.scat b{font-weight:700; color:var(--ink)}
+.samt{font-weight:800; color:var(--ink); text-align:right}
+.sx{background:none; border:none; color:var(--muted); cursor:pointer; padding:5px 7px;
+  border-radius:var(--radius-btn); font-size:16px; line-height:1}
+.sx:hover{background:var(--err-bg); color:var(--err-fg)}
+.snone{margin:4px 0 18px 18px; padding:16px 18px; background:var(--soft);
+  border-radius:var(--radius-card); font-size:13.5px; color:var(--muted)}
+
+.toggle{display:inline-flex; background:var(--soft); border:1px solid var(--hairline);
+  border-radius:var(--radius-card); padding:3px; max-width:100%}
+.toggle button{border:none; background:transparent; color:var(--muted); cursor:pointer;
+  font-weight:700; font-size:13.5px; height:36px; padding:0 16px; border-radius:9px;
+  transition:background .15s ease, color .15s ease}
+.toggle button[aria-pressed="true"]{background:var(--card); color:var(--ink); box-shadow:var(--shadow-sm)}
+.crow{display:grid; grid-template-columns:minmax(0,1.5fr) minmax(120px,2fr) 104px 52px 36px;
+  gap:16px; align-items:center; padding:12px 0; border-bottom:1px solid var(--hairline);
+  width:100%; text-align:left; background:none; border-left:none; border-right:none;
+  border-top:none; cursor:pointer; font:inherit; color:inherit}
+.crow:hover{background:var(--row-hover)}
+.cname{font-weight:700; color:var(--ink); min-width:0}
+.cshare{font-size:12.5px; color:var(--muted); text-align:right}
+.csplit{padding:4px 0 14px 18px; border-left:2px solid var(--track); border-bottom:1px solid var(--hairline)}
+.csrow{display:grid; grid-template-columns:minmax(0,1.5fr) minmax(120px,2fr) 104px 52px;
+  gap:16px; align-items:center; padding:9px 0; font-size:13.5px}
+.csrow .cname{font-weight:400; color:var(--muted)}
+.csrow .fnum{font-size:13.5px}
+
+.note{font-size:12.5px; color:var(--muted); margin-top:16px; max-width:80ch; line-height:1.5}
+.note b{font-weight:700; color:var(--ink)}
+.foot{display:flex; flex-wrap:wrap; gap:8px 24px; align-items:baseline; justify-content:space-between;
+  font-size:12.5px; color:var(--muted); padding-top:2px}
+
+.modal{position:fixed; inset:0; z-index:60; display:flex; align-items:flex-start;
+  justify-content:center; padding:24px 16px; overflow-y:auto; background:rgba(44,59,77,.45)}
+.modal__card{background:var(--card); border-radius:var(--radius-card);
+  box-shadow:var(--shadow-lg); padding:24px; width:100%; max-width:540px; margin:auto;
+  display:flex; flex-direction:column; gap:16px}
+.modal__hd{display:flex; align-items:flex-start; justify-content:space-between; gap:16px}
+.form{display:flex; flex-direction:column; gap:14px}
+.fld{display:flex; flex-direction:column; gap:6px; min-width:0}
+.fld label{font-size:11.5px; font-weight:700; letter-spacing:.07em; text-transform:uppercase; color:var(--muted)}
+.fld select,.fld input{background:var(--card); border:1.5px solid var(--hairline);
+  border-radius:var(--radius-btn); padding:0 12px; height:46px; font-size:15px; font-weight:600;
+  width:100%; min-width:0; color:var(--ink)}
+.fld select:focus,.fld input:focus{border-color:var(--accent-ink); outline:none}
+.pair{display:grid; grid-template-columns:1fr 1fr; gap:14px}
+.modal__err{font-size:13px; font-weight:700; color:var(--err-fg); background:var(--err-bg);
+  padding:11px 13px; border-radius:var(--radius-btn)}
+.modal__ft{display:flex; gap:10px; justify-content:flex-end; flex-wrap:wrap}
+
+@media (max-width:820px){
+  .t-big{font-size:27px}
+  .fhead{display:none}
+  .frow,.srow,.crow{display:flex; flex-wrap:wrap; gap:10px 16px; align-items:center}
+  .crow .track{flex:1 1 120px}
+  .fname,.sdesc,.cname{flex:1 1 100%}
+  .fnum::before{content:attr(data-lbl) " "; font-size:10.5px; font-weight:700;
+    letter-spacing:.06em; text-transform:uppercase; color:var(--muted)}
+  .fbar{flex:1 1 100%}
+  .fchev{margin-left:auto}
+  .srow{padding-left:14px}
+  .scat{flex:1 1 100%}
+  .pair{grid-template-columns:1fr}
+}
+@media (max-width:520px){
+  .wrap{padding:18px 16px 32px}
+  .demo__in{padding:10px 16px}
+  .card{padding:18px 16px}
+  .modal__card{padding:20px 16px}
+  .toggle button{padding:0 10px; font-size:13px}
+  .csrow{display:flex; flex-wrap:wrap; gap:6px 12px}
+  .csrow .cname{flex:1 1 100%}
+  .csrow .track{flex:1 1 100px}
+  .sum{gap:18px 28px}
+  .sum__n b{font-size:26px}
+}
+@media (prefers-reduced-motion:reduce){ *{transition:none !important; animation:none !important} }
+</style>
+</head>
+<body>
+
+<div class="demo" role="note">
+  <div class="demo__in">
+    <p><b>Demo with made-up data.</b> Changes are saved only in your browser.</p>
+    <button type="button" class="demo__btn" id="reset">Reset demo data</button>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <header>
+    <div class="mast">
+      <div>
+        <h1 class="t-big">Marketing budget</h1>
+        <p class="mast__sub" id="sub"></p>
+      </div>
+      <div class="acts">
+        <span class="state" id="dbstate"><span class="dot"></span>Loading...</span>
+        <button class="btn btn--quiet" id="export">Export CSV</button>
+        <button class="btn btn--primary" id="log">Log activity</button>
+      </div>
+    </div>
+  </header>
+
+  <section class="card">
+    <div class="sum">
+      <div class="sum__n"><span class="t-label">Budgeted</span><b id="s-bud">...</b></div>
+      <div class="sum__n"><span class="t-label">Spent so far</span><b id="s-spent">...</b></div>
+      <div class="sum__n"><span class="t-label">Variance</span><b id="s-var">...</b></div>
+      <div class="sum__bar">
+        <div class="track"><span class="fill" id="s-fill" style="width:0"></span></div>
+        <p class="sum__cap" id="s-cap"></p>
+      </div>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2 class="t-h2">Focus areas</h2>
+    <div class="fhead">
+      <span>Focus</span>
+      <span class="r">Budgeted</span>
+      <span class="r">Spent</span>
+      <span class="r">Variance</span>
+      <span>Budget used</span>
+      <span></span>
+    </div>
+    <div id="frows"></div>
+    <p class="note">Variance is budget less spend, so a positive figure is budget still unspent.
+      Bars turn amber at 90% used and red once a focus area is over budget.
+      Click a focus area to see what has been logged against it.</p>
+  </section>
+
+  <section class="card">
+    <div class="mast" style="align-items:center">
+      <h2 class="t-h2">Where it has been spent</h2>
+      <div class="toggle" id="toggle" role="group" aria-label="Total spend by"></div>
+    </div>
+    <div id="crows" style="margin-top:16px"></div>
+    <p class="note" id="cnote"></p>
+  </section>
+
+  <footer class="foot">
+    <span>A fictional small business &middot; all figures invented</span>
+    <span id="footnote"></span>
+  </footer>
+</div>
+
+<div class="modal" id="modal" hidden role="dialog" aria-modal="true" aria-labelledby="modal-t">
+  <div class="modal__card">
+    <div class="modal__hd">
+      <h3 class="t-h2" id="modal-t">Log activity</h3>
+      <button class="btn btn--quiet" id="m-x" aria-label="Close">&times;</button>
+    </div>
+    <div class="form">
+      <div class="fld"><label for="m-desc">What was it</label>
+        <input type="text" id="m-desc" maxlength="80" placeholder="Search ads, leaflet print run"></div>
+      <div class="fld"><label for="m-focus">Focus area</label>
+        <select id="m-focus"></select></div>
+      <div class="pair">
+        <div class="fld"><label for="m-cat">Category</label><select id="m-cat"></select></div>
+        <div class="fld"><label for="m-sub">Subcategory</label><select id="m-sub"></select></div>
+      </div>
+      <div class="pair">
+        <div class="fld"><label for="m-amt">Amount &pound;</label>
+          <input type="number" id="m-amt" min="0" step="1" placeholder="250" inputmode="numeric"></div>
+        <div class="fld"><label for="m-date">Date</label><input type="date" id="m-date"></div>
+      </div>
+      <p class="modal__err" id="m-err" hidden></p>
+    </div>
+    <div class="modal__ft">
+      <button class="btn" id="m-cancel">Cancel</button>
+      <button class="btn btn--primary" id="m-save">Save activity</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+"use strict";
+
+/* The financial year runs September to August. */
+var FY_START_YEAR = 2026, FY_START_MONTH = 8;     /* 8 is September, zero-based */
+
+/* Invented focus areas and budgets for a fictional small business. A group
+   heading shows its own total; the group itself is never stored as a line. */
+var FOCUSES = [
+  {id:"awareness", name:"Brand awareness",
+   covers:"Getting the name in front of new local customers",
+   group:"Finding new customers", budget:6000},
+  {id:"social",    name:"Social media",
+   covers:"Paid and organic posts, plus short videos",
+   group:"Finding new customers", budget:4500},
+  {id:"email",     name:"Email",
+   covers:"Newsletters and offers to people who have already bought",
+   group:"Finding new customers", budget:3000},
+  {id:"website",   name:"Website",
+   covers:"The site itself, landing pages and hosting",
+   group:"", budget:7500},
+  {id:"events",    name:"Events",
+   covers:"Fairs, local festivals and sponsorships",
+   group:"", budget:5000},
+  {id:"print",     name:"Print",
+   covers:"Leaflets, posters and business cards",
+   group:"", budget:2500},
+  {id:"content",   name:"Content and SEO",
+   covers:"Being found in search and having something worth reading",
+   group:"", budget:4000},
+  {id:"tools",     name:"Tools and analytics",
+   covers:"Software and knowing what worked",
+   group:"", budget:2500}
+];
+var FOCUS_BY = {};
+FOCUSES.forEach(function(f){ FOCUS_BY[f.id] = f; });
+
+/* A generic marketing spend taxonomy. */
+var TAXONOMY = [
+  {cat:"Paid media", subs:["Search ads","Paid social","Display","Video","Partnerships","Local advertising"]},
+  {cat:"Owned and content", subs:["SEO","Content production","Email","Website and landing pages","Organic social"]},
+  {cat:"Creative", subs:["Design","Photography and video","Print and merchandise"]},
+  {cat:"Events", subs:["Events and exhibitions","Community","Sponsorship"]},
+  {cat:"Tools and data", subs:["Software subscriptions","Analytics","Research"]},
+  {cat:"Agency and people", subs:["Agency retainer","Freelancers","Training"]}
+];
+var CATS = TAXONOMY.map(function(t){ return t.cat; });
+var SUBS_OF = {};
+TAXONOMY.forEach(function(t){ SUBS_OF[t.cat] = t.subs; });
+
+/* Invented spend for the first six weeks of the year. */
+var SEED = [
+  ["2026-09-03","Autumn search campaign","awareness","Paid media","Search ads",850],
+  ["2026-09-18","Local radio advert","awareness","Paid media","Local advertising",1200],
+  ["2026-10-01","October search campaign","awareness","Paid media","Search ads",900],
+  ["2026-09-05","Paid social, September","social","Paid media","Paid social",600],
+  ["2026-09-22","Short video edits","social","Creative","Photography and video",450],
+  ["2026-10-02","Paid social, October","social","Paid media","Paid social",650],
+  ["2026-09-01","Email platform, annual plan","email","Tools and data","Software subscriptions",480],
+  ["2026-09-24","Newsletter template refresh","email","Creative","Design",350],
+  ["2026-09-10","Homepage redesign, deposit","website","Owned and content","Website and landing pages",2000],
+  ["2026-09-15","Web hosting, annual","website","Tools and data","Software subscriptions",240],
+  ["2026-10-08","Landing pages for autumn offer","website","Owned and content","Website and landing pages",750],
+  ["2026-09-12","Trade fair stand","events","Events","Events and exhibitions",1800],
+  ["2026-09-26","Food festival sponsorship","events","Events","Sponsorship",500],
+  ["2026-10-10","Banner stands and leaflets","events","Creative","Print and merchandise",420],
+  ["2026-09-08","Autumn leaflet print run","print","Creative","Print and merchandise",1350],
+  ["2026-09-29","Postcard mailing","print","Paid media","Local advertising",680],
+  ["2026-10-06","Shop window posters","print","Creative","Print and merchandise",260],
+  ["2026-10-13","Business cards reprint","print","Creative","Print and merchandise",140],
+  ["2026-09-04","SEO audit","content","Owned and content","SEO",900],
+  ["2026-09-30","Freelance blog posts","content","Agency and people","Freelancers",600],
+  ["2026-09-01","Design software, annual","tools","Tools and data","Software subscriptions",720],
+  ["2026-09-01","Analytics dashboard, annual","tools","Tools and data","Analytics",1440],
+  ["2026-09-20","Customer survey tool","tools","Tools and data","Research",480]
+];
+function seedActs(){
+  var out = {};
+  SEED.forEach(function(r, i){
+    out["seed" + (i < 9 ? "0" : "") + (i + 1)] =
+      {date:r[0], desc:r[1], focus:r[2], category:r[3], sub:r[4], amount:r[5]};
+  });
+  return out;
+}
+
+var BYS = [
+  {key:"focus",    label:"Focus area"},
+  {key:"category", label:"Category"},
+  {key:"sub",      label:"Subcategory"}
+];
+
+var state = {
+  acts: {},          /* id -> {desc, focus, category, sub, amount, date} */
+  open: null,
+  by: "category",
+  openBy: null,
+  stored: false
+};
+
+/* ---------- browser storage, with an in-memory fallback ---------- */
+var KEY = "fn-demo-budget:activities";
+function loadStore(){
+  try{
+    var raw = window.localStorage.getItem(KEY);
+    state.stored = true;
+    if(raw){
+      var parsed = JSON.parse(raw), next = {};
+      Object.keys(parsed || {}).forEach(function(id){
+        var a = cleanAct(parsed[id]);
+        if(a.desc && a.focus) next[id] = a;
+      });
+      return next;
+    }
+  }catch(e){ state.stored = false; }
+  var seeded = seedActs();
+  saveStore(seeded);
+  return seeded;
+}
+function saveStore(acts){
+  try{
+    window.localStorage.setItem(KEY, JSON.stringify(acts));
+    state.stored = true;
+  }catch(e){ state.stored = false; }
+  showStoreState();
+}
+function showStoreState(){
+  var st = document.getElementById("dbstate");
+  st.textContent = "";
+  st.className = state.stored ? "state" : "state state--warn";
+  st.appendChild(el("span", "dot"));
+  st.appendChild(document.createTextNode(state.stored ? "Saved in this browser" : "Not saved: storage is blocked"));
+}
+
+/* ---------- dates ---------- */
+function pad2(n){ return n < 10 ? "0" + n : String(n); }
+function iso(d){ return d.getFullYear() + "-" + pad2(d.getMonth()+1) + "-" + pad2(d.getDate()); }
+function fyStart(){ return new Date(FY_START_YEAR, FY_START_MONTH, 1); }
+function fyEnd(){ return new Date(FY_START_YEAR + 1, FY_START_MONTH, 0); }
+function fyLabel(){
+  return "FY" + String(FY_START_YEAR).slice(2) + "/" + String(FY_START_YEAR+1).slice(2);
+}
+function inFy(dateStr){
+  return typeof dateStr === "string" && dateStr >= iso(fyStart()) && dateStr <= iso(fyEnd());
+}
+var MON = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+function shortDate(s){
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(s)) return s;
+  return String(Number(s.slice(8,10))) + " " + MON[Number(s.slice(5,7)) - 1];
+}
+
+/* ---------- money ---------- */
+function money(n){
+  var v = Math.round(n || 0), neg = v < 0;
+  v = Math.abs(v);
+  return (neg ? "−£" : "£") + String(v).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
+function signedMoney(n){
+  var v = Math.round(n || 0);
+  return (v > 0 ? "+" : v < 0 ? "−" : "") + "£" +
+    String(Math.abs(v)).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
+function pctUsed(spent, budget){ return budget ? spent / budget : 0; }
+function pctText(f){ return Math.round(f * 100) + "%"; }
+
+/* ---------- totals ---------- */
+function actIds(){
+  return Object.keys(state.acts)
+    .filter(function(id){ return inFy(state.acts[id].date); })
+    .sort(function(a, b){
+      var da = state.acts[a].date, dbb = state.acts[b].date;
+      if(da !== dbb) return da < dbb ? 1 : -1;
+      return a < b ? -1 : 1;
+    });
+}
+function actsOf(focusId){
+  return actIds().filter(function(id){ return state.acts[id].focus === focusId; });
+}
+function spentOn(focusId){
+  var t = 0;
+  actsOf(focusId).forEach(function(id){ t += state.acts[id].amount || 0; });
+  return t;
+}
+function totals(){
+  var budget = 0, spent = 0;
+  FOCUSES.forEach(function(f){ budget += f.budget; spent += spentOn(f.id); });
+  return {budget: budget, spent: spent, variance: budget - spent,
+          used: pctUsed(spent, budget), count: actIds().length};
+}
+/* Slate while there is room, amber from 90% used, red once over. */
+function fillClass(used){
+  return used > 1 ? "fill fill--over" : used >= 0.9 ? "fill fill--near" : "fill";
+}
+
+/* ===========================================================================
+   Render
+   =========================================================================== */
+function el(tag, cls, text){
+  var n = document.createElement(tag);
+  if(cls) n.className = cls;
+  if(text != null) n.textContent = text;
+  return n;
+}
+function numCell(value, label, cls){
+  var n = el("div", "fnum" + (cls ? " " + cls : ""), value);
+  n.setAttribute("data-lbl", label);
+  return n;
+}
+function bar(used){
+  var t = el("div", "track");
+  var f = el("span", fillClass(used));
+  f.style.width = Math.min(Math.max(used, 0), 1) * 100 + "%";
+  t.appendChild(f);
+  return t;
+}
+
+function render(){
+  var T = totals();
+  renderSummary(T);
+  renderFocuses(T);
+  renderReview(T);
+  document.getElementById("sub").textContent =
+    fyLabel() + " · September to August · " + FOCUSES.length + " focus areas";
+  document.getElementById("footnote").textContent =
+    T.count + (T.count === 1 ? " activity logged" : " activities logged");
+}
+
+function renderSummary(T){
+  document.getElementById("s-bud").textContent = money(T.budget);
+  document.getElementById("s-spent").textContent = money(T.spent);
+  var v = document.getElementById("s-var");
+  v.textContent = signedMoney(T.variance);
+  v.className = T.variance < 0 ? "over" : "";
+  var f = document.getElementById("s-fill");
+  f.className = fillClass(T.used);
+  f.style.width = Math.min(Math.max(T.used, 0), 1) * 100 + "%";
+  document.getElementById("s-cap").textContent =
+    pctText(T.used) + " of the year's budget used" +
+    (T.variance < 0 ? ", over by " + money(-T.variance) :
+      " · " + money(T.variance) + " still unspent");
+}
+
+function renderFocuses(T){
+  var box = document.getElementById("frows");
+  box.textContent = "";
+  var lastGroup = null;
+
+  FOCUSES.forEach(function(f){
+    if(f.group && f.group !== lastGroup){
+      var gb = 0, gs = 0;
+      FOCUSES.forEach(function(o){
+        if(o.group !== f.group) return;
+        gb += o.budget; gs += spentOn(o.id);
+      });
+      var gh = el("div", "ghead");
+      gh.appendChild(el("b", null, f.group));
+      gh.appendChild(el("span", null,
+        money(gb) + " budgeted · " + money(gs) + " spent · " +
+        signedMoney(gb - gs) + " variance"));
+      box.appendChild(gh);
+    }
+    lastGroup = f.group;
+
+    var spent = spentOn(f.id), used = pctUsed(spent, f.budget), open = state.open === f.id;
+
+    var row = el("button", "frow");
+    row.type = "button";
+    row.setAttribute("aria-expanded", open ? "true" : "false");
+
+    var nm = el("div", "fname");
+    nm.appendChild(el("strong", null, f.name));
+    nm.appendChild(el("small", null, f.covers));
+    row.appendChild(nm);
+
+    row.appendChild(numCell(money(f.budget), "Budgeted", "fnum--quiet"));
+    row.appendChild(numCell(money(spent), "Spent"));
+    row.appendChild(numCell(signedMoney(f.budget - spent), "Variance",
+      f.budget - spent < 0 ? "fnum--over" : "fnum--quiet"));
+
+    var fb = el("div", "fbar");
+    fb.appendChild(bar(used));
+    fb.appendChild(el("span", null, pctText(used)));
+    row.appendChild(fb);
+
+    row.appendChild(el("div", "fchev", "›"));
+
+    row.addEventListener("click", function(){
+      state.open = open ? null : f.id;
+      render();
+    });
+    box.appendChild(row);
+
+    if(open) box.appendChild(spendList(f));
+  });
+}
+
+function spendList(f){
+  var ids = actsOf(f.id);
+  if(!ids.length){
+    return el("p", "snone",
+      "Nothing logged against " + f.name + " yet. Use Log activity to add the first one.");
+  }
+  var box = el("div", "spend");
+  ids.forEach(function(id){
+    var a = state.acts[id];
+    var r = el("div", "srow");
+    r.appendChild(el("div", "sdate", shortDate(a.date)));
+    r.appendChild(el("div", "sdesc", a.desc));
+    var c = el("div", "scat");
+    c.appendChild(el("b", null, a.category));
+    if(a.sub) c.appendChild(document.createTextNode(" · " + a.sub));
+    r.appendChild(c);
+    r.appendChild(el("div", "samt", money(a.amount)));
+
+    var x = el("button", "sx");
+    x.type = "button";
+    x.textContent = "×";
+    x.setAttribute("aria-label", "Remove " + a.desc);
+    x.addEventListener("click", function(){ removeAct(id); });
+    r.appendChild(x);
+    box.appendChild(r);
+  });
+  return box;
+}
+
+function labelOf(by, a){
+  if(by === "focus") return (FOCUS_BY[a.focus] || {}).name || "Unassigned";
+  if(by === "sub") return a.sub || "Unassigned";
+  return a.category || "Uncategorised";
+}
+/* Opening a row splits it by whichever dimension it is not. */
+function splitBy(by){ return by === "focus" ? "category" : "focus"; }
+
+function tally(by, ids){
+  var sums = {}, keep = {}, order = [];
+  ids.forEach(function(id){
+    var a = state.acts[id], key = labelOf(by, a);
+    if(!(key in sums)){ sums[key] = 0; keep[key] = []; order.push(key); }
+    sums[key] += a.amount || 0;
+    keep[key].push(id);
+  });
+  var rows = order.map(function(k){ return {key:k, total:sums[k], ids:keep[k]}; });
+  rows.sort(function(a, b){ return b.total - a.total; });
+  return rows;
+}
+
+function rankRow(cls, name, total, max, spentTotal){
+  var row = el(cls === "crow" ? "button" : "div", cls);
+  if(cls === "crow") row.type = "button";
+  row.appendChild(el("div", "cname", name));
+  var t = el("div", "track track--sm");
+  var fl = el("span", "fill");
+  fl.style.width = (max > 0 ? (total / max) * 100 : 0) + "%";
+  t.appendChild(fl);
+  row.appendChild(t);
+  row.appendChild(el("div", "fnum", money(total)));
+  row.appendChild(el("div", "cshare",
+    spentTotal > 0 ? Math.round((total / spentTotal) * 100) + "%" : "0%"));
+  return row;
+}
+
+function renderReview(T){
+  var tog = document.getElementById("toggle");
+  tog.textContent = "";
+  BYS.forEach(function(b){
+    var btn = el("button", null, b.label);
+    btn.type = "button";
+    btn.setAttribute("aria-pressed", state.by === b.key ? "true" : "false");
+    btn.addEventListener("click", function(){
+      if(state.by === b.key) return;
+      state.by = b.key;
+      state.openBy = null;
+      render();
+    });
+    tog.appendChild(btn);
+  });
+
+  var rows = tally(state.by, actIds());
+  var box = document.getElementById("crows");
+  box.textContent = "";
+  var max = rows.length ? rows[0].total : 0;
+
+  rows.forEach(function(r){
+    var open = state.openBy === r.key;
+    var row = rankRow("crow", r.key, r.total, max, T.spent);
+    row.setAttribute("aria-expanded", open ? "true" : "false");
+    row.appendChild(el("div", "fchev", "›"));
+    row.addEventListener("click", function(){
+      state.openBy = open ? null : r.key;
+      render();
+    });
+    box.appendChild(row);
+
+    if(open){
+      var sp = el("div", "csplit");
+      var parts = tally(splitBy(state.by), r.ids);
+      var pmax = parts.length ? parts[0].total : 0;
+      parts.forEach(function(p){
+        sp.appendChild(rankRow("csrow", p.key, p.total, pmax, r.total));
+      });
+      box.appendChild(sp);
+    }
+  });
+
+  var note = document.getElementById("cnote");
+  note.textContent = "";
+  if(!rows.length){
+    note.textContent = "Nothing logged yet. Use Log activity to add the first one.";
+    return;
+  }
+  var byLabel = (BYS.filter(function(b){ return b.key === state.by; })[0] || BYS[0]).label.toLowerCase();
+  note.appendChild(el("b", null,
+    rows[0].key + " is the largest " + byLabel + " at " + money(rows[0].total)));
+  note.appendChild(document.createTextNode(
+    ", " + Math.round((rows[0].total / T.spent) * 100) + "% of everything spent so far. " +
+    "This totals across every focus area, so it shows what each one has cost in total. " +
+    "Open a row to see how that splits."));
+}
+
+/* ===========================================================================
+   Log activity
+   =========================================================================== */
+function fillSelect(sel, items, current){
+  sel.textContent = "";
+  items.forEach(function(it){
+    var o = document.createElement("option");
+    o.value = it.value;
+    o.textContent = it.label;
+    sel.appendChild(o);
+  });
+  if(current != null) sel.value = current;
+  if(!sel.value && sel.options.length) sel.value = sel.options[0].value;
+}
+function syncSubs(){
+  var cat = document.getElementById("m-cat").value || CATS[0];
+  fillSelect(document.getElementById("m-sub"),
+    (SUBS_OF[cat] || []).map(function(s){ return {value:s, label:s}; }));
+}
+function openModal(){
+  fillSelect(document.getElementById("m-focus"),
+    FOCUSES.map(function(f){ return {value:f.id, label:f.name}; }),
+    state.open || FOCUSES[0].id);
+  fillSelect(document.getElementById("m-cat"),
+    CATS.map(function(c){ return {value:c, label:c}; }));
+  syncSubs();
+  document.getElementById("m-desc").value = "";
+  document.getElementById("m-amt").value = "";
+  var dt = document.getElementById("m-date");
+  var today = new Date();
+  dt.min = iso(fyStart());
+  dt.max = iso(fyEnd());
+  dt.value = inFy(iso(today)) ? iso(today) : "2026-10-14";
+  document.getElementById("m-err").hidden = true;
+  document.getElementById("modal").hidden = false;
+  document.getElementById("m-desc").focus();
+}
+function closeModal(){ document.getElementById("modal").hidden = true; }
+function modalError(msg){
+  var e = document.getElementById("m-err");
+  e.textContent = msg;
+  e.hidden = false;
+}
+function saveActivity(){
+  var desc = String(document.getElementById("m-desc").value || "").trim().replace(/\s+/g, " ");
+  if(!desc){ modalError("Give the activity a short description."); return; }
+  var amt = Math.round(+document.getElementById("m-amt").value);
+  if(!isFinite(amt) || amt <= 0){ modalError("Enter an amount greater than zero."); return; }
+  var date = document.getElementById("m-date").value;
+  if(!inFy(date)){
+    modalError("Pick a date inside " + fyLabel() + ", " +
+      shortDate(iso(fyStart())) + " " + FY_START_YEAR + " to " +
+      shortDate(iso(fyEnd())) + " " + (FY_START_YEAR + 1) + ".");
+    return;
+  }
+  var focus = document.getElementById("m-focus").value;
+  if(!FOCUS_BY[focus]){ modalError("Choose a focus area."); return; }
+  var cat = document.getElementById("m-cat").value;
+  var sub = document.getElementById("m-sub").value;
+
+  var id = "a" + Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+  state.acts[id] = {
+    desc: desc.slice(0, 80),
+    focus: focus,
+    category: CATS.indexOf(cat) >= 0 ? cat : CATS[0],
+    sub: (SUBS_OF[cat] || []).indexOf(sub) >= 0 ? sub : "",
+    amount: amt,
+    date: date
+  };
+  state.open = focus;
+  closeModal();
+  saveStore(state.acts);
+  render();
+}
+function removeAct(id){
+  if(!state.acts[id]) return;
+  delete state.acts[id];
+  saveStore(state.acts);
+  render();
+}
+function resetDemo(){
+  state.acts = seedActs();
+  state.open = null;
+  state.openBy = null;
+  saveStore(state.acts);
+  render();
+}
+
+/* Anything read back from storage is treated as untrusted. */
+function cleanAct(d){
+  d = d || {};
+  var cat = CATS.indexOf(d.category) >= 0 ? d.category : "";
+  var sub = cat && (SUBS_OF[cat] || []).indexOf(d.sub) >= 0 ? d.sub : "";
+  return {
+    desc: String(d.desc || "").trim().replace(/\s+/g, " ").slice(0, 80),
+    focus: FOCUS_BY[d.focus] ? d.focus : "",
+    category: cat || "Uncategorised",
+    sub: sub,
+    amount: typeof d.amount === "number" && isFinite(d.amount) && d.amount >= 0 ? d.amount : 0,
+    date: /^\d{4}-\d{2}-\d{2}$/.test(d.date) ? d.date : ""
+  };
+}
+
+/* ---------- export ---------- */
+function exportCsv(){
+  var T = totals();
+  var lines = [["Date","What","Focus area","Group","Category","Subcategory","Amount"].join(",")];
+  actIds().forEach(function(id){
+    var a = state.acts[id], f = FOCUS_BY[a.focus] || {};
+    lines.push([csv(a.date), csv(a.desc), csv(f.name || "Unassigned"), csv(f.group || ""),
+      csv(a.category), csv(a.sub), a.amount].join(","));
+  });
+  lines.push("");
+  lines.push(["Focus area","Group","Budgeted","Spent","Variance","Budget used %"].join(","));
+  FOCUSES.forEach(function(f){
+    var s = spentOn(f.id);
+    lines.push([csv(f.name), csv(f.group || ""), f.budget, Math.round(s), Math.round(f.budget - s),
+      Math.round(pctUsed(s, f.budget) * 100)].join(","));
+  });
+  lines.push([csv("TOTAL"), "", T.budget, Math.round(T.spent), Math.round(T.variance),
+    Math.round(T.used * 100)].join(","));
+
+  var blob = new Blob([lines.join("\r\n")], {type:"text/csv;charset=utf-8"});
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement("a");
+  a.href = url;
+  a.download = "marketing-budget-demo-" + fyLabel().replace("/", "-") + ".csv";
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(function(){ URL.revokeObjectURL(url); }, 1000);
+}
+function csv(s){ return '"' + String(s == null ? "" : s).replace(/"/g, '""') + '"'; }
+
+/* ===========================================================================
+   Wiring
+   =========================================================================== */
+document.getElementById("log").addEventListener("click", openModal);
+document.getElementById("m-x").addEventListener("click", closeModal);
+document.getElementById("m-cancel").addEventListener("click", closeModal);
+document.getElementById("m-save").addEventListener("click", saveActivity);
+document.getElementById("m-cat").addEventListener("change", syncSubs);
+document.getElementById("modal").addEventListener("click", function(e){
+  if(e.target === this) closeModal();
+});
+document.getElementById("m-desc").addEventListener("keydown", function(e){
+  if(e.key === "Enter") saveActivity();
+});
+document.addEventListener("keydown", function(e){
+  if(e.key === "Escape" && !document.getElementById("modal").hidden) closeModal();
+});
+document.getElementById("export").addEventListener("click", exportCsv);
+document.getElementById("reset").addEventListener("click", resetDemo);
+
+state.acts = loadStore();
+showStoreState();
+render();
+
+})();
+</script>
+</body>
+</html>

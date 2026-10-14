@@ -220,7 +220,7 @@ input[type=range]{width:100%;accent-color:var(--moss);margin:0}
   <form id="newForm">
     <h2 id="newTitle">New project</h2>
     <label class="fld"><span>Project name</span><input id="npName" placeholder="For example, Back garden" autocomplete="off"></label>
-    <label class="fld"><span>Client</span><input id="npClient" autocomplete="off"></label>
+    <label class="fld"><span>Notes (optional)</span><input id="npClient" autocomplete="off"></label>
     <div class="two">
       <label class="fld"><span>Plot width</span><span class="nin"><input id="npW" type="number" step="0.1" min="2" max="200" value="8"><em>m</em></span></label>
       <label class="fld"><span>Plot length</span><span class="nin"><input id="npL" type="number" step="0.1" min="2" max="200" value="15"><em>m</em></span></label>
@@ -895,7 +895,7 @@ function renderHome(){const g=$('#projGrid'),L=Object.entries(store.list).sort((
   if(store.mode==='pending'){g.innerHTML='<p class="empty">Loading your projects…</p>';return;}
   if(store.mode==='local'&&!$('#homeNote').textContent)$('#homeNote').textContent='Projects are saved in this browser only.';
   if(!L.length){g.innerHTML='<p class="empty">No projects yet. Start one with New project.</p>';return;}
-  g.innerHTML=L.map(([id,p])=>`<article class="pcard" data-id="${esc(id)}"><button class="popen" data-act="open"><b>${esc(p.name||'Untitled')}</b><span>${esc(p.client||'No client name')}</span><small>${(p.designs||[]).length} design${(p.designs||[]).length===1?'':'s'}, updated ${fmtDate(p.updatedAt)}</small></button>
+  g.innerHTML=L.map(([id,p])=>`<article class="pcard" data-id="${esc(id)}"><button class="popen" data-act="open"><b>${esc(p.name||'Untitled')}</b><span>${esc(p.client||'')}</span><small>${(p.designs||[]).length} design${(p.designs||[]).length===1?'':'s'}, updated ${fmtDate(p.updatedAt)}</small></button>
     <div class="pact"><button class="link" data-act="dup">Duplicate</button><button class="link danger" data-act="del">Delete</button></div></article>`).join('');}
 $('#projGrid').addEventListener('click',e=>{const b=e.target.closest('[data-act]');if(!b)return;const id=b.closest('.pcard').dataset.id,p=store.list[id];if(!p)return;
   if(b.dataset.act==='open')openProject(id);
