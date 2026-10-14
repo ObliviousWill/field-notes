@@ -1,0 +1,137 @@
+---
+import { getCollection } from 'astro:content';
+import BaseHead from '../../components/BaseHead.astro';
+import Footer from '../../components/Footer.astro';
+import Header from '../../components/Header.astro';
+import NewsletterBlock from '../../components/NewsletterBlock.astro';
+import PageTitle from '../../components/PageTitle.astro';
+import IdeaCard from '../../components/ideas/IdeaCard.astro';
+import { SITE_TITLE } from '../../consts';
+
+const ideas = (await getCollection('ideas')).sort((a, b) => a.data.order - b.data.order);
+const rows = [
+	{ goal: 'noticed', label: 'Get noticed', line: 'Fun things people play, share and tag their friends in.' },
+	{ goal: 'capture', label: 'Capture leads', line: 'Something useful in exchange for an email address.' },
+	{ goal: 'decide', label: 'Help people decide', line: 'Answer the question that stops people getting in touch.' },
+].map((r) => ({ ...r, ideas: ideas.filter((i) => i.data.goal === r.goal) }));
+const description =
+	'Quizzes, calculators and games that bring in customers for small businesses. Play each one, then copy the prompt and build your own with Claude. No coding needed.';
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<BaseHead title={`Ideas to steal · ${SITE_TITLE}`} description={description} />
+	</head>
+	<body>
+		<Header current="ideas" />
+		<main class="wide">
+			<PageTitle title="Ideas to steal" count={ideas.length} countLabel="ideas" subtitle={description} />
+
+			<ol class="how">
+				<li><span>1</span> Play the demo</li>
+				<li><span>2</span> Copy the prompt</li>
+				<li><span>3</span> Paste it into Claude and make it yours</li>
+			</ol>
+
+			{
+				rows.map((row) => (
+					<section class="row">
+						<div class="row-head">
+							<h2>{row.label}</h2>
+							<p>{row.line}</p>
+						</div>
+						<ul class="cards">
+							{row.ideas.map((idea) => (
+								<li>
+									<IdeaCard idea={idea} />
+								</li>
+							))}
+						</ul>
+					</section>
+				))
+			}
+
+			<p class="note">
+				The businesses in these demos are made up, and the demos don't collect anything. Each one
+				shows where a real version would ask for an email, with proper consent.
+			</p>
+
+			<NewsletterBlock />
+		</main>
+		<Footer />
+	</body>
+</html>
+<style>
+	main.wide {
+		max-width: 1100px;
+	}
+	.how {
+		list-style: none;
+		margin: 6px 0 8px;
+		padding: 0;
+		display: flex;
+		flex-wrap: wrap;
+		gap: 8px 18px;
+		font-size: 15px;
+		font-weight: 700;
+	}
+	.how span {
+		display: inline-grid;
+		place-items: center;
+		width: 24px;
+		height: 24px;
+		margin-right: 6px;
+		border-radius: 50%;
+		background: var(--accent);
+		font-size: 13px;
+	}
+	.row {
+		margin-top: 40px;
+	}
+	.row-head h2 {
+		margin: 0;
+		font-size: 26px;
+	}
+	.row-head p {
+		margin: 4px 0 14px;
+		color: rgb(var(--text-muted));
+		font-size: 15px;
+	}
+	.cards {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+		gap: 16px;
+	}
+	.cards li {
+		margin: 0;
+	}
+	@media (max-width: 720px) {
+		/* a swipeable row on phones, with the next card peeking in */
+		.cards {
+			display: flex;
+			overflow-x: auto;
+			scroll-snap-type: x mandatory;
+			gap: 12px;
+			margin: 0 -16px;
+			padding: 4px 16px 12px;
+			scrollbar-width: none;
+		}
+		.cards::-webkit-scrollbar {
+			display: none;
+		}
+		.cards li {
+			flex: 0 0 78%;
+			scroll-snap-align: start;
+		}
+	}
+	.note {
+		margin-top: 36px;
+		font-size: 14px;
+		color: rgb(var(--text-muted));
+		max-width: 640px;
+	}
+</style>

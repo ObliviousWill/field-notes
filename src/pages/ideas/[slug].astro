@@ -1,0 +1,286 @@
+---
+import { getCollection, render, type CollectionEntry } from 'astro:content';
+import BaseHead from '../../components/BaseHead.astro';
+import Footer from '../../components/Footer.astro';
+import Header from '../../components/Header.astro';
+import NewsletterBlock from '../../components/NewsletterBlock.astro';
+import IdeaCard from '../../components/ideas/IdeaCard.astro';
+import { SITE_TITLE } from '../../consts';
+
+export async function getStaticPaths() {
+	const ideas = (await getCollection('ideas')).sort((a, b) => a.data.order - b.data.order);
+	return ideas.map((idea, i) => ({
+		params: { slug: idea.id },
+		props: { idea, more: [...ideas.slice(i + 1), ...ideas.slice(0, i)].slice(0, 3) },
+	}));
+}
+
+interface Props {
+	idea: CollectionEntry<'ideas'>;
+	more: CollectionEntry<'ideas'>[];
+}
+const { idea, more } = Astro.props;
+const { Content } = await render(idea);
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const demo = `${base}${idea.data.demo}`;
+const kindLabel = { quiz: 'Quiz', calculator: 'Calculator', checker: 'Checker', game: 'Game', planner: 'Planner' }[idea.data.kind];
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<BaseHead title={`${idea.data.title} · ${SITE_TITLE}`} description={idea.data.summary} />
+	</head>
+	<body>
+		<Header current="ideas" />
+		<main class="wide" style={`--idea:${idea.data.accent}`}>
+			<a class="fn-link crumb" href={`${base}/ideas/`}>← All ideas</a>
+
+			<header class="head">
+				<span class="tile" aria-hidden="true">{idea.data.emoji}</span>
+				<div>
+					<p class="meta"><strong>{kindLabel}</strong> for a {idea.data.business.toLowerCase()}</p>
+					<h1>{idea.data.title}</h1>
+					<p class="dek">{idea.data.summary}</p>
+				</div>
+			</header>
+
+			<section class="try">
+				<div class="try-head">
+					<h2>1. Try it</h2>
+					<a class="fn-link" href={demo} target="_blank" rel="noopener">Open full screen ↗</a>
+				</div>
+				<div class="frame">
+					<iframe src={demo} title={`Demo: ${idea.data.title}`} loading="lazy"></iframe>
+				</div>
+				<p class="small">A made-up business. Nothing you enter is sent anywhere.</p>
+			</section>
+
+			<div class="cols">
+				<section class="why prose">
+					<h2>Why it works</h2>
+					<p class="why-line">{idea.data.why}</p>
+					<Content />
+				</section>
+
+				<section class="steal">
+					<h2>2. Steal it</h2>
+					<p>Copy this prompt, paste it into <a href="https://claude.ai/new" target="_blank" rel="noopener">Claude</a>, and change the details to fit your business.</p>
+					<pre class="prompt" data-prompt>{idea.data.prompt.trim()}</pre>
+					<div class="btns">
+						<button type="button" data-copy>Copy the prompt</button>
+						<a class="btn ghost" href="https://claude.ai/new" target="_blank" rel="noopener">Open Claude ↗</a>
+					</div>
+
+					<h3>Before you put it live</h3>
+					<ul class="checklist">
+						<li>Check every fact and price yourself.</li>
+						<li>Ask for consent properly: an unticked box, and say how to unsubscribe.</li>
+						<li>Connect the form to your email tool, and say what you'll send.</li>
+						<li>Try it on your own phone, start to finish.</li>
+						<li>Ask a friend to play it and watch where they get stuck.</li>
+					</ul>
+				</section>
+			</div>
+
+			<section class="more">
+				<h2>More ideas to steal</h2>
+				<ul class="cards">
+					{more.map((m) => <li><IdeaCard idea={m} /></li>)}
+				</ul>
+			</section>
+
+			<NewsletterBlock />
+		</main>
+		<Footer />
+		<script>
+			document.querySelectorAll<HTMLButtonElement>('[data-copy]').forEach((btn) => {
+				btn.addEventListener('click', async () => {
+					const text = document.querySelector('[data-prompt]')?.textContent ?? '';
+					try {
+						await navigator.clipboard.writeText(text);
+						btn.textContent = 'Copied ✓';
+					} catch {
+						btn.textContent = 'Select the text and copy it';
+					}
+					setTimeout(() => (btn.textContent = 'Copy the prompt'), 2200);
+				});
+			});
+		</script>
+	</body>
+</html>
+<style>
+	main.wide {
+		max-width: 1100px;
+	}
+	.crumb {
+		font-size: 13px;
+	}
+	.head {
+		display: flex;
+		gap: 20px;
+		align-items: center;
+		margin: 24px 0 28px;
+	}
+	.tile {
+		flex: none;
+		display: grid;
+		place-items: center;
+		width: 96px;
+		height: 96px;
+		border-radius: 22px;
+		font-size: 52px;
+		background:
+			radial-gradient(circle at 25% 20%, rgba(255, 255, 255, 0.35), transparent 45%),
+			var(--idea);
+	}
+	.meta {
+		margin: 0 0 4px;
+		font-size: 13px;
+		color: rgb(var(--text-muted));
+	}
+	.head h1 {
+		margin: 0;
+		font-family: var(--font-display);
+		font-weight: 500;
+		font-size: 44px;
+		line-height: 1.05;
+	}
+	.dek {
+		margin: 10px 0 0;
+		font-size: 18px;
+		color: rgb(var(--text-muted));
+		max-width: 640px;
+	}
+	h2 {
+		font-size: 24px;
+		margin: 0 0 12px;
+	}
+	.try-head {
+		display: flex;
+		justify-content: space-between;
+		align-items: baseline;
+		gap: 12px;
+	}
+	.frame {
+		border: 1px solid var(--hairline);
+		border-radius: 16px;
+		overflow: hidden;
+		background: #fff;
+		box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+	}
+	.frame iframe {
+		display: block;
+		width: 100%;
+		height: 760px;
+		border: 0;
+	}
+	.small {
+		font-size: 13px;
+		color: rgb(var(--text-muted));
+		margin: 8px 0 0;
+	}
+	.cols {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 40px;
+		margin-top: 44px;
+	}
+	.why-line {
+		font-size: 18px;
+		font-weight: 700;
+	}
+	.steal p {
+		margin-top: 0;
+	}
+	.prompt {
+		white-space: pre-wrap;
+		font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+		font-size: 13.5px;
+		line-height: 1.55;
+		padding: 16px;
+		margin: 0;
+		background: var(--bg-soft);
+		border: 1px solid var(--hairline);
+		border-left: 4px solid var(--idea);
+		border-radius: 8px;
+		max-height: 420px;
+		overflow: auto;
+	}
+	.btns {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 8px;
+		margin-top: 12px;
+	}
+	.btns button,
+	.btn {
+		padding: 11px 16px;
+		border: 0;
+		border-radius: 8px;
+		background: rgb(var(--text));
+		color: #eee9df;
+		font: inherit;
+		font-size: 14px;
+		font-weight: 700;
+		cursor: pointer;
+		text-decoration: none;
+		background-image: none;
+	}
+	.btn.ghost {
+		background: transparent;
+		color: rgb(var(--text));
+		border: 1px solid var(--hairline);
+	}
+	.steal h3 {
+		margin: 28px 0 8px;
+		font-size: 17px;
+	}
+	.checklist {
+		margin: 0;
+		padding-left: 20px;
+		font-size: 15px;
+	}
+	.more {
+		margin-top: 56px;
+	}
+	.cards {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		display: grid;
+		grid-template-columns: repeat(3, 1fr);
+		gap: 16px;
+	}
+	.cards li {
+		margin: 0;
+	}
+	@media (max-width: 820px) {
+		.cols {
+			grid-template-columns: 1fr;
+			gap: 28px;
+		}
+		.cards {
+			grid-template-columns: 1fr;
+		}
+	}
+	@media (max-width: 720px) {
+		.head {
+			flex-direction: column;
+			align-items: flex-start;
+			gap: 14px;
+		}
+		.tile {
+			width: 72px;
+			height: 72px;
+			font-size: 40px;
+			border-radius: 18px;
+		}
+		.head h1 {
+			font-size: 34px;
+		}
+		.frame iframe {
+			height: 640px;
+		}
+	}
+</style>

@@ -76,4 +76,23 @@ const guides = defineCollection({
 	}),
 });
 
-export const collections = { blog, projects, updates, guides };
+const ideas = defineCollection({
+	loader: glob({ base: './src/content/ideas', pattern: '**/*.{md,mdx}' }),
+	schema: z.object({
+		title: z.string(),
+		business: z.string(),
+		kind: z.enum(['quiz', 'calculator', 'checker', 'game', 'planner']),
+		// the row it sits in on /ideas/
+		goal: z.enum(['noticed', 'capture', 'decide']),
+		summary: z.string(),
+		why: z.string(),
+		emoji: z.string(),
+		accent: z.string(),
+		demo: z.string().startsWith('/'),
+		order: z.number(),
+		pubDate: z.coerce.date(),
+		prompt: z.string(),
+	}),
+});
+
+export const collections = { blog, projects, updates, guides, ideas };

@@ -3,7 +3,7 @@ import HeaderLink from './HeaderLink.astro';
 import { SITE_TITLE } from '../consts';
 
 interface Props {
-	current?: 'home' | 'blog' | 'guides' | 'projects' | 'about';
+	current?: 'home' | 'blog' | 'guides' | 'ideas' | 'projects' | 'about';
 }
 
 const { current } = Astro.props;
@@ -32,6 +32,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 		<div id="primary-menu" class="internal-links">
 			<HeaderLink href="/" active={current === 'home'}>Home</HeaderLink>
 			<HeaderLink href="/guides" active={current === 'guides'}>Guides</HeaderLink>
+			<HeaderLink href="/ideas" active={current === 'ideas'}>Ideas</HeaderLink>
 			<HeaderLink href="/blog" active={current === 'blog'}>Blog</HeaderLink>
 			<HeaderLink href="/projects" active={current === 'projects'}>Projects</HeaderLink>
 			<HeaderLink href="/about" active={current === 'about'}>About</HeaderLink>

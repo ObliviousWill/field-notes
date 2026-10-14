@@ -6,6 +6,7 @@ import Header from '../components/Header.astro';
 import NewsletterBlock from '../components/NewsletterBlock.astro';
 import PostRow from '../components/PostRow.astro';
 import ProjectCard from '../components/ProjectCard.astro';
+import IdeaCard from '../components/ideas/IdeaCard.astro';
 import SectionHeading from '../components/SectionHeading.astro';
 import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
 
@@ -15,6 +16,10 @@ const recentPosts = (await getCollection('blog'))
 
 const guides = (await getCollection('guides'))
 	.sort((a, b) => a.data.step - b.data.step)
+	.slice(0, 4);
+
+const featuredIdeas = (await getCollection('ideas'))
+	.sort((a, b) => a.data.order - b.data.order)
 	.slice(0, 4);
 
 const recentProjects = (await getCollection('projects'))
@@ -62,6 +67,26 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 								</li>
 							))}
 						</ol>
+					</section>
+				)
+			}
+
+			{
+				featuredIdeas.length > 0 && (
+					<section class="ideas">
+						<SectionHeading title="Ideas to steal" top={false}>
+							<a slot="side-link" class="fn-link" href={`${base}/ideas/`}>
+								All ideas →
+							</a>
+						</SectionHeading>
+						<p class="ideas-line">Quizzes, calculators and games that bring in customers. Play them, then build your own.</p>
+						<ul class="idea-grid">
+							{featuredIdeas.map((idea) => (
+								<li>
+									<IdeaCard idea={idea} />
+								</li>
+							))}
+						</ul>
 					</section>
 				)
 			}
@@ -207,6 +232,39 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 	@media (max-width: 720px) {
 		.start-list {
 			grid-template-columns: 1fr;
+		}
+	}
+	.ideas {
+		margin-bottom: 48px;
+	}
+	.ideas-line {
+		margin: -4px 0 14px;
+		color: rgb(var(--text-muted));
+		font-size: 15px;
+	}
+	.idea-grid {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 12px;
+	}
+	.idea-grid li {
+		margin: 0;
+	}
+	@media (max-width: 720px) {
+		.idea-grid {
+			display: flex;
+			overflow-x: auto;
+			scroll-snap-type: x mandatory;
+			margin: 0 -16px;
+			padding: 4px 16px 12px;
+			scrollbar-width: none;
+		}
+		.idea-grid li {
+			flex: 0 0 78%;
+			scroll-snap-align: start;
 		}
 	}
 </style>
