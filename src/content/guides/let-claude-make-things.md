@@ -2,6 +2,7 @@
 title: 'Get Claude to make things, not just answer'
 description: 'Delegation, bigger: Claude can make documents, spreadsheets, slides, web pages and small tools, not just chat. What it can make, how to ask for it, and how to teach it your way of doing things.'
 pubDate: 'Sep 08 2026'
+audio: '/guides/audio/let-claude-make-things.mp3'
 step: 6
 fourD: 'delegation'
 ---
