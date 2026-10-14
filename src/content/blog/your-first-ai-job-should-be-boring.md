@@ -2,6 +2,7 @@
 title: 'Your first job for AI should be a boring one'
 description: 'The AI work that has saved me the most time is the dullest: a news round-up every Monday and a numbers report every morning. How to set one up, and the rules that stop it going wrong.'
 pubDate: 'Sep 18 2026'
+audio: '/blog/audio/your-first-ai-job-should-be-boring.mp3'
 tags: ['ai', 'marketing']
 mentions:
   - sector-news

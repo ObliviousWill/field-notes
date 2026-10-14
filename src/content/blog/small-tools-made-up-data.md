@@ -2,6 +2,7 @@
 title: 'Small tools, made-up data: three team tools you can try'
 description: "A budget tracker, a cover rota and a holiday planner, each built with Claude. Here's why small tools beat big systems for everyday team jobs, and how I share them safely."
 pubDate: 'Oct 14 2026'
+audio: '/blog/audio/small-tools-made-up-data.mp3'
 tags: ['building', 'ai']
 mentions:
   - budget-tools
