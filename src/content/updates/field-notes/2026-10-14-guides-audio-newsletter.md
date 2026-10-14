@@ -6,7 +6,7 @@ pubDate: 'Oct 14 2026'
 
 Three additions, all aimed at people who are new to this.
 
-- **Guides.** A new section with four short guides for anyone starting out with Claude. Read them in order, one sitting each.
+- **Guides.** A new section of short guides for anyone starting out with Claude. Read them in order, one sitting each.
 - **Audio versions.** Every guide and post now has a version you can listen to. It's read by an AI voice, and the player says so.
 - **A newsletter.** The sign-up box at the bottom of each page went nowhere. It now points to a free newsletter on LinkedIn, so new posts reach you there.
 

@@ -19,11 +19,9 @@ Most budget questions are simple: are we on track, and is this plan realistic? T
 
 **The spend tracker** is a single page. It shows the budget for each area of marketing, what's been spent so far, and what's left. Logging spending takes a few seconds: what it was, which area, how much and when. Bars change colour as an area gets close to its budget, so there are no surprises. You can see the spending by area or by type, such as advertising or printing.
 
-**The budget checker** helps with a yearly job: reviewing the budget plans that the businesses we work with send in. Claude does a careful first pass on each one:
+**The budget checker** helps with a yearly job: reviewing budget plans before the planning conversations. Claude does a careful first pass on each one:
 
-- re-adding the figures to make sure they total correctly
 - comparing each plan with the previous year's results
-- checking it against the targets agreed together
 - highlighting anything worth talking through
 - writing a short summary for each, with suggested questions for the review conversation
 

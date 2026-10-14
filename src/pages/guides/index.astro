@@ -71,10 +71,12 @@ const description =
 
 			<hr />
 
+			<p class="progress-line" data-progress hidden></p>
+
 			<ol class="guides">
 				{
 					guides.map((guide) => (
-						<li class="guide">
+						<li class="guide" data-guide={guide.id}>
 							<span class="num" aria-hidden="true">
 								{String(guide.data.step).padStart(2, '0')}
 							</span>
@@ -103,6 +105,27 @@ const description =
 		<Footer />
 	</body>
 </html>
+<script>
+	(function () {
+		let done: string[] = [];
+		try {
+			done = JSON.parse(localStorage.getItem('fn:guides-done') || '[]');
+		} catch {}
+		const items = Array.from(document.querySelectorAll<HTMLElement>('[data-guide]'));
+		let count = 0;
+		items.forEach((li) => {
+			if (done.includes(li.dataset.guide!)) {
+				li.classList.add('is-done');
+				count++;
+			}
+		});
+		const line = document.querySelector<HTMLElement>('[data-progress]');
+		if (line && count > 0) {
+			line.textContent = `You've done ${count} of ${items.length} guides.`;
+			line.hidden = false;
+		}
+	})();
+</script>
 <style>
 	.framework {
 		margin: 8px 0 36px;
@@ -149,6 +172,16 @@ const description =
 	.d {
 		color: var(--accent-ink);
 		font-weight: 700;
+	}
+	.progress-line {
+		margin: 0 0 8px;
+		font-size: 14px;
+		font-weight: 700;
+		color: var(--accent-ink);
+	}
+	.guide.is-done .num::after {
+		content: ' ✓';
+		font-size: 0.6em;
 	}
 	.guides {
 		list-style: none;

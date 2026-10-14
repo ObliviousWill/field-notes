@@ -28,11 +28,11 @@ None of this makes me a developer. I couldn't debug the slightest issue without 
 
 The site itself is unremarkable (for now). Three pages, customised styling, content I wrote. What was remarkable was the process.
 
-In WordPress, making a change means logging in, clicking through to a page, dragging a block, hoping the preview is accurate, publishing. The cycle is fine but the system is heavy: plugins, themes, a database, regular updates, the occasional security panic.
+In WordPress, making a change means logging in, clicking through to a page, dragging a block, hoping the preview is accurate, publishing. The cycle is fine but the system is heavy: plugins, themes, a database and regular updates to keep on top of.
 
 This site has none of that. To change something, I edit a file, save it to GitHub, and ninety seconds later it's live. Or, even easier, I just describe what I want to happen and boom! Every change is logged, reversible, and visible to anyone I want to share it with. To create a new page, I write a new file. To restructure the site, I move files around.
 
-I won't pretend that's a workflow that suits everyone on a marketing team. It absolutely doesn't. But what it suggests is something worth paying attention to: the gap between what marketers can do directly and what they need to ask for is moving. Some things that were a ticket two years ago are a chat message now. Not because the marketer learned to code, but because the AI did, on their behalf, with enough scaffolding that the marketer can drive.
+I won't pretend that's a workflow that suits everyone on a marketing team. It absolutely doesn't. But what it suggests is something worth paying attention to: the gap between what marketers can do directly and what they need to ask for is moving. Some small changes that used to need a request can now be tried first in a chat, which leaves specialists more time for the work that really needs them.
 
 That's the workflow I'm interested in. This site is a tiny version of it.
 
@@ -40,7 +40,7 @@ That's the workflow I'm interested in. This site is a tiny version of it.
 
 On the basis of one morning, with appropriate humility.
 
-**The expertise matters and we have to respect that more than ever.** I built three pages. I didn't deal with accessibility properly, or performance, or analytics, or SEO at any depth, or any of the dozen things a good agency builds in by default. The people I've worked with over the years are exceptional; powered by this sort of technology, they'll have superpowers. What's changing is the base rate of what a non-developer can do before they need to call those people.
+**The expertise matters and we have to respect that more than ever.** I built three pages. I didn't deal with accessibility properly, or performance, or analytics, or SEO at any depth, or any of the dozen things a good agency builds in by default. The people I've worked with over the years are exceptional; powered by this sort of technology, they'll have superpowers. What's changing is how much a non-developer can try out before bringing those experts in.
 
 **The hard part isn't the building, it's the deciding.** Most of my morning wasn't spent making things. It was spent answering questions: what do you want, who is this for, what should be on it, what shouldn't, what's the URL, what's the tone. The AI was very fast at the building. The decisions were still mine. That's the right division of labour, and I suspect it's the right one for most marketing work in these early parts of the AI era.
 

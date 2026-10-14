@@ -5,6 +5,7 @@ import CategoryChip from '../components/CategoryChip.astro';
 import Footer from '../components/Footer.astro';
 import FormattedDate from '../components/FormattedDate.astro';
 import FourD from '../components/FourD.astro';
+import GuideDone from '../components/guides/GuideDone.astro';
 import Header from '../components/Header.astro';
 import NewsletterBlock from '../components/NewsletterBlock.astro';
 import PostRow from '../components/PostRow.astro';
@@ -23,6 +24,7 @@ type Props = Omit<CollectionEntry<'blog'>['data'], 'tags' | 'mentions'> & {
 	stepCount?: number;
 	nextGuide?: { href: string; title: string; description: string } | null;
 	fourD?: 'delegation' | 'description' | 'discernment' | 'diligence';
+	guideSlug?: string;
 };
 
 const {
@@ -42,6 +44,7 @@ const {
 	stepCount,
 	nextGuide,
 	fourD,
+	guideSlug,
 } = Astro.props;
 
 const byline = author ?? SITE_AUTHOR;
@@ -146,6 +149,8 @@ const resolvedMentions = mentions
 			<article class="prose">
 				<slot />
 			</article>
+
+			{guideSlug && <GuideDone slug={guideSlug} />}
 
 			<aside class="toc" data-toc aria-label="On this page" hidden>
 				<p class="toc-label">On this page</p>

@@ -29,7 +29,7 @@ Each book became a small folder:
 - **A glossary** of the book's terms
 - **A cheat sheet** of rules of thumb for making decisions quickly
 
-I used a free tool that does most of the conversion. I then checked the result and filled in the gaps, because charts and diagrams don't survive being turned into text.
+Claude helped me turn my reading into structured notes, and I checked them. They're my own private study notes in summary form, not the books' text.
 
 ## How Claude uses it
 

@@ -1,0 +1,76 @@
+---
+// "Mark as done" for a guide. Progress lives in the reader's browser only.
+interface Props {
+	slug: string;
+}
+const { slug } = Astro.props;
+---
+
+<div class="done-box" data-done={slug}>
+	<p>Tried the "Try this today" task?</p>
+	<button type="button" aria-pressed="false">Mark this guide as done</button>
+</div>
+<style>
+	.done-box {
+		margin-top: 40px;
+		padding: 16px 18px;
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		justify-content: space-between;
+		gap: 10px;
+		background: var(--bg-soft);
+		border: 1px solid var(--hairline-soft);
+		border-radius: 8px;
+		max-width: 680px;
+	}
+	.done-box p {
+		margin: 0;
+		font-size: 15px;
+		color: rgb(var(--text-muted));
+	}
+	.done-box button {
+		padding: 10px 16px;
+		border-radius: 6px;
+		border: 1px solid var(--hairline);
+		background: transparent;
+		color: rgb(var(--text));
+		font: inherit;
+		font-size: 14px;
+		font-weight: 700;
+		cursor: pointer;
+	}
+	.done-box button[aria-pressed='true'] {
+		background: var(--accent);
+		border-color: var(--accent);
+	}
+</style>
+<script>
+	const KEY = 'fn:guides-done';
+	const load = (): string[] => {
+		try {
+			return JSON.parse(localStorage.getItem(KEY) || '[]');
+		} catch {
+			return [];
+		}
+	};
+	document.querySelectorAll<HTMLElement>('[data-done]').forEach((box) => {
+		const slug = box.dataset.done!;
+		const btn = box.querySelector('button')!;
+		const paint = (on: boolean) => {
+			btn.setAttribute('aria-pressed', String(on));
+			btn.textContent = on ? '✓ Done' : 'Mark this guide as done';
+		};
+		paint(load().includes(slug));
+		btn.addEventListener('click', () => {
+			const done = new Set(load());
+			const on = !done.has(slug);
+			if (on) done.add(slug);
+			else done.delete(slug);
+			try {
+				localStorage.setItem(KEY, JSON.stringify([...done]));
+			} catch {}
+			paint(on);
+		});
+	});
+</script>

@@ -12,7 +12,7 @@ It runs without anyone watching, so it checks its own work carefully:
 
 - **Look before you touch.** If the page has been changed since yesterday, stop rather than overwrite someone's work.
 - **Add it up two ways.** The daily figures must match a separately fetched total.
-- **Zero isn't the same as missing.** In school holidays some numbers really are zero. If a figure can't be fetched, the report says so clearly rather than showing a zero that looks real.
+- **Zero isn't the same as missing.** At quiet times of year, some numbers really are zero. If a figure can't be fetched, the report says so clearly rather than showing a zero that looks real.
 - **Read it back.** After saving, it opens the page again and checks what actually landed.
 - **Tell a person.** It sends one short message, leading with anything that needs attention.
 

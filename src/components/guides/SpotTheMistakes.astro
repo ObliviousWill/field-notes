@@ -1,0 +1,125 @@
+---
+import ToolBox from './ToolBox.astro';
+
+// Each sentence is either right or a planted mistake, with the reason shown after checking.
+const sentences = [
+	{ text: 'England has eight bank holidays a year, so there are plenty of long weekends to choose from.', wrong: false, why: 'Correct. England and Wales have eight bank holidays a year.' },
+	{ text: 'The summer bank holiday falls on the first Monday in August.', wrong: true, why: "Wrong for England. It's the last Monday in August. (Scotland's is the first Monday, which is how this kind of mix-up happens.) A classic: nearly right, said with total confidence." },
+	{ text: 'If you plan to sell food, you need to register with your local council at least 28 days before you start.', wrong: false, why: "Correct. That's the Food Standards Agency's guidance for new food businesses." },
+	{ text: 'A study by the University of Bristol found that events with live music attract 73% more visitors.', wrong: true, why: "Almost certainly made up. A precise number, a respectable-sounding source, and exactly what you'd want to hear. If you can't find the study yourself, don't use it." },
+	{ text: 'In late June the sun sets in London at around 9.20pm, so evening events have plenty of light.', wrong: false, why: 'Correct. Around the longest day, London sunset is about 9.20pm.' },
+	{ text: 'Public liability insurance is a legal requirement for every event.', wrong: true, why: "Overstated. It isn't a legal requirement in general, though venues and councils often ask for it. AI tends to turn 'usually' into 'always'." },
+];
+---
+
+<ToolBox title="Spot the mistakes">
+	<div data-spot>
+		<p>
+			Here's the kind of answer Claude might give to "Help me plan a summer event in England."
+			Some of it is right. Some isn't. <strong>Tap each sentence you think is wrong</strong>, then
+			check your answers.
+		</p>
+		<ol class="spot-list">
+			{
+				sentences.map((s, i) => (
+					<li>
+						<button type="button" class="spot" aria-pressed="false" data-i={i} data-wrong={s.wrong ? '1' : '0'}>
+							{s.text}
+						</button>
+						<p class="why" hidden>{s.why}</p>
+					</li>
+				))
+			}
+		</ol>
+		<div class="btns">
+			<button type="button" data-check>Check my answers</button>
+			<button type="button" class="ghost" data-reset>Start again</button>
+		</div>
+		<div class="verdict" data-result hidden aria-live="polite"></div>
+	</div>
+</ToolBox>
+<style>
+	.spot-list {
+		list-style: none;
+		margin: 12px 0 0;
+		padding: 0;
+		display: grid;
+		gap: 8px;
+	}
+	.spot-list li {
+		margin: 0;
+	}
+	.spot {
+		display: block;
+		width: 100%;
+		text-align: left;
+		padding: 12px 14px !important;
+		background: var(--bg, #eee9df) !important;
+		color: rgb(var(--text)) !important;
+		border: 1px solid var(--hairline) !important;
+		font-weight: 400 !important;
+		font-size: 16px !important;
+		line-height: 1.45;
+	}
+	.spot[aria-pressed='true'] {
+		border-color: #c0392b !important;
+		box-shadow: inset 4px 0 0 #c0392b;
+	}
+	.spot.right {
+		border-color: #2e7d4f !important;
+		box-shadow: inset 4px 0 0 #2e7d4f;
+	}
+	.spot.missed {
+		border-color: #c0392b !important;
+		border-style: dashed !important;
+	}
+	.why {
+		margin: 6px 4px 4px !important;
+		font-size: 14px !important;
+		color: rgb(var(--text-muted));
+	}
+</style>
+<script>
+	document.querySelectorAll<HTMLElement>('[data-spot]').forEach((root) => {
+		const items = Array.from(root.querySelectorAll<HTMLButtonElement>('.spot'));
+		const result = root.querySelector<HTMLElement>('[data-result]')!;
+		let checked = false;
+		items.forEach((b) =>
+			b.addEventListener('click', () => {
+				if (checked) return;
+				b.setAttribute('aria-pressed', String(b.getAttribute('aria-pressed') !== 'true'));
+			}),
+		);
+		root.querySelector('[data-check]')!.addEventListener('click', () => {
+			checked = true;
+			let found = 0;
+			let falseAlarms = 0;
+			const total = items.filter((b) => b.dataset.wrong === '1').length;
+			items.forEach((b) => {
+				const flagged = b.getAttribute('aria-pressed') === 'true';
+				const wrong = b.dataset.wrong === '1';
+				if (wrong && flagged) found++;
+				if (!wrong && flagged) falseAlarms++;
+				b.classList.toggle('right', !wrong);
+				b.classList.toggle('missed', wrong && !flagged);
+				(b.nextElementSibling as HTMLElement).hidden = false;
+			});
+			const s = document.createElement('strong');
+			s.textContent = `You found ${found} of ${total} mistakes${falseAlarms ? `, and flagged ${falseAlarms} correct ${falseAlarms === 1 ? 'sentence' : 'sentences'}` : ''}.`;
+			const p = document.createElement('span');
+			p.textContent =
+				'Notice that the wrong sentences sound exactly as confident as the right ones. That is why checking matters: tone tells you nothing.';
+			result.replaceChildren(s, p);
+			result.hidden = false;
+		});
+		root.querySelector('[data-reset]')!.addEventListener('click', () => {
+			checked = false;
+			items.forEach((b) => {
+				b.setAttribute('aria-pressed', 'false');
+				b.classList.remove('right', 'missed');
+				(b.nextElementSibling as HTMLElement).hidden = true;
+			});
+			result.hidden = true;
+		});
+	});
+</script>

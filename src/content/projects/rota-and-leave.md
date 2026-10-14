@@ -23,7 +23,7 @@ So I built two simple pages with Claude. You open them in a browser like any oth
 
 **The holiday planner** helps everyone get the time off they're entitled to, spread through the year:
 
-- It shows how each person's holiday is spread across the year, so nobody ends up with days left over at the end.
+- Everyone can see how their holiday is spread through the year, so it's easy to plan breaks and not end up with days left over.
 - It spots clashes early, such as two people who cover for each other both booking the same week.
 - It checks new requests against the team's agreed guidelines, so decisions are consistent and fair.
 

@@ -12,7 +12,7 @@ mentions:
 
 Every small business has the same problem. The customer can't see what they're buying.
 
-- A plumber says "your photocell's gone". The customer hears noise, and wonders if they're being ripped off.
+- A plumber says "your photocell's gone". The customer hears jargon, and isn't sure what they're paying for.
 - A garden designer shows a flat plan. The customer nods, and quietly can't picture it.
 - An architect hands over drawings. They're accurate, and almost nobody can read them.
 
@@ -26,7 +26,7 @@ It doesn't turn customers into plumbers. It helps them describe the problem when
 
 ## A garden you can walk round
 
-While helping a landscape gardener with their marketing, we boiled their customers' biggest worry down to one line: *"I can't picture it, and I don't trust a sketch."* So I built a designer that shows the garden in 3D as you draw it. You can slide through the months to see it in spring and in snow, and through the years to see it grow. [Try it](/field-notes/demos/garden/).
+Ask anyone thinking about a new garden what holds them back, and it often comes down to one line: *"I can't picture it, and I don't trust a sketch."* So I built a designer that shows the garden in 3D as you draw it. You can slide through the months to see it in spring and in snow, and through the years to see it grow. [Try it](/field-notes/demos/garden/).
 
 ## A building before it's built
 

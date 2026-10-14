@@ -1,0 +1,120 @@
+---
+import ToolBox from './ToolBox.astro';
+const rows = [0, 1, 2, 3, 4];
+---
+
+<ToolBox title="Plan a whole job">
+	<div data-job>
+		<label>The job<span class="hint">e.g. "My weekly update for my manager"</span>
+			<input type="text" data-name /></label>
+		<span class="field-label">The steps<span class="hint">Up to five. For each, choose what kind of step it is, and whether you want to check it before Claude carries on.</span></span>
+		<ol class="steps">
+			{
+				rows.map((i) => (
+					<li>
+						<input type="text" data-step aria-label={`Step ${i + 1}`} placeholder={`Step ${i + 1}`} />
+						<select data-kind aria-label={`Kind of step ${i + 1}`}>
+							<option value="gather">Gather</option>
+							<option value="draft">Draft</option>
+							<option value="check">Check</option>
+							<option value="format">Format</option>
+						</select>
+						<label class="pause"><input type="checkbox" data-pause /> I'll check this</label>
+					</li>
+				))
+			}
+		</ol>
+		<p class="meter" data-meter aria-live="polite"></p>
+		<div class="output" data-out aria-live="polite"></div>
+		<div class="btns">
+			<button type="button" data-copy>Copy instructions</button>
+			<a class="btn ghost" href="https://claude.ai/new" target="_blank" rel="noopener">Open Claude ↗</a>
+			<button type="button" class="ghost" data-example>Show me an example</button>
+		</div>
+	</div>
+</ToolBox>
+<style>
+	.steps {
+		margin: 0;
+		padding-left: 22px;
+		display: grid;
+		gap: 8px;
+	}
+	.steps li {
+		display: grid;
+		grid-template-columns: 1fr 110px;
+		gap: 6px;
+		align-items: center;
+	}
+	.steps .pause {
+		grid-column: 1 / -1;
+		display: inline-flex !important;
+		gap: 6px;
+		margin: 0 0 6px !important;
+		font-weight: 400 !important;
+		font-size: 14px !important;
+	}
+</style>
+<script>
+	document.querySelectorAll<HTMLElement>('[data-job]').forEach((root) => {
+		const out = root.querySelector<HTMLElement>('[data-out]')!;
+		const meter = root.querySelector<HTMLElement>('[data-meter]')!;
+		const rows = Array.from(root.querySelectorAll<HTMLElement>('.steps li'));
+		const render = () => {
+			const name = root.querySelector<HTMLInputElement>('[data-name]')!.value.trim();
+			const steps = rows
+				.map((r) => ({
+					text: r.querySelector<HTMLInputElement>('[data-step]')!.value.trim().replace(/[.]$/, ''),
+					kind: r.querySelector<HTMLSelectElement>('[data-kind]')!.value,
+					pause: r.querySelector<HTMLInputElement>('[data-pause]')!.checked,
+				}))
+				.filter((s) => s.text);
+			if (!steps.length) {
+				out.textContent = 'Your instructions will appear here.';
+				meter.textContent = '';
+				return;
+			}
+			const lines = [`I'd like your help with a whole job${name ? `: ${name}` : ''}. Please work through these steps in order.`, ''];
+			steps.forEach((s, i) => {
+				lines.push(`${i + 1}. (${s.kind}) ${s.text}.`);
+				if (s.pause && i < steps.length - 1) lines.push(`   Then stop and show me the result, so I can check it before you carry on.`);
+			});
+			lines.push('', "Don't send or publish anything. I'll review the final result myself.");
+			out.textContent = lines.join('\n');
+			const tips: string[] = [];
+			if (!steps.some((s) => s.kind === 'check')) tips.push('add a "check" step, such as "list anything you were unsure about"');
+			const firstPause = steps.findIndex((s) => s.pause);
+			if (firstPause === -1 || firstPause > 1) tips.push('check one of the first two steps: if an early step is wrong, everything after it is too');
+			meter.textContent = tips.length ? `Tip: ${tips.join('; and ')}.` : 'Good plan: there are checks in, and an early checkpoint.';
+		};
+		root.addEventListener('input', render);
+		root.addEventListener('change', render);
+		root.querySelector('[data-copy]')!.addEventListener('click', async (e) => {
+			const btn = e.currentTarget as HTMLButtonElement;
+			try {
+				await navigator.clipboard.writeText(out.textContent || '');
+				btn.textContent = 'Copied';
+			} catch {
+				btn.textContent = 'Select the text and copy it';
+			}
+			setTimeout(() => (btn.textContent = 'Copy instructions'), 2000);
+		});
+		root.querySelector('[data-example]')!.addEventListener('click', () => {
+			root.querySelector<HTMLInputElement>('[data-name]')!.value = 'My weekly update for my manager';
+			const ex: [string, string, boolean][] = [
+				['Look through my sent emails and calendar from this week', 'gather', true],
+				['Draft a short update: what got done, what is next, where I need help', 'draft', false],
+				['List anything you were unsure about or might have missed', 'check', true],
+				['Put it in a short email, ready for me to send', 'format', false],
+				['', 'gather', false],
+			];
+			rows.forEach((r, i) => {
+				r.querySelector<HTMLInputElement>('[data-step]')!.value = ex[i][0];
+				r.querySelector<HTMLSelectElement>('[data-kind]')!.value = ex[i][1];
+				r.querySelector<HTMLInputElement>('[data-pause]')!.checked = ex[i][2];
+			});
+			render();
+		});
+		render();
+	});
+</script>

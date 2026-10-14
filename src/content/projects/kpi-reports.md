@@ -21,12 +21,12 @@ So I set Claude up to do the gathering. Early each morning it:
 
 1. asks our booking system for the latest sales figures
 2. asks our customer database for new enquiries and meetings
-3. counts the work the customer service team got through
+3. counts how many customer enquiries came in
 4. checks the numbers against each other, and says if anything doesn't add up
 5. updates one shared page that everyone has bookmarked
 
 The rule that matters most is simple: **if it can't get a number, it says so. It never guesses.**
 
-The same approach now produces a second report every Tuesday, on how our new booking app is doing.
+The same approach now produces a second weekly report, on one of our customer-facing digital tools.
 
 I'm not sharing the reports themselves, because they contain real business figures. The updates below explain how they work.

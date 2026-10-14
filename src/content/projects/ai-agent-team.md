@@ -19,12 +19,12 @@ Most people use AI on their own: one person, one chat window, one task. That's u
 
 I wanted something the whole team could benefit from. So I've set up a small set of AI helpers. Each one works like a good research assistant: it gathers the evidence, spots what's changed, and prepares a suggestion. The team and I decide what to do with it.
 
-The aim is simple: less time digging through reports, more time on the work that needs people.
+The aim is simple: less time digging through reports, more time on the work that matters most.
 
 ## The helpers
 
 - **The bookings helper** looks at how bookings are going and, when something looks unusual, suggests what might help.
-- **The enquiries helper** keeps an eye on new enquiries, so none of them slip through the cracks.
+- **The enquiries helper** helps make sure every new enquiry gets a quick, helpful reply.
 - **The search helper** looks at how people find us on Google.
 - **The website helper** checks our web pages are accurate and up to date.
 - **The writer** suggests useful articles and, once a topic is agreed, prepares a first draft for us to edit.

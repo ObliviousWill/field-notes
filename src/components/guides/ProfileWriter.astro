@@ -1,0 +1,71 @@
+---
+import ToolBox from './ToolBox.astro';
+const likes = ['Short answers', 'British English', 'Plain English, no jargon', 'One recommendation, not a list of options', 'Bullet points where they help', 'Explain things step by step'];
+const dislikes = ["Don't flatter me", "Tell me if my idea is weak", "Don't hedge everything", 'Ask before assuming'];
+---
+
+<ToolBox title="Write your 'about me'">
+	<div data-profile>
+		<p>Answer a few questions. You'll get a short description to paste into Claude's settings.</p>
+		<label>What do you do?<span class="hint">e.g. "I run a small cleaning business with four staff"</span>
+			<input type="text" data-f="what" /></label>
+		<label>Who do you usually write for?<span class="hint">e.g. "Customers, mostly homeowners, and my team"</span>
+			<input type="text" data-f="who" /></label>
+		<span class="field-label">How do you like answers?</span>
+		<div class="checks" data-group="likes">
+			{likes.map((l) => <label><input type="checkbox" value={l} /> {l}</label>)}
+		</div>
+		<span class="field-label">What should Claude avoid?</span>
+		<div class="checks" data-group="dislikes">
+			{dislikes.map((l) => <label><input type="checkbox" value={l} /> {l}</label>)}
+		</div>
+		<label>Anything else?<span class="hint">One thing you're tired of repeating</span>
+			<input type="text" data-f="extra" /></label>
+		<div class="output" data-out aria-live="polite"></div>
+		<p class="meter" data-meter></p>
+		<div class="btns">
+			<button type="button" data-copy>Copy</button>
+			<a class="btn ghost" href="https://claude.ai/settings" target="_blank" rel="noopener">Open Claude's settings ↗</a>
+		</div>
+	</div>
+</ToolBox>
+<script>
+	document.querySelectorAll<HTMLElement>('[data-profile]').forEach((root) => {
+		const out = root.querySelector<HTMLElement>('[data-out]')!;
+		const meter = root.querySelector<HTMLElement>('[data-meter]')!;
+		const val = (k: string) => root.querySelector<HTMLInputElement>(`[data-f="${k}"]`)!.value.trim().replace(/[.]$/, '');
+		const picked = (g: string) =>
+			Array.from(root.querySelectorAll<HTMLInputElement>(`[data-group="${g}"] input:checked`)).map((x) => x.value);
+		const lower = (s: string) => s.charAt(0).toLowerCase() + s.slice(1);
+		const render = () => {
+			const lines: string[] = [];
+			const what = val('what');
+			const who = val('who');
+			if (what) lines.push(/^i\b/i.test(what) ? what + '.' : 'I ' + lower(what) + '.');
+			if (who) lines.push(`I mostly write for ${lower(who)}.`);
+			const likes = picked('likes');
+			if (likes.length) lines.push(`I like: ${likes.map(lower).join('; ')}.`);
+			const dislikes = picked('dislikes');
+			if (dislikes.length) lines.push(dislikes.join('. ') + '.');
+			const extra = val('extra');
+			if (extra) lines.push(extra + '.');
+			const text = lines.join(' ');
+			out.textContent = text || 'Your description will appear here.';
+			const words = text ? text.split(/\s+/).length : 0;
+			meter.textContent = words === 0 ? '' : words > 120 ? `${words} words. Try trimming it: shorter works better.` : `${words} words. A good length.`;
+		};
+		root.addEventListener('input', render);
+		root.addEventListener('change', render);
+		root.querySelector('[data-copy]')!.addEventListener('click', async (e) => {
+			const btn = e.currentTarget as HTMLButtonElement;
+			try {
+				await navigator.clipboard.writeText(out.textContent || '');
+				btn.textContent = 'Copied';
+			} catch {
+				btn.textContent = 'Select the text and copy it';
+			}
+			setTimeout(() => (btn.textContent = 'Copy'), 2000);
+		});
+		render();
+	});
+</script>

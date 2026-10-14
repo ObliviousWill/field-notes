@@ -4,9 +4,6 @@ summary: "The site you're reading. I'm not a developer, and I built it from noth
 status: 'building'
 area: 'personal'
 startDate: 'May 20 2026'
-links:
-  - label: 'See the code (GitHub)'
-    url: 'https://github.com/ObliviousWill/field-notes'
 facts:
   - label: 'What it is'
     value: 'A personal website and blog'

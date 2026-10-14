@@ -45,7 +45,7 @@ A job that runs while you're asleep needs to be honest with you. Every one of mi
 
 **Don't pad a quiet week.** If there are only two good stories, send two. A briefing that always finds three soon becomes noise.
 
-**Zero isn't the same as missing.** In the school holidays, some of our numbers really are zero. If a figure can't be fetched, the report says so clearly, rather than showing a zero that looks real.
+**Zero isn't the same as missing.** At quiet times of year, some numbers really are zero. If a figure can't be fetched, the report says so clearly, rather than showing a zero that looks real.
 
 **Add it up two ways.** If the daily figures don't match the total, it flags it straight away.
 

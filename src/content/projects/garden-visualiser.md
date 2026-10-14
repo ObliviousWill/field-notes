@@ -18,7 +18,7 @@ facts:
     value: 'A computer or tablet, in the browser'
 ---
 
-I'd been helping a local landscape gardener with their marketing. When we wrote down what holds their customers back, it came to one line: *"I can't picture it, and I don't trust a sketch."* People are being asked to spend thousands on something they can only imagine.
+Ask anyone thinking about a new garden what holds them back, and it often comes down to one line: *"I can't picture it, and I don't trust a sketch."* People are being asked to spend thousands on something they can only imagine.
 
 So I built a garden designer.
 

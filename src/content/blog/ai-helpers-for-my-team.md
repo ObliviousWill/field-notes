@@ -18,7 +18,7 @@ An "agent" is an AI that does a task on a schedule, instead of waiting for someo
 There are six, plus one that checks their work:
 
 - **The bookings helper** looks at how bookings are going.
-- **The enquiries helper** makes sure no new enquiry slips through the cracks.
+- **The enquiries helper** helps make sure every new enquiry gets a quick, helpful reply.
 - **The search helper** looks at how people find us on Google.
 - **The website helper** checks our pages are accurate.
 - **The writer** suggests articles and prepares first drafts for us to edit.
@@ -66,4 +66,4 @@ Nobody has to learn a new tool. Suggestions appear on the task board the team al
 - **Separate the work from the checking.**
 - **Make it easy to say no.** A suggestion that's quick to turn down is a suggestion people will actually read.
 
-The point isn't to do more. It's to give the team better information, earlier, so they can spend their time on the work that needs people.
+The point isn't to do more. It's to give the team better information, earlier, so they can spend their time on the work that matters most.

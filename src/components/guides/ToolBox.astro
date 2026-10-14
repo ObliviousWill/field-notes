@@ -1,0 +1,165 @@
+---
+// Frame for an interactive exercise inside a guide.
+interface Props {
+	title: string;
+	privacy?: boolean;
+}
+const { title, privacy = true } = Astro.props;
+---
+
+<aside class="tool">
+	<p class="tool-label">Try it here</p>
+	<h3 class="tool-title">{title}</h3>
+	<slot />
+	{privacy && <p class="tool-privacy">This runs in your browser. Nothing you type is sent anywhere or saved.</p>}
+</aside>
+<style is:global>
+	.tool {
+		margin: 32px 0;
+		padding: 22px 22px 18px;
+		background: var(--bg-soft);
+		border: 1px solid var(--hairline);
+		border-left: 4px solid var(--accent);
+		border-radius: 8px;
+		font-size: 16px;
+	}
+	.tool-label {
+		margin: 0 0 4px !important;
+		font-size: 11px !important;
+		letter-spacing: 0.16em;
+		text-transform: uppercase;
+		font-weight: 700;
+		color: var(--accent-ink);
+	}
+	.tool-title {
+		margin: 0 0 14px !important;
+		font-size: 22px !important;
+	}
+	.tool-privacy {
+		margin: 14px 0 0 !important;
+		font-size: 12px !important;
+		color: rgb(var(--text-muted));
+	}
+	.tool label,
+	.tool .field-label {
+		display: block;
+		font-weight: 700;
+		font-size: 14px;
+		margin: 14px 0 6px;
+		color: rgb(var(--text));
+	}
+	.tool .hint {
+		display: block;
+		font-weight: 400;
+		font-size: 13px;
+		color: rgb(var(--text-muted));
+		margin-top: 2px;
+	}
+	.tool input[type='text'],
+	.tool textarea,
+	.tool select {
+		width: 100%;
+		box-sizing: border-box;
+		padding: 10px 12px;
+		border: 1px solid var(--hairline);
+		border-radius: 6px;
+		background: var(--bg, #eee9df);
+		color: rgb(var(--text));
+		font: inherit;
+		font-size: 16px;
+		font-weight: 400;
+	}
+	.tool textarea {
+		min-height: 72px;
+		resize: vertical;
+	}
+	.tool input:focus,
+	.tool textarea:focus,
+	.tool select:focus {
+		outline: 2px solid var(--accent);
+		outline-offset: 1px;
+	}
+	.tool .checks {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 8px;
+	}
+	.tool .checks label {
+		display: inline-flex;
+		align-items: center;
+		gap: 6px;
+		margin: 0;
+		padding: 7px 12px;
+		border: 1px solid var(--hairline);
+		border-radius: 999px;
+		font-weight: 400;
+		font-size: 14px;
+		cursor: pointer;
+		background: var(--bg, #eee9df);
+	}
+	.tool .checks label:has(input:checked) {
+		border-color: var(--accent);
+		background: rgba(255, 177, 98, 0.18);
+	}
+	.tool .btns {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 8px;
+		margin-top: 14px;
+	}
+	.tool button,
+	.tool .btn {
+		padding: 10px 16px;
+		border: 0;
+		border-radius: 6px;
+		background: rgb(var(--text));
+		color: #eee9df;
+		font: inherit;
+		font-size: 14px;
+		font-weight: 700;
+		cursor: pointer;
+		text-decoration: none;
+		background-image: none;
+	}
+	.tool button.ghost,
+	.tool .btn.ghost {
+		background: transparent;
+		color: rgb(var(--text));
+		border: 1px solid var(--hairline);
+	}
+	.tool .output {
+		margin-top: 16px;
+		padding: 14px;
+		background: var(--bg, #eee9df);
+		border: 1px dashed var(--hairline);
+		border-radius: 6px;
+		white-space: pre-wrap;
+		font-size: 15px;
+		line-height: 1.5;
+		min-height: 48px;
+	}
+	.tool .verdict {
+		margin-top: 16px;
+		padding: 14px 16px;
+		border-radius: 6px;
+		background: rgba(255, 177, 98, 0.16);
+		border: 1px solid var(--accent);
+	}
+	.tool .verdict strong {
+		display: block;
+		font-size: 17px;
+		margin-bottom: 4px;
+	}
+	.tool .meter {
+		margin-top: 12px;
+		font-size: 14px;
+		color: rgb(var(--text-muted));
+	}
+	.tool .sr {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		overflow: hidden;
+		clip: rect(0 0 0 0);
+	}
+</style>

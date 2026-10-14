@@ -25,6 +25,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 <BlogPost
 	{...guide.data}
 	section="guides"
+	guideSlug={guide.id}
 	stepCount={count}
 	readingTime={readingTimeMinutes(guide.body)}
 	ogImageUrl={`${base}/og/guides/${guide.id}.png`}

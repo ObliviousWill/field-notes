@@ -54,7 +54,7 @@ A few moves that consistently raise the quality of the brief:
 
 **Treat it as a conversation, not a vending machine.** The first answer is a draft, not a verdict. "Good, but too formal and the second paragraph buries the ask. Fix both" gets you somewhere a fresh prompt won't. The people who get the most out of Claude are the ones who argue with it.
 
-One more thing on direction, because it's a real lever and most people never touch it: you can tell Claude how to think before it answers. For anything properly hard (a thorny decision, a complex analysis, a plan with a lot of moving parts) asking it to reason through the problem step by step, or to think it through carefully before responding, measurably improves the result. For a quick factual answer it's overkill. For a knotty one it's the difference between a glib reply and a considered one.
+One more thing on direction, because it's a real lever and most people never touch it: you can tell Claude how to think before it answers. For anything properly hard (a thorny decision, a complex analysis, a plan with a lot of moving parts) asking it to reason through the problem step by step, or to think it through carefully before responding, often improves the result. For a quick factual answer it's overkill. For a knotty one it's the difference between a glib reply and a considered one.
 
 ## 3. Building: where it stops being a chat and starts being infrastructure
 

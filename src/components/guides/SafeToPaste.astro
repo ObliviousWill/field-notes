@@ -1,0 +1,112 @@
+---
+import ToolBox from './ToolBox.astro';
+---
+
+<ToolBox title="Safe to paste?">
+	<div data-safe>
+		<p>
+			Paste or type what you're about to give Claude. This highlights common personal
+			details so you can take them out first.
+		</p>
+		<label for="safe-input" class="sr">Your text</label>
+		<textarea id="safe-input" data-in rows="5" placeholder="e.g. Please reply to Mrs Jane Smith (jane.smith@example.com, 07700 900123) about her order."></textarea>
+		<div class="output safe-out" data-out aria-live="polite"></div>
+		<p class="meter" data-meter aria-live="polite"></p>
+		<div class="btns">
+			<button type="button" data-fix>Replace them with placeholders</button>
+			<button type="button" class="ghost" data-example>Try an example</button>
+		</div>
+		<p class="meter">
+			It catches common patterns, such as email addresses, phone numbers, postcodes, card
+			numbers and names after Mr, Mrs or Dr. It can't catch everything. Names on their own
+			are hard to spot automatically, so read it through yourself too.
+		</p>
+	</div>
+</ToolBox>
+<style>
+	.safe-out :global(mark) {
+		background: rgba(220, 80, 80, 0.22);
+		color: inherit;
+		border-radius: 3px;
+		padding: 0 2px;
+	}
+	.safe-out :global(mark span) {
+		font-size: 11px;
+		font-weight: 700;
+		text-transform: uppercase;
+		letter-spacing: 0.06em;
+		margin-left: 4px;
+		color: #a33;
+	}
+</style>
+<script>
+	type Rule = { label: string; re: RegExp };
+	const rules: Rule[] = [
+		{ label: 'email', re: /[\w.+-]+@[\w-]+(\.[\w-]+)+/g },
+		{ label: 'card number', re: /\b(?:\d[ -]?){13,19}\b/g },
+		{ label: 'phone', re: /(?:\+44\s?|\b0)\d{2,4}[\s-]?\d{3,4}[\s-]?\d{3,4}\b/g },
+		{ label: 'NI number', re: /\b[A-CEGHJ-PR-TW-Z]{2}\s?\d{2}\s?\d{2}\s?\d{2}\s?[A-D]\b/gi },
+		{ label: 'postcode', re: /\b[A-Z]{1,2}\d[A-Z\d]?\s?\d[A-Z]{2}\b/gi },
+		{ label: 'date', re: /\b\d{1,2}[\/.-]\d{1,2}[\/.-]\d{2,4}\b/g },
+		{ label: 'name', re: /\b(?:Mr|Mrs|Ms|Miss|Dr|Mx)\.?\s+[A-Z][a-z'-]+(?:\s+[A-Z][a-z'-]+)?/g },
+		{ label: 'address', re: /\b\d{1,4}\s+[A-Z][a-z]+(?:\s[A-Z][a-z]+)?\s(?:Street|St|Road|Rd|Lane|Ln|Avenue|Ave|Close|Drive|Way|Court|Crescent|Gardens|Place)\b/g },
+	];
+	const find = (text: string) => {
+		const hits: { start: number; end: number; label: string }[] = [];
+		for (const r of rules) {
+			for (const m of text.matchAll(r.re)) {
+				const start = m.index ?? 0;
+				const end = start + m[0].length;
+				if (!hits.some((h) => start < h.end && end > h.start)) hits.push({ start, end, label: r.label });
+			}
+		}
+		return hits.sort((a, b) => a.start - b.start);
+	};
+	document.querySelectorAll<HTMLElement>('[data-safe]').forEach((root) => {
+		const input = root.querySelector<HTMLTextAreaElement>('[data-in]')!;
+		const out = root.querySelector<HTMLElement>('[data-out]')!;
+		const meter = root.querySelector<HTMLElement>('[data-meter]')!;
+		const render = () => {
+			const text = input.value;
+			const hits = find(text);
+			out.replaceChildren();
+			let pos = 0;
+			for (const h of hits) {
+				out.append(document.createTextNode(text.slice(pos, h.start)));
+				const mark = document.createElement('mark');
+				mark.textContent = text.slice(h.start, h.end);
+				const tag = document.createElement('span');
+				tag.textContent = h.label;
+				mark.append(tag);
+				out.append(mark);
+				pos = h.end;
+			}
+			out.append(document.createTextNode(text.slice(pos)));
+			if (!text.trim()) out.textContent = 'Highlights will appear here.';
+			meter.textContent = !text.trim()
+				? ''
+				: hits.length
+					? `Found ${hits.length} ${hits.length === 1 ? 'thing' : 'things'} worth taking out.`
+					: "Nothing obvious found. Still read it through: does it identify anyone?";
+		};
+		input.addEventListener('input', render);
+		root.querySelector('[data-fix]')!.addEventListener('click', () => {
+			const text = input.value;
+			const hits = find(text);
+			let result = '';
+			let pos = 0;
+			for (const h of hits) {
+				result += text.slice(pos, h.start) + `[${h.label.toUpperCase()}]`;
+				pos = h.end;
+			}
+			input.value = result + text.slice(pos);
+			render();
+		});
+		root.querySelector('[data-example]')!.addEventListener('click', () => {
+			input.value =
+				'Please write a reply to Mrs Jane Smith, 14 Mill Lane, AB1 2CD (jane.smith@example.com, 07700 900123). She says her order from 03/10/2026 arrived damaged and wants a refund.';
+			render();
+		});
+		render();
+	});
+</script>

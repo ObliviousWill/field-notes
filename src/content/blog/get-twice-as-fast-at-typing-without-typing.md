@@ -10,7 +10,7 @@ I type at 63 words a minute. With Wispr Flow, an app that types out what you say
 
 That's the hook. It isn't the point.
 
-The point is that dictation has crossed a line in the last year or two. It used to be the thing you reached for when you couldn't type: accessibility, injury, holding a baby. Now it's a better default for a lot of knowledge work, and almost no one I work with has noticed. So this is me showing colleagues what's actually on the table. Not waving a personal best around.
+The point is that dictation has crossed a line in the last year or two. It used to be the thing you reached for when you couldn't type: accessibility, injury, holding a baby. Now it's a better default for a lot of knowledge work, and most people haven't noticed yet. So this is me showing colleagues what's actually on the table. Not waving a personal best around.
 
 ## The speed bit, briefly
 
@@ -53,9 +53,9 @@ Each layer removes work you used to do badly or slowly by hand.
 ## Why most people are leaving this on the table
 
 
-Almost everyone I work with can type competently, so they do.
+Most of us type well, so we type.
 
-But I think they're missing something. The faster and more fluent a typist you are, the more aggressively you self-edit at the keyboard, and the more you have to gain from a tool that outruns that instinct. The people who'd benefit most are the ones most convinced they don't need it.
+But I think they're missing something. The faster and more fluent a typist you are, the more aggressively you self-edit at the keyboard, and the more you have to gain from a tool that outruns that instinct. Fast typists may have the most to gain.
 
 The barriers are real but smaller than they were. Talking to your machine feels strange, especially near other people. You get over that in about a week. You also have to stop treating the transcript as precious; it's input, not output, though with Wispr cleaning as it goes the gap is narrower than it used to be. And accuracy used to be the dealbreaker. It largely isn't. Once it's learned your names and product terms, the mangled-jargon problem disappears, and the learning carries between devices.
 

@@ -1,0 +1,98 @@
+---
+import ToolBox from './ToolBox.astro';
+---
+
+<ToolBox title="Build a brief">
+	<div data-brief>
+		<p>Fill in what you can. Your brief builds itself below, ready to copy into Claude.</p>
+		<label>What do you want?<span class="hint">e.g. "A reply to a customer who's unhappy with a late delivery"</span>
+			<textarea data-f="want" rows="2"></textarea></label>
+		<label>Who is it for?<span class="hint">e.g. "A long-standing customer, quite upset"</span>
+			<input type="text" data-f="who" /></label>
+		<label>What's the background?<span class="hint">The things in your head that Claude can't know</span>
+			<textarea data-f="bg" rows="3"></textarea></label>
+		<label>How should it sound?<span class="hint">e.g. "Warm, apologetic, not grovelling"</span>
+			<input type="text" data-f="tone" /></label>
+		<label>Any limits?<span class="hint">e.g. "Under 120 words. No discount offered."</span>
+			<input type="text" data-f="limits" /></label>
+		<span class="field-label">How should Claude go about it?</span>
+		<div class="checks">
+			<label><input type="checkbox" data-x="Before you start, ask me any questions you need answered to do this well." /> Ask me questions first</label>
+			<label><input type="checkbox" data-x="Tell me what you're assuming, and what could make this wrong." /> Tell me its assumptions</label>
+			<label><input type="checkbox" data-x="Give me your single best version, not a list of options." /> One best answer</label>
+			<label><input type="checkbox" data-x="Challenge me if you think I've got this wrong." /> Push back on me</label>
+		</div>
+		<p class="meter" data-meter aria-live="polite"></p>
+		<div class="output" data-out aria-live="polite"></div>
+		<div class="btns">
+			<button type="button" data-copy>Copy brief</button>
+			<a class="btn ghost" href="https://claude.ai/new" target="_blank" rel="noopener">Open Claude ↗</a>
+			<button type="button" class="ghost" data-example>Show me an example</button>
+			<button type="button" class="ghost" data-clear>Clear</button>
+		</div>
+	</div>
+</ToolBox>
+<script>
+	document.querySelectorAll<HTMLElement>('[data-brief]').forEach((root) => {
+		const field = (k: string) => root.querySelector<HTMLInputElement | HTMLTextAreaElement>(`[data-f="${k}"]`)!;
+		const out = root.querySelector<HTMLElement>('[data-out]')!;
+		const meter = root.querySelector<HTMLElement>('[data-meter]')!;
+		const extras = Array.from(root.querySelectorAll<HTMLInputElement>('[data-x]'));
+		const parts: [string, string, string][] = [
+			['want', '', 'what you want'],
+			['who', "It's for: ", 'who it is for'],
+			['bg', 'Background: ', 'the background'],
+			['tone', 'How it should sound: ', 'how it should sound'],
+			['limits', 'Limits: ', 'any limits'],
+		];
+		const tidy = (s: string) => {
+			s = s.trim();
+			return s && !/[.!?]$/.test(s) ? s + '.' : s;
+		};
+		const render = () => {
+			const lines: string[] = [];
+			const missing: string[] = [];
+			for (const [k, prefix, name] of parts) {
+				const v = tidy(field(k).value);
+				if (v) lines.push(prefix + v);
+				else missing.push(name);
+			}
+			const chosen = extras.filter((x) => x.checked).map((x) => x.dataset.x!);
+			if (chosen.length) lines.push(chosen.join(' '));
+			out.textContent = lines.length ? lines.join('\n\n') : 'Your brief will appear here.';
+			const have = parts.length - missing.length;
+			meter.textContent =
+				have === 0
+					? ''
+					: missing.length === 0
+						? `All five parts in. A colleague could do this without asking you anything.`
+						: `${have} of 5 parts in. Worth adding: ${missing.join(', ')}.`;
+		};
+		root.addEventListener('input', render);
+		root.querySelector('[data-copy]')!.addEventListener('click', async (e) => {
+			const btn = e.currentTarget as HTMLButtonElement;
+			try {
+				await navigator.clipboard.writeText(out.textContent || '');
+				btn.textContent = 'Copied';
+			} catch {
+				btn.textContent = 'Select the text and copy it';
+			}
+			setTimeout(() => (btn.textContent = 'Copy brief'), 2000);
+		});
+		root.querySelector('[data-example]')!.addEventListener('click', () => {
+			field('want').value = 'A reply to a customer whose order arrived a week late';
+			field('who').value = 'A customer who has ordered from us several times and is clearly frustrated';
+			field('bg').value = 'The delay was caused by our courier. The order has now arrived and is complete. We want to keep them as a customer';
+			field('tone').value = 'Warm and genuinely sorry, but not grovelling. Plain English';
+			field('limits').value = 'Under 120 words. Do not offer a discount';
+			extras.forEach((x, i) => (x.checked = i === 2));
+			render();
+		});
+		root.querySelector('[data-clear]')!.addEventListener('click', () => {
+			parts.forEach(([k]) => (field(k).value = ''));
+			extras.forEach((x) => (x.checked = false));
+			render();
+		});
+		render();
+	});
+</script>
