@@ -1,0 +1,409 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Coffee Personality Quiz</title>
+<meta name="description" content="What's your coffee personality? A six-question quiz from Crema &amp; Crumb, an independent café.">
+<style>
+:root{
+  --bean:#3a2218; --bean-2:#5a3726; --cream:#fff3e3; --foam:#fffaf2; --card:#ffffff;
+  --ink:#2a1a12; --muted:#6a5246; --berry:#b0244f; --berry-dark:#7d1636; --berry-soft:#fbe1e8;
+  --mustard:#f2b134; --mint:#cfe8dc; --line:rgba(58,34,24,.16); --focus:#1957d2;
+  color-scheme:light;
+}
+*,*::before,*::after{box-sizing:border-box}
+html,body{margin:0}
+body{
+  background:var(--cream);
+  background-image:radial-gradient(circle, rgba(58,34,24,.07) 2px, transparent 2.5px);
+  background-size:26px 26px;
+  color:var(--ink);
+  font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  font-size:17px;line-height:1.5;min-height:100vh;overflow-x:hidden;
+}
+.wrap{max-width:560px;margin:0 auto;padding:16px 16px 40px}
+header.brand{display:flex;align-items:center;gap:10px;padding:6px 0 14px}
+.brand-mark{width:42px;height:42px;flex:none}
+.brand-name{font-weight:900;color:var(--bean);font-size:1.1rem;line-height:1.1;letter-spacing:-.01em}
+.brand-name small{display:block;font-weight:650;color:var(--muted);font-size:.78rem;letter-spacing:.02em}
+.panel{background:var(--card);border-radius:24px;border:3px solid var(--bean);box-shadow:6px 6px 0 var(--bean);padding:22px 20px;position:relative}
+h1,h2,h3{line-height:1.12;letter-spacing:-.02em;margin:0}
+h1{font-size:2.05rem;color:var(--bean)}
+h2{font-size:1.45rem;color:var(--bean)}
+p{margin:.6em 0}
+.muted{color:var(--muted)}
+.btn{
+  appearance:none;cursor:pointer;font:inherit;font-weight:800;
+  min-height:52px;padding:12px 22px;border-radius:999px;border:3px solid var(--bean);
+  background:var(--berry);color:#fff;box-shadow:0 5px 0 var(--bean);
+  transition:transform .15s cubic-bezier(.3,1.6,.5,1),box-shadow .15s,background .2s;
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+}
+.btn:hover{transform:translateY(-2px) rotate(-1deg);background:var(--berry-dark)}
+.btn:active{transform:translateY(4px);box-shadow:0 1px 0 var(--bean)}
+.btn.alt{background:#fff;color:var(--bean)}
+.btn.alt:hover{background:var(--cream)}
+.btn.dark{background:var(--bean)}
+.btn.dark:hover{background:var(--bean-2)}
+.btn.link{background:none;border:0;box-shadow:none;color:var(--bean);min-height:44px;padding:8px 10px;text-decoration:underline;text-underline-offset:3px}
+.btn.link:hover{transform:none;background:var(--berry-soft)}
+:focus-visible{outline:3px solid var(--focus);outline-offset:3px}
+.btn:focus-visible{outline-offset:5px}
+
+.intro{text-align:center;overflow:hidden}
+.hero{width:180px;height:180px;display:block;margin:0 auto}
+.steam path{animation:steam 2.4s ease-in-out infinite;transform-origin:center}
+.steam path:nth-child(2){animation-delay:.4s}
+.steam path:nth-child(3){animation-delay:.8s}
+.pill{display:inline-block;background:var(--mustard);color:#3a2600;font-weight:800;font-size:.82rem;padding:4px 12px;border-radius:999px;margin:4px 0 10px;border:2px solid var(--bean)}
+
+.progress{display:flex;align-items:center;gap:10px;margin:0 0 16px}
+.track{flex:1;height:16px;background:var(--foam);border:2px solid var(--bean);border-radius:999px;position:relative}
+.fill{position:absolute;left:0;top:0;bottom:0;width:0;border-radius:999px;background:repeating-linear-gradient(-45deg,#6b4030 0 8px,#7b4b37 8px 16px);transition:width .5s cubic-bezier(.3,1.4,.5,1)}
+.bean{position:absolute;top:50%;width:28px;height:28px;transform:translate(-50%,-50%) rotate(-20deg);transition:left .5s cubic-bezier(.3,1.4,.5,1)}
+.count{font-weight:800;color:var(--bean);font-size:.9rem;min-width:40px;text-align:right}
+
+.qnum{font-weight:800;color:var(--berry);font-size:.85rem;letter-spacing:.06em;text-transform:uppercase}
+.qtitle{margin:6px 0 4px;font-size:1.5rem}
+.qhint{color:var(--muted);margin:0 0 14px;font-size:.95rem}
+.options{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.opt{
+  appearance:none;font:inherit;cursor:pointer;color:var(--ink);text-align:center;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;
+  min-height:112px;padding:12px 10px;background:var(--foam);border:2px solid var(--bean);border-radius:18px;
+  box-shadow:0 4px 0 var(--bean);
+  transition:transform .18s cubic-bezier(.3,1.6,.5,1),background .2s,box-shadow .15s;
+  font-weight:700;line-height:1.25;font-size:.98rem;
+}
+.opt .emo{font-size:2rem;line-height:1;transition:transform .3s cubic-bezier(.3,1.8,.5,1)}
+.opt:hover{transform:translateY(-3px) rotate(-1.5deg);background:#fff}
+.opt:nth-child(even):hover{transform:translateY(-3px) rotate(1.5deg)}
+.opt:hover .emo{transform:scale(1.2) rotate(-8deg)}
+.opt:active{transform:translateY(3px);box-shadow:0 1px 0 var(--bean)}
+.opt.picked{background:var(--mustard);animation:pop .4s cubic-bezier(.3,1.8,.5,1)}
+.opt.picked .emo{transform:scale(1.3) rotate(10deg)}
+.opt.wide{grid-column:1 / -1;min-height:76px;flex-direction:row}
+.qnav{display:flex;align-items:center;margin-top:14px;min-height:44px}
+
+.screen{animation:slideIn .45s cubic-bezier(.2,.9,.3,1.15) both}
+.screen.leaving{animation:slideOut .22s ease-in both}
+
+.brewing{text-align:center;padding:40px 20px}
+.brewing svg{width:150px;height:150px}
+.brewing .liquid{animation:brewFill 1.3s ease-in-out forwards}
+.brewing p{font-weight:800;color:var(--bean);font-size:1.2rem}
+
+.result-card{border:3px solid var(--bean);border-radius:28px;overflow:hidden;box-shadow:8px 8px 0 var(--bean);background:#fff;animation:reveal .8s cubic-bezier(.2,1.4,.4,1) both}
+.result-top{padding:22px 18px 6px;text-align:center;color:#fff;position:relative;
+  background:radial-gradient(circle at 50% 78%, rgba(255,255,255,.16) 0 92px, transparent 93px),var(--rc,#b0244f)}
+.result-top .tag{display:inline-block;background:var(--mustard);color:#3a2600;font-weight:800;font-size:.78rem;letter-spacing:.06em;text-transform:uppercase;padding:4px 12px;border-radius:999px;border:2px solid var(--bean)}
+.persona{font-size:1.9rem;font-weight:900;margin:12px 0 2px;color:#fff;line-height:1.08;text-shadow:0 3px 0 rgba(0,0,0,.18)}
+.drinkname{display:inline-block;background:#fff;color:var(--bean);font-weight:800;padding:6px 14px;border-radius:12px;transform:rotate(-2deg);margin-top:8px;border:2px solid var(--bean)}
+.result-art{width:200px;height:200px;display:block;margin:6px auto 0}
+.result-body{padding:20px}
+.result-body h3{font-size:1.05rem;color:var(--bean);margin:16px 0 8px}
+.what{background:var(--cream);border-radius:14px;padding:10px 12px;font-size:.95rem;margin:12px 0 0}
+.pair{display:flex;gap:12px;align-items:center;background:var(--mint);border:2px solid var(--bean);border-radius:16px;padding:12px 14px;margin-top:14px}
+.pair .pi{font-size:2rem;flex:none;line-height:1}
+.pair strong{display:block;color:var(--bean)}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
+.actions .btn{flex:1 1 150px}
+.toast{min-height:1.5em;font-weight:700;color:var(--bean);margin:8px 0 0;font-size:.92rem}
+
+.capture{margin-top:22px;background:var(--foam)}
+.capture h3{color:var(--bean);font-size:1.3rem}
+.offer{display:flex;gap:12px;align-items:center;background:var(--berry-soft);border:2px dashed var(--berry);border-radius:16px;padding:10px 12px;margin:12px 0 14px}
+.offer .big{font-size:2rem;line-height:1;flex:none;display:inline-block;transform:rotate(-8deg)}
+.offer small{display:block;color:var(--berry-dark);font-size:.8rem;font-weight:650}
+.field{display:grid;gap:4px;margin:0 0 12px}
+.field label{font-weight:750;font-size:.95rem}
+.field input{font:inherit;min-height:50px;padding:10px 14px;border-radius:12px;border:2px solid var(--bean);background:#fff;color:var(--ink);width:100%}
+.check{display:flex;gap:10px;align-items:flex-start;margin:4px 0 16px;font-size:.95rem;cursor:pointer}
+.check input{width:24px;height:24px;flex:none;margin:1px 0 0;accent-color:var(--berry)}
+.demo-note{background:var(--mint);border:2px solid var(--bean);border-radius:16px;padding:16px;animation:pop .45s cubic-bezier(.3,1.8,.5,1)}
+footer{text-align:center;color:var(--muted);font-size:.85rem;margin-top:26px}
+
+.confetti{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:50}
+.confetti i{position:absolute;top:-30px;font-style:normal;font-size:20px;animation:fall linear forwards}
+.confetti b{position:absolute;top:-20px;width:10px;height:14px;border-radius:3px;animation:fall linear forwards}
+
+@keyframes steam{0%{opacity:0;transform:translateY(8px)}40%{opacity:.9}100%{opacity:0;transform:translateY(-14px)}}
+@keyframes pop{0%{transform:scale(.95)}60%{transform:scale(1.04)}100%{transform:scale(1)}}
+@keyframes slideIn{from{opacity:0;transform:translateY(18px) scale(.97)}to{opacity:1;transform:none}}
+@keyframes slideOut{to{opacity:0;transform:translateY(-14px) scale(.97)}}
+@keyframes reveal{0%{opacity:0;transform:scale(.5) rotate(-6deg)}70%{opacity:1;transform:scale(1.04) rotate(1deg)}100%{transform:none}}
+@keyframes fall{to{transform:translate3d(var(--dx),110vh,0) rotate(var(--rot))}}
+@keyframes brewFill{from{transform:translateY(46px)}to{transform:translateY(0)}}
+@keyframes wiggle{0%,100%{transform:rotate(0)}25%{transform:rotate(-6deg)}75%{transform:rotate(6deg)}}
+.wiggle{animation:wiggle .4s ease-in-out}
+
+@media (max-width:359px){.options{grid-template-columns:1fr}}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+  .confetti{display:none}
+}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="brand">
+    <svg class="brand-mark" viewBox="0 0 42 42" aria-hidden="true">
+      <circle cx="21" cy="21" r="19" fill="#b0244f" stroke="#3a2218" stroke-width="3"/>
+      <path d="M11 17h17v6a8.5 8.5 0 0 1-17 0z" fill="#fff3e3"/>
+      <path d="M28 19h2.5a3 3 0 0 1 0 6H27" fill="none" stroke="#fff3e3" stroke-width="2.4"/>
+      <ellipse cx="19.5" cy="17.5" rx="7" ry="1.6" fill="#5a3726"/>
+    </svg>
+    <div class="brand-name">Crema &amp; Crumb<small>Independent café &amp; bakery</small></div>
+  </header>
+  <main id="app" tabindex="-1"></main>
+  <div id="live" class="sr-only" aria-live="polite" aria-atomic="true"></div>
+  <footer>A fictional business. Demo from Field Notes.</footer>
+</div>
+
+<script>
+(function(){
+"use strict";
+var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+var app = document.getElementById("app"), live = document.getElementById("live");
+
+var DRINKS = {
+  fw:{drink:"Flat white",persona:"The Quietly Confident",colour:"#2f6f73",liquid:"#c89a6a",art:"heart",cup:"tumbler",
+    desc:"You don't need to shout about it. You're organised, a little bit cool and secretly the person everyone asks for advice. Like you, a flat white is small, strong and smooth.",
+    what:"A double shot of espresso topped with a thin layer of velvety steamed milk. Smaller and stronger-tasting than a latte.",
+    pair:"An almond croissant",pairWhy:"Buttery and nutty, it lets the coffee do the talking.",pairE:"🥐"},
+  co:{drink:"Cortado",persona:"The Small But Mighty",colour:"#8a4b2a",liquid:"#a8714a",art:"dot",cup:"glass",
+    desc:"Efficient, direct and surprisingly fun once you get going. You know what you like and you don't waste a sip getting there.",
+    what:"Espresso 'cut' with a roughly equal amount of warm milk and very little foam. The name comes from the Spanish word cortar, to cut.",
+    pair:"A custard tart",pairWhy:"A creamy, caramelised bite to match that punchy little drink.",pairE:"🥧"},
+  oat:{drink:"Oat latte",persona:"The Cosy Optimist",colour:"#5c7f3a",liquid:"#d8b48a",art:"rosetta",cup:"mug",
+    desc:"Warm, easy-going and the friend who always brings snacks. You like your mornings gentle and your playlists mellow, and you believe things usually turn out fine.",
+    what:"Espresso with plenty of steamed oat milk and a soft layer of foam. Mellow, creamy and naturally a little sweet.",
+    pair:"A slice of banana bread",pairWhy:"Toasty, comforting and best enjoyed slowly.",pairE:"🍌"},
+  esp:{drink:"Double espresso",persona:"The Full-Throttle Go-Getter",colour:"#b0244f",liquid:"#4a2616",art:"crema",cup:"demi",
+    desc:"You were up before the alarm, you've already answered three emails and you have a plan for lunch. Bold, focused and allergic to faff.",
+    what:"Two shots of espresso, sometimes called a doppio. Short, intense and topped with a golden layer of crema.",
+    pair:"Almond biscotti",pairWhy:"Crunchy, not too sweet and made for dunking.",pairE:"🍪"},
+  mo:{drink:"Mocha",persona:"The Sweet-Hearted Romantic",colour:"#7a3b5c",liquid:"#7a4a33",art:"cream",cup:"mug",
+    desc:"You believe in treats, candlelit everything and saying yes to dessert. Life is short, so you make every moment a little bit delicious.",
+    what:"Espresso and chocolate with steamed milk, often finished with whipped cream or a dusting of cocoa.",
+    pair:"Buttery shortbread",pairWhy:"Simple and crumbly, so it doesn't fight all that chocolate.",pairE:"🧈"},
+  chai:{drink:"Chai latte",persona:"The Spiced Free Spirit",colour:"#c2571a",liquid:"#c8925e",art:"spice",cup:"mug",
+    desc:"Curious, creative and always up for an adventure, even if it's just a new route home. You never order the same thing twice. Well, except this.",
+    what:"Black tea with warming spices such as cinnamon, cardamom, ginger and cloves, topped up with steamed milk. No coffee, but the tea brings a little caffeine.",
+    pair:"A cinnamon bun",pairWhy:"Spice on spice. Trust us.",pairE:"🌀"}
+};
+var ORDER = ["fw","co","oat","esp","mo","chai"];
+
+var QUESTIONS = [
+  {q:"How do you wake up?",hint:"Be honest. We've all got a morning face.",opts:[
+    {e:"🐓",t:"Up before the alarm, already smug",p:{esp:3,co:1}},
+    {e:"🗂️",t:"Calm, collected, planning world domination",p:{fw:3,co:1}},
+    {e:"🧸",t:"Do not speak to me until I'm warm",p:{oat:2,mo:2}},
+    {e:"🎧",t:"Depends entirely on the playlist",p:{chai:3,oat:1}}]},
+  {q:"Your ideal Sunday?",hint:"No chores allowed in this fantasy.",opts:[
+    {e:"🏃",t:"Early run, then a big brunch",p:{esp:2,co:2}},
+    {e:"📚",t:"Bookshop browse and a window seat",p:{fw:2,chai:1,oat:1}},
+    {e:"🛌",t:"Duvet, films, zero plans",p:{mo:3,oat:1}},
+    {e:"🧺",t:"Market stroll and a new recipe",p:{chai:2,oat:2}}]},
+  {q:"Sweet or bitter?",hint:"Your taste buds are about to snitch on you.",opts:[
+    {e:"🍫",t:"Bitter. 85% dark chocolate is a snack",p:{esp:3,co:2,fw:1}},
+    {e:"⚖️",t:"A bit of both, please",p:{fw:2,co:2,oat:1}},
+    {e:"🍭",t:"Sweet tooth, no shame",p:{mo:4,chai:1}},
+    {e:"🌶️",t:"Neither. Give me spice",p:{chai:4}}]},
+  {q:"How do you take your milk?",hint:"The big one. Choose wisely.",opts:[
+    {e:"🚫",t:"No milk, thanks",p:{esp:5,co:-1,oat:-3,mo:-3,chai:-3,fw:-2}},
+    {e:"💧",t:"Just a splash",p:{co:3,fw:1}},
+    {e:"🌾",t:"Oat, always",p:{oat:4,chai:1}},
+    {e:"☁️",t:"Silky, creamy, the works",p:{fw:2,mo:2,chai:1}}]},
+  {q:"Describe your week so far",hint:"In one dramatic phrase.",opts:[
+    {e:"🔥",t:"A sprint with my to-do list on fire",p:{esp:3,co:1}},
+    {e:"✅",t:"Busy, but under control",p:{fw:3,co:1}},
+    {e:"🎢",t:"A rollercoaster that needs a treat",p:{mo:3,oat:1}},
+    {e:"🕯️",t:"Slow, steady and cosy",p:{oat:2,chai:2}}]},
+  {q:"Pick a biscuit",hint:"This is the most important question. Obviously.",opts:[
+    {e:"🥖",t:"Almond biscotti",p:{esp:2,co:1}},
+    {e:"🧈",t:"Shortbread",p:{fw:2,oat:1}},
+    {e:"🍫",t:"Chocolate digestive",p:{mo:2,fw:1}},
+    {e:"🫚",t:"Ginger nut",p:{chai:3}},
+    {e:"🍮",t:"Custard cream, the people's champion",p:{oat:2,mo:1},wide:true}]}
+];
+
+var answers = [], step = -1;
+function esc(s){return String(s).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];});}
+
+/* ---------- Cup illustration ---------- */
+function cupSVG(d, steam){
+  var liquid = d?d.liquid:"#c89a6a", type = d?d.cup:"mug", art = d?d.art:"heart";
+  var s = '';
+  s += '<ellipse cx="100" cy="176" rx="70" ry="12" fill="#3a2218" opacity=".18"/>';
+  s += '<ellipse cx="100" cy="168" rx="66" ry="13" fill="#fffaf2" stroke="#3a2218" stroke-width="4"/>';
+  var top=86, rx=52, body;
+  if(type==="demi"){ top=110; rx=34;
+    body='<path d="M66 110 h68 l-6 40 a28 12 0 0 1 -56 0z" fill="#fffaf2" stroke="#3a2218" stroke-width="4"/><path d="M132 120 a12 12 0 0 1 0 22" fill="none" stroke="#3a2218" stroke-width="6"/>';
+  } else if(type==="glass"){ top=98; rx=38;
+    body='<path d="M62 98 h76 l-8 60 h-60z" fill="'+liquid+'" fill-opacity=".85" stroke="#3a2218" stroke-width="4"/><path d="M64 112 h72" stroke="#fffaf2" stroke-width="3" opacity=".6"/>';
+  } else if(type==="tumbler"){ top=92; rx=46;
+    body='<path d="M54 92 h92 l-8 58 a38 14 0 0 1 -76 0z" fill="#fffaf2" stroke="#3a2218" stroke-width="4"/><path d="M144 102 a18 18 0 0 1 -2 34" fill="none" stroke="#3a2218" stroke-width="7"/>';
+  } else {
+    body='<path d="M48 86 h104 v58 a30 16 0 0 1 -30 16 h-44 a30 16 0 0 1 -30 -16z" fill="#fffaf2" stroke="#3a2218" stroke-width="4"/><path d="M152 98 a20 20 0 0 1 0 38" fill="none" stroke="#3a2218" stroke-width="8"/>';
+  }
+  s += body;
+  s += '<g class="liquid"><ellipse cx="100" cy="'+top+'" rx="'+rx+'" ry="'+(rx*.24)+'" fill="'+liquid+'" stroke="#3a2218" stroke-width="4"/></g>';
+  var cy=top, a='';
+  if(art==="heart") a='<path d="M100 '+(cy+7)+' C86 '+(cy-1)+' 90 '+(cy-10)+' 100 '+(cy-4)+' C110 '+(cy-10)+' 114 '+(cy-1)+' 100 '+(cy+7)+'z" fill="#fffaf2"/>';
+  else if(art==="rosetta"){ a='<path d="M100 '+(cy+8)+' V'+(cy-9)+'" stroke="#fffaf2" stroke-width="2"/>'; for(var i=0;i<5;i++){a+='<path d="M'+(100-14+i*2)+' '+(cy-7+i*3)+' q14 6 '+(28-i*4)+' 0" stroke="#fffaf2" stroke-width="2.6" fill="none"/>';}}
+  else if(art==="crema") a='<ellipse cx="100" cy="'+cy+'" rx="'+(rx-6)+'" ry="'+(rx*.24-3)+'" fill="#b77b3d"/><ellipse cx="94" cy="'+(cy-1)+'" rx="8" ry="2" fill="#d9a35e"/>';
+  else if(art==="dot") a='<ellipse cx="100" cy="'+cy+'" rx="12" ry="4" fill="#f3e2c9"/>';
+  else if(art==="cream") a='<path d="M64 '+cy+' q8 -18 20 -10 q6 -16 18 -8 q10 -14 20 0 q12 -6 14 18z" fill="#fffaf2" stroke="#3a2218" stroke-width="3"/><circle cx="90" cy="'+(cy-8)+'" r="2" fill="#5a3726"/><circle cx="104" cy="'+(cy-12)+'" r="2" fill="#5a3726"/><circle cx="116" cy="'+(cy-6)+'" r="2" fill="#5a3726"/>';
+  else if(art==="spice") a='<path d="M100 '+(cy-7)+' l2 5 5 0 -4 3 2 5 -5 -3 -5 3 2 -5 -4 -3 5 0z" fill="#8a4b2a"/><circle cx="80" cy="'+cy+'" r="1.6" fill="#8a4b2a"/><circle cx="120" cy="'+(cy+2)+'" r="1.6" fill="#8a4b2a"/><circle cx="112" cy="'+(cy-5)+'" r="1.4" fill="#8a4b2a"/>';
+  s += a;
+  if(steam!==false){
+    var sy = top-20;
+    s += '<g class="steam" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round" opacity=".95"><path d="M84 '+sy+' q-8 -10 0 -20 q8 -10 0 -20"/><path d="M100 '+(sy-4)+' q-8 -10 0 -20 q8 -10 0 -20"/><path d="M116 '+sy+' q-8 -10 0 -20 q8 -10 0 -20"/></g>';
+  }
+  return s;
+}
+var BEAN = '<svg class="bean" viewBox="0 0 28 28" aria-hidden="true"><ellipse cx="14" cy="14" rx="9" ry="12" fill="#5a3726" stroke="#3a2218" stroke-width="2"/><path d="M14 3 C9 10 19 18 14 25" stroke="#d9a35e" stroke-width="2" fill="none"/></svg>';
+
+function swap(html, focusSel, bind){
+  var old = app.firstElementChild;
+  var go = function(){
+    app.innerHTML = html;
+    window.scrollTo({top:0,behavior:reduce?"auto":"smooth"});
+    var f = focusSel && app.querySelector(focusSel);
+    if(f){ f.setAttribute("tabindex","-1"); f.focus({preventScroll:true}); }
+    if(bind) bind();
+  };
+  if(old && !reduce){ old.classList.add("leaving"); setTimeout(go,200); } else go();
+}
+
+function renderIntro(){
+  step=-1; answers=[];
+  swap('<section class="panel intro screen" aria-labelledby="h-intro">'+
+    '<svg class="hero" viewBox="0 0 200 200" role="img" aria-label="A steaming cup of coffee"><circle cx="100" cy="104" r="84" fill="#b0244f"/>'+cupSVG(null)+'</svg>'+
+    '<span class="pill">6 questions · under a minute</span>'+
+    '<h1 id="h-intro">What\'s your coffee personality?</h1>'+
+    '<p class="muted">Tell us how you take your mornings, your Sundays and (crucially) your biscuits. We\'ll brew up the drink that matches your vibe.</p>'+
+    '<button class="btn" id="start" type="button">Brew my result ☕</button></section>', "#h-intro", function(){
+      app.querySelector("#start").addEventListener("click", function(){ step=0; renderQuestion(); });
+    });
+}
+
+function renderQuestion(){
+  var Q = QUESTIONS[step], n = QUESTIONS.length, pct = step/n*100;
+  var html = '<section class="panel screen" aria-labelledby="qt">'+
+    '<div class="progress"><div class="track" role="progressbar" aria-label="Quiz progress" aria-valuemin="0" aria-valuemax="'+n+'" aria-valuenow="'+step+'"><div class="fill" style="width:'+pct+'%"></div>'+BEAN.replace('class="bean"','class="bean" style="left:'+Math.max(4,pct)+'%"')+'</div><div class="count">'+(step+1)+'/'+n+'</div></div>'+
+    '<div class="qnum">Question '+(step+1)+'</div><h2 class="qtitle" id="qt">'+esc(Q.q)+'</h2><p class="qhint">'+esc(Q.hint)+'</p>'+
+    '<div class="options" role="group" aria-labelledby="qt">';
+  Q.opts.forEach(function(o,i){
+    var sel = answers[step]===i;
+    html += '<button type="button" class="opt'+(o.wide?' wide':'')+(sel?' picked':'')+'" data-i="'+i+'" aria-pressed="'+sel+'"><span class="emo" aria-hidden="true">'+o.e+'</span><span>'+esc(o.t)+'</span></button>';
+  });
+  html += '</div><div class="qnav"><button type="button" class="btn link" id="back">← '+(step>0?'Back':'Start again')+'</button></div></section>';
+  swap(html, "#qt", function(){
+    app.querySelectorAll(".opt").forEach(function(b){
+      b.addEventListener("click", function(){
+        if(app.dataset.busy) return; app.dataset.busy="1";
+        answers[step] = +b.dataset.i;
+        app.querySelectorAll(".opt").forEach(function(x){x.classList.remove("picked");x.setAttribute("aria-pressed","false");});
+        b.classList.add("picked"); b.setAttribute("aria-pressed","true");
+        var np=(step+1)/n*100; app.querySelector(".fill").style.width=np+"%"; app.querySelector(".bean").style.left=np+"%";
+        setTimeout(function(){ delete app.dataset.busy; step++; if(step<n) renderQuestion(); else renderBrewing(); }, reduce?60:380);
+      });
+    });
+    app.querySelector("#back").addEventListener("click", function(){ if(step>0){step--;renderQuestion();} else renderIntro(); });
+  });
+}
+
+function score(){
+  var s={}; ORDER.forEach(function(k){s[k]=0;});
+  answers.forEach(function(ai,qi){ var p=QUESTIONS[qi].opts[ai].p; Object.keys(p).forEach(function(k){s[k]+=p[k];}); });
+  var r = ORDER.slice().sort(function(a,b){return (s[b]-s[a])||(ORDER.indexOf(a)-ORDER.indexOf(b));});
+  return r[0];
+}
+
+function renderBrewing(){
+  var key = score();
+  if(reduce){ renderResult(key); return; }
+  swap('<section class="panel brewing screen" aria-labelledby="bh"><svg viewBox="0 0 200 200" aria-hidden="true"><defs><clipPath id="cl"><rect x="0" y="0" width="200" height="200"/></clipPath></defs>'+cupSVG(DRINKS[key],false)+'</svg><p id="bh">Brewing your result…</p></section>', "#bh", function(){
+    setTimeout(function(){ renderResult(key); }, 1300);
+  });
+}
+
+function confetti(){
+  if(reduce) return;
+  var box=document.createElement("div"); box.className="confetti"; box.setAttribute("aria-hidden","true");
+  var cols=["#b0244f","#f2b134","#5a3726","#cfe8dc","#2f6f73","#fff"];
+  for(var i=0;i<56;i++){
+    var el = document.createElement(i%5===0?"i":"b");
+    if(i%5===0) el.textContent = i%10===0?"☕":"🫘"; else el.style.background=cols[i%cols.length];
+    el.style.left=(Math.random()*100)+"vw";
+    el.style.setProperty("--dx",(Math.random()*160-80)+"px");
+    el.style.setProperty("--rot",(Math.random()*720-360)+"deg");
+    el.style.animationDuration=(1.8+Math.random()*1.6)+"s";
+    el.style.animationDelay=(Math.random()*.5)+"s";
+    box.appendChild(el);
+  }
+  document.body.appendChild(box);
+  setTimeout(function(){box.remove();},4200);
+}
+
+function renderResult(key){
+  var D = DRINKS[key];
+  var html = '<section class="screen" aria-labelledby="res-h">'+
+    '<div class="result-card"><div class="result-top" style="--rc:'+D.colour+'"><span class="tag">Your coffee personality</span>'+
+      '<h2 class="persona" id="res-h">'+esc(D.persona)+'</h2>'+
+      '<span class="drinkname">Your drink: '+esc(D.drink)+'</span>'+
+      '<svg class="result-art" viewBox="0 0 200 200" role="img" aria-label="Illustration of a '+esc(D.drink.toLowerCase())+'">'+cupSVG(D)+'</svg></div>'+
+    '<div class="result-body"><p style="margin-top:0">'+esc(D.desc)+'</p>'+
+      '<p class="what"><strong>What\'s in it?</strong> '+esc(D.what)+'</p>'+
+      '<div class="pair"><span class="pi" aria-hidden="true">'+D.pairE+'</span><div><strong>Try it with: '+esc(D.pair)+'</strong>'+esc(D.pairWhy)+'</div></div>'+
+      '<div class="actions"><button type="button" class="btn" id="share">Share my result 📣</button><button type="button" class="btn alt" id="again">Try again ↺</button></div>'+
+      '<p class="toast" id="toast" role="status"></p></div></div>'+
+    '<section class="panel capture" aria-labelledby="cap-h">'+
+      '<h3 id="cap-h">Free drink on your birthday: join our coffee club</h3>'+
+      '<p class="muted" style="margin:.4em 0 0">Members hear first about new bakes and seasonal drinks, and get a birthday treat on us.</p>'+
+      '<div class="offer"><span class="big" aria-hidden="true">🎂</span><span><strong>A free '+esc(D.drink.toLowerCase())+' on your birthday</strong><small>Example offer for this demo</small></span></div>'+
+      '<form id="cap" novalidate>'+
+        '<div class="field"><label for="nm">First name</label><input id="nm" type="text" autocomplete="off"></div>'+
+        '<div class="field"><label for="em">Email address</label><input id="em" type="email" autocomplete="off" inputmode="email"></div>'+
+        '<label class="check" for="ok"><input id="ok" type="checkbox"><span>Yes, email me Coffee Club news and offers from Crema &amp; Crumb. You can unsubscribe at any time.</span></label>'+
+        '<button class="btn dark" type="submit">Join the coffee club ☕</button>'+
+      '</form><div id="capdone" aria-live="polite"></div>'+
+    '</section></section>';
+  swap(html, "#res-h", function(){
+    live.textContent = "Your coffee personality is "+D.persona+". Your drink is a "+D.drink+".";
+    confetti();
+    app.querySelector("#again").addEventListener("click", renderIntro);
+    app.querySelector("#share").addEventListener("click", function(){ share(D); });
+    app.querySelector("#cap").addEventListener("submit", function(e){
+      e.preventDefault(); var f=e.target; f.reset(); f.style.display="none";
+      var d = app.querySelector("#capdone");
+      d.innerHTML = '<div class="demo-note" tabindex="-1" id="dn"><strong>Thanks! ☕</strong><p style="margin:.4em 0 0">This is a demo, so nothing was sent. In a real version, this is where the business would collect your email, with your clear consent.</p><button type="button" class="btn link" id="showform">Show the form again</button></div>';
+      app.querySelector("#dn").focus();
+      app.querySelector("#showform").addEventListener("click", function(){ d.innerHTML=""; f.style.display=""; f.querySelector("input").focus(); });
+    });
+  });
+}
+
+function share(D){
+  var text = "My coffee personality is "+D.persona+" ("+D.drink+") ☕ What's yours? Take the Crema & Crumb quiz.";
+  var toast = app.querySelector("#toast"), btn = app.querySelector("#share");
+  btn.classList.remove("wiggle"); void btn.offsetWidth; btn.classList.add("wiggle");
+  if(navigator.share){ navigator.share({title:"My coffee personality",text:text}).catch(function(){}); return; }
+  var done=function(){toast.textContent="Copied! Paste it anywhere to share your coffee personality.";};
+  var fail=function(){toast.textContent="Couldn't copy automatically. Here it is: "+text;};
+  if(navigator.clipboard && navigator.clipboard.writeText){ navigator.clipboard.writeText(text).then(done,function(){fallbackCopy(text)?done():fail();}); }
+  else { fallbackCopy(text)?done():fail(); }
+}
+function fallbackCopy(t){
+  try{var ta=document.createElement("textarea");ta.value=t;ta.setAttribute("readonly","");ta.style.position="fixed";ta.style.opacity="0";document.body.appendChild(ta);ta.select();var ok=document.execCommand("copy");ta.remove();return ok;}catch(e){return false;}
+}
+
+renderIntro();
+})();
+</script>
+</body>
+</html>
