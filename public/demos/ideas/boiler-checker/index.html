@@ -328,7 +328,9 @@ footer{text-align:center;color:var(--muted);font-size:.85rem;padding:10px 16px 3
   }
   function updateGasAlert(){
     var on = Q[step].id==="signs" && has("smell");
-    $("gasAlert").classList.toggle("hidden", !on);
+    var g=$("gasAlert"), was=!g.classList.contains("hidden");
+    g.classList.toggle("hidden", !on);
+    if(on && !was) g.scrollIntoView({behavior:reduce?"auto":"smooth", block:"start"});
   }
   function has(sign){ return (answers.signs||[]).indexOf(sign)>-1; }
 
@@ -337,7 +339,7 @@ footer{text-align:center;color:var(--muted);font-size:.85rem;padding:10px 16px 3
     var level=0; var reasons=[];
     var fuel=answers.fuel, last=answers.last, age=answers.age, co=answers.co;
     function add(l, ic, title, body){ level=Math.max(level,l); reasons.push({l:l, ic:ic, t:title, b:body}); }
-    if(has("smell")) add(3,"🚨","You told us you can smell gas","Treat this as an emergency. Follow the steps below before anything else.");
+    if(has("smell")) add(3,"🚨","You told us you can smell gas","Treat this as an emergency. Follow the steps above before anything else.");
     if(has("soot")) add(3,"⚫","Soot or staining around the boiler","This can be a sign the boiler isn't burning properly and could be producing carbon monoxide. Stop using it and get it checked by a registered engineer straight away.");
     if(has("flame")) add(3,"🟠","A yellow or orange flame","A healthy gas flame is usually blue. A lazy yellow or orange flame can mean poor combustion and a carbon monoxide risk. Stop using it and get it checked urgently.");
     if(last==="24+") add(2,"🕸️","Over two years since its last service","Annual servicing is generally recommended to keep your boiler safe, efficient and covered by most warranties.");
@@ -360,7 +362,7 @@ footer{text-align:center;color:var(--muted);font-size:.85rem;padding:10px 16px 3
   var MOODS = [
     {cls:"mood-happy", say:"Feeling toasty! Keep going.", mouth:"M70 72 Q85 86 100 72", brow:[40,40], flame:"#3d8bff", led:"#33c463", needle:0, title:"happy"},
     {cls:"mood-ok", say:"Hmm, I could do with a little attention soon.", mouth:"M70 76 Q85 80 100 76", brow:[40,40], flame:"#3d8bff", led:"#ffc226", needle:35, title:"a bit unsure"},
-    {cls:"mood-worried", say:"Ooh. I'd really like an engineer to look me over.", mouth:"M70 80 Q85 70 100 80", brow:[36,44], flame:"#3d8bff", led:"#ff7a26", needle:70, title:"worried"},
+    {cls:"mood-worried", say:"Ooh. I'd really like an engineer to look me over.", mouth:"M70 80 Q85 70 100 80", brow:[44,38], flame:"#3d8bff", led:"#ff7a26", needle:70, title:"worried"},
     {cls:"mood-alarm", say:"This is serious. Safety first, please!", mouth:"M74 80 Q85 66 96 80 Q85 74 74 80z", brow:[44,34], flame:"#ff9a1f", led:"#ff3b3b", needle:110, title:"alarmed"}
   ];
   function setMood(level, pop, sayText){
@@ -397,7 +399,7 @@ footer{text-align:center;color:var(--muted);font-size:.85rem;padding:10px 16px 3
     var fuel = answers.fuel;
     var who = fuel==="oil" ? "Oil boilers should be serviced by an <b>OFTEC registered technician</b>."
       : fuel==="unsure" ? "Gas and LPG work must be done by a <b>Gas Safe registered engineer</b> (by law). Oil boilers should be serviced by an <b>OFTEC registered technician</b>."
-      : "By law, any work on a "+(fuel==="lpg"?"LPG":"gas")+" boiler in the UK must be done by a <b>Gas Safe registered engineer</b>. Ask to see their ID card.";
+      : "By law, any work on "+(fuel==="lpg"?"an LPG":"a gas")+" boiler in the UK must be done by a <b>Gas Safe registered engineer</b>. Ask to see their ID card.";
     var lights = '<div class="lights" aria-hidden="true"><i class="g'+(a.level===0?" on":"")+'"></i><i class="a'+(a.level===1?" on":"")+'"></i><i class="o'+(a.level===2?" on":"")+'"></i><i class="r'+(a.level===3?" on":"")+'"></i></div>';
     var list = a.reasons.map(function(r){return '<li><span class="ic" aria-hidden="true">'+r.ic+'</span><span><b>'+r.t+'</b>'+r.b+'</span></li>';}).join("");
     var gas = has("smell") ? '<div class="alertbox">'+$("gasAlert").innerHTML.replace("Stop the quiz. Do this now.","Smell gas? Do this now.")+'</div>' : "";

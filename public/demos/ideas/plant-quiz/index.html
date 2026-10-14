@@ -105,7 +105,7 @@ p{margin:.6em 0}
 .result-top h2{color:#fff;font-size:2rem;margin:10px 0 2px}
 .result-top .latin{font-style:italic;color:#d6eadb;font-size:.92rem;margin:0}
 .persona{display:inline-block;margin:10px 0 0;background:#fff;color:var(--leaf);font-weight:800;padding:6px 14px;border-radius:12px;transform:rotate(-2deg);box-shadow:0 4px 0 rgba(0,0,0,.15)}
-.result-art{width:200px;height:200px;display:block;margin:4px auto -6px}
+.result-art{width:210px;height:231px;display:block;margin:4px auto 10px}
 .result-art .sway{transform-origin:100px 160px;animation:sway 5s ease-in-out infinite}
 .result-body{background:#fff;color:var(--ink);padding:20px;border-radius:24px 24px 0 0;margin-top:-14px;position:relative}
 .result-body h3{font-size:1.05rem;color:var(--leaf);margin:14px 0 8px}
@@ -347,13 +347,13 @@ function plantSVG(k){
       for(var t=.3;t<1;t+=.09){var px=(1-t)*(1-t)*100+2*(1-t)*t*mx+t*t*ex,py=(1-t)*(1-t)*152+2*(1-t)*t*my+t*t*ey,ln=18*(1-t*.5),dir=l[0]<0?-1:(l[0]>0?1:0);
         g+='<path d="M'+px+' '+py+' l'+(-ln*.8+dir*4)+' '+(ln*.6)+'" stroke="#3f8f45" stroke-width="3.5" stroke-linecap="round"/><path d="M'+px+' '+py+' l'+(ln*.8+dir*4)+' '+(ln*.6)+'" stroke="#4fa152" stroke-width="3.5" stroke-linecap="round"/>';}});
   } else if(k==="haworthia"){
-    for(var h=0;h<10;h++){var an=-75+h*16.5,ra=an*Math.PI/180,ln2=h%2?44:56,tipx=100+Math.sin(ra)*ln2,tipy=150-Math.cos(ra)*ln2;
-      var bl=100+Math.cos(ra)*9,br=100-Math.cos(ra)*9;
+    for(var h=0;h<10;h++){var an=-75+h*16.5,ra=an*Math.PI/180,ln2=h%2?62:80,tipx=100+Math.sin(ra)*ln2,tipy=150-Math.cos(ra)*ln2;
+      var bl=100+Math.cos(ra)*12,br=100-Math.cos(ra)*12;
       g+='<path d="M'+bl+' 152 L'+tipx+' '+tipy+' L'+br+' 152z" fill="'+(h%2?"#2c6a3d":"#24593a")+'"/>';
-      for(var d=.25;d<.9;d+=.18){g+='<circle cx="'+(100+(tipx-100)*d)+'" cy="'+(150+(tipy-150)*d)+'" r="1.8" fill="#f4f7ee"/>';}}
+      for(var d=.25;d<.9;d+=.18){g+='<circle cx="'+(100+(tipx-100)*d)+'" cy="'+(150+(tipy-150)*d)+'" r="2.4" fill="#f4f7ee"/>';}}
   }
   var small = k==="haworthia";
-  return '<g class="sway">'+g+'</g>'+pot(small?.75:1);
+  return '<g class="sway">'+g+'</g>'+pot(small?.85:1);
 }
 function svgWrap(k,cls,label){return '<svg class="'+cls+'" viewBox="0 0 200 220" role="img" aria-label="'+esc(label)+'">'+plantSVG(k)+'</svg>';}
 
@@ -473,7 +473,7 @@ function renderResult(){
       P.tips.map(function(t){return '<li><span class="ti" aria-hidden="true">'+t[0]+'</span><span>'+esc(t[1])+'</span></li>';}).join("")+
       '</ul>'+petNote+
       '<p class="runner">Runner-up: <strong>'+esc(R.name)+'</strong>, '+esc(R.persona.replace(/^The /,"the ")).replace(/^the/,"aka the")+'.</p>'+
-      '<div class="actions"><button type="button" class="btn terra" id="share">Share my result 📣</button><button type="button" class="btn alt" id="again">Take it again ↺</button></div>'+
+      '<div class="actions"><button type="button" class="btn terra" id="share">Share my result 📣</button><button type="button" class="btn alt" id="again">Try again ↺</button></div>'+
       '<p class="toast" id="toast" role="status"></p></div>'+
     '</div>'+
     '<section class="panel capture" aria-labelledby="cap-h">'+

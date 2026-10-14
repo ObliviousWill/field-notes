@@ -30,7 +30,7 @@ p{margin:.4em 0 .8em}
 .tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:16px 0 8px}
 .tile{perspective:400px;text-align:center}
 .face{position:relative;background:var(--plum);color:#fff;border-radius:14px;padding:14px 4px 10px;font-variant-numeric:tabular-nums;font-weight:900;font-size:clamp(1.6rem,8vw,2.6rem);line-height:1;box-shadow:0 6px 0 var(--plum-dark);overflow:hidden}
-.face::after{content:"";position:absolute;left:0;right:0;top:50%;height:2px;background:rgba(0,0,0,.25)}
+.face{background-image:linear-gradient(rgba(255,255,255,.1) 50%,rgba(0,0,0,.1) 50%)!important}
 .face.flip{animation:flip .45s cubic-bezier(.3,1.5,.5,1)}
 @keyframes flip{0%{transform:rotateX(0)}45%{transform:rotateX(-80deg)}100%{transform:rotateX(0)}}
 .tile:nth-child(2) .face{background:var(--mint);box-shadow:0 6px 0 #0c5547}

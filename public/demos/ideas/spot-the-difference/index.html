@@ -1,0 +1,485 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Dog-Eared Page: spot the difference</title>
+<meta name="description" content="Spot the five differences in our shop window and win a little something. A demo from Field Notes.">
+<style>
+:root{
+  --bg:#f7f1e6; --card:#fffdf8; --ink:#1d2b2d; --muted:#4f5d5f; --line:#e6dccb;
+  --teal:#1f4e52; --teal-dark:#163a3d; --mustard:#e3a72f; --berry:#b23a48; --berry-dark:#8e2a37; --cream:#fff3d6;
+  --good:#1d7a4f; --radius:18px; --shadow:0 10px 30px rgba(29,43,45,.09);
+}
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;overflow-x:hidden}
+.wrap{max-width:1000px;margin:0 auto;padding:16px 16px 40px}
+header.top{display:flex;align-items:center;gap:12px;padding:4px 0 12px}
+.logo{width:46px;height:46px;flex:none}
+.brand-name{font-family:Georgia,"Times New Roman",serif;font-style:italic;font-weight:700;font-size:1.25rem;margin:0;line-height:1.1;color:var(--teal-dark)}
+.brand-tag{margin:0;color:var(--muted);font-size:.9rem}
+h1{font-size:clamp(1.55rem,5.5vw,2.3rem);line-height:1.1;margin:.15em 0 .3em;letter-spacing:-.02em}
+h1 em{font-style:normal;color:var(--berry)}
+.intro{margin:0 0 14px;color:var(--muted);max-width:62ch}
+.hud{position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:rgba(247,241,230,.94);backdrop-filter:blur(6px);padding:10px 0;margin-bottom:8px;border-bottom:1px solid var(--line)}
+.pill{display:inline-flex;align-items:center;gap:6px;background:var(--card);border:1px solid var(--line);border-radius:999px;padding:6px 12px;font-weight:800;font-variant-numeric:tabular-nums;min-height:40px}
+.dots{display:inline-flex;gap:5px;margin-left:2px}
+.dot{width:14px;height:14px;border-radius:50%;border:2px solid var(--teal);background:transparent;transition:background .3s}
+.dot.on{background:var(--mustard);border-color:var(--teal-dark);animation:pop .45s cubic-bezier(.3,1.7,.5,1)}
+.hud .spacer{flex:1}
+@media (max-width:420px){.dots{display:none}.hud{gap:8px}.pill{padding:6px 10px}.hud .btn.small{padding:8px 14px}}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:48px;padding:10px 20px;border-radius:999px;border:0;background:var(--teal);color:#fff;font:inherit;font-weight:800;cursor:pointer;box-shadow:0 5px 0 var(--teal-dark);transition:transform .15s cubic-bezier(.3,1.6,.6,1),box-shadow .15s,background .2s}
+.btn:hover{transform:translateY(-2px)}
+.btn:active{transform:translateY(4px);box-shadow:0 1px 0 var(--teal-dark)}
+.btn.berry{background:var(--berry);box-shadow:0 5px 0 var(--berry-dark)}
+.btn.ghost{background:var(--card);color:var(--ink);border:2px solid var(--ink);box-shadow:0 4px 0 var(--ink)}
+.btn.small{min-height:44px;padding:8px 16px}
+.btn[disabled]{opacity:.5;cursor:not-allowed;transform:none}
+:focus-visible{outline:3px solid var(--berry);outline-offset:3px}
+.boards{display:grid;gap:14px}
+@media (min-width:760px){.boards{grid-template-columns:1fr 1fr}}
+.board{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:10px;margin:0}
+.board figcaption{display:flex;justify-content:space-between;align-items:center;font-weight:800;padding:2px 4px 8px;color:var(--teal-dark)}
+.board figcaption span{font-weight:600;color:var(--muted);font-size:.85rem}
+.pic{display:block;width:100%;height:auto;border-radius:12px;cursor:crosshair;touch-action:manipulation;-webkit-tap-highlight-color:transparent;user-select:none}
+.pic:focus-visible{outline:4px solid var(--berry);outline-offset:3px}
+.shake{animation:shake .35s}
+@keyframes shake{20%{transform:translateX(-6px)}40%{transform:translateX(5px)}60%{transform:translateX(-4px)}80%{transform:translateX(2px)}}
+.ring{transform-box:fill-box;transform-origin:center;animation:ringPop .55s cubic-bezier(.3,1.7,.5,1) both}
+@keyframes ringPop{0%{transform:scale(0);opacity:0}70%{opacity:1}100%{transform:scale(1);opacity:1}}
+.burst line{stroke-dasharray:14;stroke-dashoffset:14;animation:burst .6s ease-out forwards}
+@keyframes burst{0%{stroke-dashoffset:14;opacity:1}100%{stroke-dashoffset:-14;opacity:0}}
+.miss{transform-box:fill-box;transform-origin:center;animation:miss .8s ease-out forwards}
+@keyframes miss{0%{transform:scale(.4);opacity:1}100%{transform:scale(1.4);opacity:0}}
+.hintc{transform-box:fill-box;transform-origin:center;animation:hint 1.1s ease-in-out 3}
+@keyframes hint{0%,100%{transform:scale(.85);opacity:.55}50%{transform:scale(1.05);opacity:1}}
+@keyframes pop{0%{transform:scale(0)}100%{transform:scale(1)}}
+.status{min-height:1.5em;margin:10px 2px 0;font-weight:650;color:var(--teal-dark)}
+.found-list{list-style:none;margin:12px 0 0;padding:0;display:grid;gap:8px;grid-template-columns:1fr}
+@media (min-width:560px){.found-list{grid-template-columns:1fr 1fr}}
+.found-list li{display:flex;align-items:center;gap:10px;background:var(--card);border:1px dashed #cdbfa6;border-radius:12px;padding:8px 12px;color:var(--muted);min-height:46px}
+.found-list li .num{flex:none;width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:#efe6d5;font-weight:800;color:var(--teal-dark);font-size:.9rem}
+.found-list li.got{border-style:solid;border-color:var(--teal);color:var(--ink);animation:pop .4s cubic-bezier(.3,1.7,.5,1)}
+.found-list li.got .num{background:var(--mustard)}
+.kbd-tip{font-size:.85rem;color:var(--muted);margin:8px 2px 0}
+#reward{margin-top:18px;scroll-margin-top:80px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px}
+.reward-card{background:var(--teal);color:#fff;border:0;text-align:center;padding:24px 18px;position:relative;overflow:hidden;animation:rise .6s cubic-bezier(.3,1.5,.5,1) both}
+@keyframes rise{0%{transform:translateY(30px) scale(.95);opacity:0}100%{transform:none;opacity:1}}
+.reward-card .badge{display:inline-block;background:var(--mustard);color:var(--teal-dark);font-weight:800;border-radius:999px;padding:4px 12px;font-size:.85rem}
+.reward-card h2{font-family:Georgia,"Times New Roman",serif;font-size:clamp(1.5rem,6vw,2.1rem);line-height:1.15;margin:.4em 0 .2em}
+.reward-card p{margin:.2em auto;max-width:46ch;color:#e9f2f1}
+.coupon{margin:16px auto 6px;max-width:320px;background:var(--cream);color:var(--teal-dark);border-radius:14px;padding:14px;border:3px dashed var(--berry);position:relative}
+.reward-card .coupon p{color:var(--teal-dark)}
+.coupon .off{font-weight:800;font-size:1.05rem;margin:0}
+.reward-card .coupon .code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:2rem;font-weight:800;letter-spacing:.12em;margin:4px 0;color:var(--berry-dark)}
+.reward-card .coupon .label{font-size:.8rem;color:#4f5d5f;margin:0}
+.reward-card .stats{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin:12px 0 6px}
+.reward-card .stats span{background:rgba(255,255,255,.14);border-radius:999px;padding:4px 12px;font-weight:700;font-size:.9rem}
+.reward-card .actions{display:flex;flex-wrap:wrap;justify-content:center;gap:12px;margin-top:14px}
+.reward-card .btn{background:#fff;color:var(--teal-dark);box-shadow:0 5px 0 #0f2b2d}
+.reward-card .btn.ghost{background:transparent;color:#fff;border-color:#fff;box-shadow:0 4px 0 #0f2b2d}
+.reward-card :focus-visible{outline-color:var(--mustard)}
+.capture{margin-top:16px}
+.capture h3{margin:0 0 4px;font-size:1.25rem}
+.capture p{margin:0 0 12px;color:var(--muted)}
+.form-row{margin-bottom:12px}
+.form-row label{display:block;font-weight:650;margin-bottom:4px}
+.form-row input{width:100%;min-height:48px;padding:10px 12px;border:2px solid #b9ae9b;border-radius:12px;font:inherit;background:#fff;color:var(--ink)}
+.check{display:flex;gap:10px;align-items:flex-start;margin:4px 0 14px;font-size:.92rem}
+.check input{width:24px;height:24px;flex:none;margin:1px 0 0;accent-color:var(--teal)}
+.err{color:#a3241a;font-size:.88rem;margin:4px 0 0;font-weight:600}
+.demo-note{margin-top:12px;padding:14px;border-radius:14px;background:#fdf3dc;border:2px solid var(--mustard);color:#3b2d0a;animation:rise .45s cubic-bezier(.3,1.5,.5,1)}
+.demo-note strong{display:block;margin-bottom:2px}
+footer{margin-top:28px;text-align:center;color:var(--muted);font-size:.85rem}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.toast{position:fixed;left:50%;bottom:20px;transform:translate(-50%,120px);background:var(--ink);color:#fff;padding:10px 16px;border-radius:999px;font-weight:700;transition:transform .35s cubic-bezier(.3,1.6,.6,1);z-index:30;max-width:calc(100% - 32px);text-align:center}
+.toast.show{transform:translate(-50%,0)}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <svg class="logo" viewBox="0 0 48 48" aria-hidden="true">
+      <rect x="4" y="4" width="40" height="40" rx="12" fill="#1f4e52"/>
+      <path d="M12 14h12a4 4 0 0 1 4 4v18a3 3 0 0 0-3-3H12z" fill="#fff3d6"/>
+      <path d="M36 14H28a4 4 0 0 0-4 4v18a3 3 0 0 1 3-3h9z" fill="#fff3d6"/>
+      <path d="M36 14v7l-5-5z" fill="#e3a72f"/>
+    </svg>
+    <div>
+      <p class="brand-name">The Dog-Eared Page</p>
+      <p class="brand-tag">Books, gifts and a very sleepy shop cat</p>
+    </div>
+  </header>
+
+  <h1>Spot the <em>5 differences</em> in our window</h1>
+  <p class="intro">Our cat Marmalade has been rearranging things again. Tap anything that looks different on either picture. Find all five and there's a little thank-you waiting for you.</p>
+
+  <div class="hud">
+    <span class="pill" role="timer" aria-label="Time taken"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="13" r="8" fill="none" stroke="currentColor" stroke-width="2.5"/><path d="M12 9v4l3 2M9 2h6" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg><span id="time">0:00</span></span>
+    <span class="pill" aria-label="Differences found"><span><span id="count">0</span>/5</span><span class="dots" id="dots" aria-hidden="true"></span></span>
+    <span class="spacer"></span>
+    <button type="button" class="btn berry small" id="hint">Hint <span style="font-weight:600">+10s</span></button>
+  </div>
+
+  <div class="boards">
+    <figure class="board">
+      <figcaption>Picture A <span>the real window</span></figcaption>
+      <svg class="pic" id="picA" viewBox="0 0 400 320" tabindex="0" role="application" aria-roledescription="picture puzzle" aria-label="Picture A, the original shop window. Use arrow keys to move the magnifier and Enter to check a spot." aria-describedby="sceneDesc"></svg>
+    </figure>
+    <figure class="board">
+      <figcaption>Picture B <span>Marmalade's version</span></figcaption>
+      <svg class="pic" id="picB" viewBox="0 0 400 320" tabindex="0" role="application" aria-roledescription="picture puzzle" aria-label="Picture B, the changed shop window. Use arrow keys to move the magnifier and Enter to check a spot." aria-describedby="sceneDesc"></svg>
+    </figure>
+  </div>
+  <p class="sr-only" id="sceneDesc">A bookshop window with bunting across the top, a hanging clock, a shelf of books, a potted plant, a stack of books with a mug of tea, and a ginger cat asleep on the display. A red door stands to the right.</p>
+  <p class="status" id="status" aria-live="polite">Tap a spot on either picture to start the clock.</p>
+  <p class="kbd-tip">Using a keyboard? Tab to a picture, move the magnifier with the arrow keys (hold Shift for big jumps) and press Enter to check.</p>
+  <ol class="found-list" id="found" aria-label="Differences found"></ol>
+
+  <section id="reward" hidden tabindex="-1" aria-live="polite">
+    <div class="card reward-card">
+      <span class="badge" id="rank">Eagle-eyed Bookworm</span>
+      <h2>You found them all! Here's 10% off your next visit</h2>
+      <p id="rewardLine">Marmalade is very impressed (she's pretending not to be).</p>
+      <div class="stats"><span id="statTime">Time 0:42</span><span id="statHints">0 hints</span><span id="statBest" hidden></span></div>
+      <div class="coupon">
+        <p class="off">10% off books and gifts</p>
+        <p class="code" id="code">DEMO10</p>
+        <p class="label">Example code for this demo only. Not a real offer.</p>
+      </div>
+      <div class="actions">
+        <button type="button" class="btn" id="copy">Copy code</button>
+        <button type="button" class="btn" id="share">Share my time</button>
+        <button type="button" class="btn ghost" id="again">Play again</button>
+      </div>
+    </div>
+
+    <div class="card capture">
+      <h3>Email me the code</h3>
+      <p>We'll pop it in your inbox so it's there when you next come in for a browse.</p>
+      <form id="leadForm" novalidate>
+        <div class="form-row"><label for="name">Your name</label><input type="text" id="name" autocomplete="off"></div>
+        <div class="form-row"><label for="email">Email address</label><input type="email" id="email" autocomplete="off" aria-describedby="emailErr"><p class="err" id="emailErr" hidden>Please enter an email address that looks like name@example.com.</p></div>
+        <label class="check"><input type="checkbox" id="consent"><span>Yes, email me my code and news about new books and events from The Dog-Eared Page. You can unsubscribe at any time.</span></label>
+        <button type="submit" class="btn">Email me the code</button>
+      </form>
+      <div class="demo-note" id="demoNote" hidden role="status" tabindex="-1">
+        <strong>Thank you! Bookmark that.</strong>
+        This is a demo, so nothing was sent. In a real version, this is where the business would collect your email, with your clear consent.
+      </div>
+    </div>
+  </section>
+
+  <footer>A fictional business. Demo from Field Notes.</footer>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function(){
+  'use strict';
+  var $=function(id){return document.getElementById(id);};
+  var reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var NS='http://www.w3.org/2000/svg';
+
+  // ---------- scene ----------
+  function qb(t,p0,p1,p2){var u=1-t;return [u*u*p0[0]+2*u*t*p1[0]+t*t*p2[0], u*u*p0[1]+2*u*t*p1[1]+t*t*p2[1]];}
+  var FLAG_COLS=['#b23a48','#e3a72f','#4f9a94','#b23a48','#e3a72f','#4f9a94','#b23a48'];
+  var BOOKS=[[12,40,'#b23a48'],[10,34,'#e3a72f'],[14,44,'#1f4e52'],[9,30,'#d9c7a3'],[13,38,'#7c4a2d'],[12,42,'#3c7a4a'],[11,33,'#b23a48'],[15,36,'#e3a72f'],[10,40,'#4f9a94'],[12,30,'#7c4a2d']];
+  var DIFFS=[]; // filled by layout
+
+  function bookX(i){var x=50;for(var j=0;j<i;j++)x+=BOOKS[j][0]+2;return x;}
+  (function layout(){
+    var f=qb(5/8,[40,104],[155,124],[270,104]);
+    DIFFS.push({id:'flag',cx:f[0],cy:f[1]+8,r:34,name:'A bunting flag changed colour',hint:'Look up high, along the bunting.'});
+    DIFFS.push({id:'clock',cx:248,cy:140,r:34,name:'The clock says 10 o\'clock, not ten past',hint:'Somebody has been messing with time.'});
+    var bx=bookX(5)+BOOKS[5][0]/2;
+    DIFFS.push({id:'book',cx:bx,cy:176-BOOKS[5][1]/2,r:32,name:'A book on the shelf changed colour',hint:'Check the bookshelf. One spine is not quite right.'});
+    DIFFS.push({id:'plant',cx:68,cy:214,r:34,name:'The plant lost a flower',hint:'Something green on the left is feeling a bit bare.'});
+    DIFFS.push({id:'tail',cx:252,cy:245,r:34,name:'Marmalade moved her tail',hint:'Let sleeping cats lie... but do look at the cat.'});
+  })();
+
+  function scene(v){
+    var s='';
+    s+='<defs><linearGradient id="glow'+v+'" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff2d2"/><stop offset="1" stop-color="#f6cf8e"/></linearGradient></defs>';
+    s+='<rect width="400" height="320" fill="#2b5c60"/>';
+    // brick hints
+    s+='<g fill="#326a6e">';
+    for(var by=96;by<290;by+=18){s+='<rect x="2" y="'+by+'" width="20" height="8" rx="2"/>';}
+    s+='</g>';
+    // sign
+    s+='<rect x="20" y="8" width="360" height="40" rx="6" fill="#163a3d" stroke="#e3a72f" stroke-width="2"/>';
+    s+='<text x="200" y="35" text-anchor="middle" font-family="Georgia, \'Times New Roman\', serif" font-style="italic" font-weight="700" font-size="21" fill="#fff3d6">The Dog-Eared Page</text>';
+    // awning
+    for(var i=0;i<10;i++){var ax=20+i*36;s+='<path d="M'+ax+' 52h36v20a18 9 0 0 1-36 0z" fill="'+(i%2?'#fff3d6':'#e3a72f')+'"/>';}
+    // window frame + glass
+    s+='<rect x="28" y="86" width="254" height="206" rx="4" fill="#fff3d6"/>';
+    s+='<rect x="38" y="96" width="234" height="186" fill="url(#glow'+v+')"/>';
+    // display base
+    s+='<rect x="38" y="262" width="234" height="20" fill="#c98f5a"/><rect x="38" y="262" width="234" height="3" fill="#a8703f"/>';
+    s+='<rect x="22" y="288" width="266" height="9" rx="2" fill="#efe1c2"/>';
+    // bunting
+    s+='<path d="M40 104Q155 124 270 104" fill="none" stroke="#7a5a3a" stroke-width="1.5"/>';
+    for(var k=0;k<7;k++){
+      var p=qb((k+1)/8,[40,104],[155,124],[270,104]);
+      var col=FLAG_COLS[k]; if(v&&k===4) col='#4f9a94';
+      s+='<path d="M'+(p[0]-9)+' '+p[1]+'L'+(p[0]+9)+' '+p[1]+'L'+p[0]+' '+(p[1]+18)+'z" fill="'+col+'"/>';
+    }
+    // clock
+    s+='<line x1="248" y1="96" x2="248" y2="122" stroke="#7a5a3a" stroke-width="1.5"/>';
+    s+='<circle cx="248" cy="140" r="18" fill="#fffdf6" stroke="#163a3d" stroke-width="3"/>';
+    for(var m=0;m<12;m++){var a=m*Math.PI/6;s+='<circle cx="'+(248+Math.sin(a)*13.5).toFixed(1)+'" cy="'+(140-Math.cos(a)*13.5).toFixed(1)+'" r="'+(m%3?0.9:1.6)+'" fill="#163a3d"/>';}
+    var hA=-60*Math.PI/180, mA=(v?0:60)*Math.PI/180;
+    s+='<line x1="248" y1="140" x2="'+(248+Math.sin(hA)*8).toFixed(1)+'" y2="'+(140-Math.cos(hA)*8).toFixed(1)+'" stroke="#163a3d" stroke-width="3" stroke-linecap="round"/>';
+    s+='<line x1="248" y1="140" x2="'+(248+Math.sin(mA)*12).toFixed(1)+'" y2="'+(140-Math.cos(mA)*12).toFixed(1)+'" stroke="#b23a48" stroke-width="2" stroke-linecap="round"/>';
+    s+='<circle cx="248" cy="140" r="2" fill="#163a3d"/>';
+    // shelf + books
+    s+='<rect x="44" y="176" width="156" height="6" rx="1" fill="#8a5a35"/><rect x="56" y="182" width="5" height="10" fill="#8a5a35"/><rect x="182" y="182" width="5" height="10" fill="#8a5a35"/>';
+    for(var b=0;b<BOOKS.length;b++){
+      var bw=BOOKS[b][0],bh=BOOKS[b][1],bc=BOOKS[b][2],x=bookX(b);
+      if(v&&b===5) bc='#6a4c93';
+      s+='<rect x="'+x+'" y="'+(176-bh)+'" width="'+bw+'" height="'+bh+'" rx="1.5" fill="'+bc+'"/>';
+      s+='<rect x="'+(x+2)+'" y="'+(176-bh+5)+'" width="'+(bw-4)+'" height="2" fill="#fff3d6" opacity=".55"/>';
+      s+='<rect x="'+(x+2)+'" y="'+(176-10)+'" width="'+(bw-4)+'" height="2" fill="#fff3d6" opacity=".4"/>';
+    }
+    // little "book of the month" card
+    s+='<rect x="210" y="186" width="50" height="30" rx="3" fill="#fffdf6" stroke="#e3a72f" stroke-width="1.5" transform="rotate(4 235 201)"/>';
+    s+='<text x="235" y="199" text-anchor="middle" font-size="7" font-family="Georgia, serif" fill="#163a3d" transform="rotate(4 235 201)">Book of</text><text x="235" y="209" text-anchor="middle" font-size="7" font-family="Georgia, serif" fill="#163a3d" transform="rotate(4 235 201)">the month</text>';
+    // plant
+    s+='<path d="M70 262V218M70 240Q58 232 56 222M70 236Q82 228 84 220" fill="none" stroke="#3c7a4a" stroke-width="2.5" stroke-linecap="round"/>';
+    s+='<ellipse cx="60" cy="236" rx="8" ry="4" fill="#4f9a5a" transform="rotate(-30 60 236)"/><ellipse cx="81" cy="232" rx="8" ry="4" fill="#4f9a5a" transform="rotate(25 81 232)"/>';
+    function flower(cx,cy,c){var f='';for(var q=0;q<5;q++){var aa=q*Math.PI*2/5;f+='<circle cx="'+(cx+Math.cos(aa)*4.5).toFixed(1)+'" cy="'+(cy+Math.sin(aa)*4.5).toFixed(1)+'" r="3.6" fill="'+c+'"/>';}return f+'<circle cx="'+cx+'" cy="'+cy+'" r="2.6" fill="#e3a72f"/>';}
+    s+=flower(56,220,'#f08aa0');
+    if(!v) s+=flower(70,212,'#ffffff');
+    s+=flower(84,218,'#f08aa0');
+    s+='<path d="M54 246h32l-4 18H58z" fill="#c8643b"/><rect x="52" y="243" width="36" height="6" rx="2" fill="#b0532e"/>';
+    // book stack + mug
+    s+='<rect x="96" y="250" width="68" height="12" rx="2" fill="#b23a48"/><rect x="99" y="253" width="62" height="2" fill="#fff3d6" opacity=".5"/>';
+    s+='<rect x="100" y="239" width="60" height="11" rx="2" fill="#1f4e52"/>';
+    s+='<rect x="94" y="229" width="64" height="10" rx="2" fill="#e3a72f"/>';
+    s+='<rect x="114" y="213" width="16" height="16" rx="3" fill="#fffdf6" stroke="#163a3d" stroke-width="1.5"/><path d="M130 217q6 0 6 5t-6 5" fill="none" stroke="#163a3d" stroke-width="1.5"/>';
+    s+='<path d="M118 208q-3-4 0-8M124 208q-3-4 0-8" fill="none" stroke="#a8703f" stroke-width="1.5" stroke-linecap="round" opacity=".7"/>';
+    // cat
+    s+='<g>';
+    if(v){ s+='<path d="M240 252Q262 248 258 222" fill="none" stroke="#d27a2e" stroke-width="7" stroke-linecap="round"/>'; }
+    else { s+='<path d="M242 254Q262 262 246 264Q222 266 206 262" fill="none" stroke="#d27a2e" stroke-width="7" stroke-linecap="round"/>'; }
+    s+='<ellipse cx="214" cy="248" rx="32" ry="15" fill="#e08a3c"/>';
+    s+='<path d="M206 236q3 6 0 12M216 234q3 7 0 14M226 236q3 6 0 12" fill="none" stroke="#c46f25" stroke-width="2.5" stroke-linecap="round"/>';
+    s+='<circle cx="186" cy="246" r="13" fill="#e08a3c"/>';
+    s+='<path d="M176 238l1-12 8 7zM188 233l7-9 3 11z" fill="#e08a3c"/><path d="M178 236l1-6 4 4z" fill="#f4b8a8"/>';
+    s+='<path d="M179 247q3 2 6 0M189 247q3 2 6 0" fill="none" stroke="#3b2414" stroke-width="1.5" stroke-linecap="round"/>';
+    s+='<path d="M186 252l-1.5-1.5h3z" fill="#b2504a"/>';
+    s+='<path d="M196 256q-6 6-14 4" fill="none" stroke="#e08a3c" stroke-width="6" stroke-linecap="round"/>';
+    s+='<text x="168" y="226" font-size="9" font-weight="700" fill="#7a5a3a" font-family="system-ui, sans-serif">z</text><text x="160" y="216" font-size="11" font-weight="700" fill="#7a5a3a" font-family="system-ui, sans-serif">z</text>';
+    s+='</g>';
+    // door
+    s+='<rect x="296" y="86" width="86" height="210" rx="3" fill="#fff3d6"/>';
+    s+='<rect x="302" y="92" width="74" height="200" fill="#b23a48"/>';
+    s+='<rect x="310" y="100" width="58" height="56" rx="3" fill="url(#glow'+v+')" stroke="#8e2a37" stroke-width="3"/><line x1="339" y1="100" x2="339" y2="156" stroke="#8e2a37" stroke-width="3"/>';
+    s+='<rect x="312" y="200" width="54" height="34" rx="3" fill="none" stroke="#8e2a37" stroke-width="2"/><rect x="312" y="242" width="54" height="40" rx="3" fill="none" stroke="#8e2a37" stroke-width="2"/>';
+    s+='<rect x="326" y="214" width="26" height="6" rx="2" fill="#e3a72f"/><circle cx="366" cy="190" r="4" fill="#e3a72f"/>';
+    s+='<path d="M328 158l11 8 11-8" fill="none" stroke="#7a5a3a" stroke-width="1.2"/><rect x="322" y="166" width="34" height="16" rx="3" fill="#fff3d6"/><text x="339" y="178" text-anchor="middle" font-size="10" font-weight="800" fill="#1f4e52" font-family="system-ui, sans-serif">OPEN</text>';
+    // pavement
+    s+='<rect x="0" y="296" width="400" height="24" fill="#a9b0ac"/><path d="M0 306H400" stroke="#959c98" stroke-width="1"/>';
+    s+='<rect x="292" y="292" width="94" height="6" fill="#d8d1c2"/>';
+    s+='<g class="marks"></g><g class="hints"></g><g class="cursor" visibility="hidden"><circle r="22" fill="rgba(255,255,255,.18)" stroke="#fff" stroke-width="4"/><circle r="22" fill="none" stroke="#b23a48" stroke-width="2"/><path d="M-6 0h12M0-6v12" stroke="#b23a48" stroke-width="2"/></g>';
+    return s;
+  }
+
+  var pics=[$('picA'),$('picB')];
+  pics[0].innerHTML=scene(0);pics[1].innerHTML=scene(1);
+
+  // ---------- game state ----------
+  var found={}, nFound=0, started=false, t0=0, elapsed=0, penalty=0, hints=0, timer=null, done=false;
+  var dotsEl=$('dots'), list=$('found');
+  function buildUi(){
+    dotsEl.innerHTML='';list.innerHTML='';
+    DIFFS.forEach(function(d,i){
+      var dot=document.createElement('span');dot.className='dot';dotsEl.appendChild(dot);
+      var li=document.createElement('li');li.innerHTML='<span class="num">'+(i+1)+'</span><span class="txt">Still hiding...</span>';list.appendChild(li);
+    });
+  }
+  buildUi();
+
+  function fmtT(sec){sec=Math.floor(sec);return Math.floor(sec/60)+':'+String(sec%60).padStart(2,'0');}
+  function total(){return elapsed+penalty;}
+  function startClock(){
+    if(started) return; started=true; t0=performance.now();
+    timer=setInterval(function(){elapsed=(performance.now()-t0)/1000;$('time').textContent=fmtT(total());},250);
+  }
+  function stopClock(){clearInterval(timer);elapsed=(performance.now()-t0)/1000;$('time').textContent=fmtT(total());}
+
+  function toLocal(svg,clientX,clientY){
+    var pt=svg.createSVGPoint();pt.x=clientX;pt.y=clientY;
+    return pt.matrixTransform(svg.getScreenCTM().inverse());
+  }
+
+  function check(x,y,svg){
+    if(done) return;
+    startClock();
+    var best=null,bd=1e9;
+    DIFFS.forEach(function(d){if(found[d.id])return;var dist=Math.hypot(d.cx-x,d.cy-y);if(dist<=d.r&&dist<bd){bd=dist;best=d;}});
+    if(best){ markFound(best); }
+    else {
+      // already found nearby?
+      var again=DIFFS.some(function(d){return found[d.id]&&Math.hypot(d.cx-x,d.cy-y)<=d.r;});
+      missAt(svg,x,y);
+      say(again?'You have already found that one. Keep looking!':pick(['Not there. Keep looking!','Nope, that one is the same in both.','Close your eyes, count to three, try again.','Marmalade says: not that bit.']));
+    }
+  }
+  function pick(a){return a[Math.floor(Math.random()*a.length)];}
+
+  function el(tag,attrs){var e=document.createElementNS(NS,tag);for(var k in attrs)e.setAttribute(k,attrs[k]);return e;}
+
+  function markFound(d){
+    found[d.id]=true;nFound++;
+    var idx=DIFFS.indexOf(d);
+    pics.forEach(function(svg){
+      var g=svg.querySelector('.marks');
+      var grp=el('g',{});
+      grp.appendChild(el('circle',{cx:d.cx,cy:d.cy,r:24,fill:'rgba(227,167,47,.18)',stroke:'#1d7a4f','stroke-width':4,class:'ring'}));
+      grp.appendChild(el('circle',{cx:d.cx,cy:d.cy,r:24,fill:'none',stroke:'#fff','stroke-width':1.5,class:'ring'}));
+      if(!reduce){
+        var burst=el('g',{class:'burst',stroke:'#e3a72f','stroke-width':3,'stroke-linecap':'round'});
+        for(var i=0;i<8;i++){var a=i*Math.PI/4;burst.appendChild(el('line',{x1:d.cx+Math.cos(a)*28,y1:d.cy+Math.sin(a)*28,x2:d.cx+Math.cos(a)*40,y2:d.cy+Math.sin(a)*40}));}
+        grp.appendChild(burst);
+      }
+      g.appendChild(grp);
+      svg.querySelector('.hints').innerHTML='';
+    });
+    dotsEl.children[nFound-1].classList.add('on');
+    var li=list.children[idx];li.classList.add('got');li.querySelector('.txt').textContent=d.name;
+    $('count').textContent=nFound;
+    var left=DIFFS.length-nFound;
+    say(left?('Found it! '+d.name+'. '+left+' to go.'):'Found it! '+d.name+'. That is all five!');
+    if(!left) win();
+  }
+
+  function missAt(svg,x,y){
+    var g=svg.querySelector('.marks');
+    var m=el('g',{class:'miss'});
+    m.appendChild(el('circle',{cx:x,cy:y,r:12,fill:'none',stroke:'#b23a48','stroke-width':3}));
+    m.appendChild(el('path',{d:'M'+(x-5)+' '+(y-5)+'l10 10M'+(x+5)+' '+(y-5)+'l-10 10',stroke:'#b23a48','stroke-width':3,'stroke-linecap':'round'}));
+    g.appendChild(m);setTimeout(function(){m.remove();},reduce?600:800);
+    if(!reduce){svg.classList.remove('shake');void svg.getBoundingClientRect();svg.classList.add('shake');}
+  }
+
+  var statusT;
+  function say(t){var s=$('status');s.textContent=t;}
+
+  pics.forEach(function(svg){
+    svg.addEventListener('click',function(e){var p=toLocal(svg,e.clientX,e.clientY);check(p.x,p.y,svg);});
+    // keyboard magnifier
+    var cur={x:200,y:180};
+    var cg=svg.querySelector('.cursor');
+    function place(){cg.setAttribute('transform','translate('+cur.x+','+cur.y+')');}
+    var byPointer=false;
+    svg.addEventListener('focus',function(){if(!byPointer){cg.setAttribute('visibility','visible');place();}byPointer=false;});
+    svg.addEventListener('blur',function(){cg.setAttribute('visibility','hidden');});
+    svg.addEventListener('pointerdown',function(){byPointer=true;cg.setAttribute('visibility','hidden');});
+    svg.addEventListener('keydown',function(e){
+      var step=e.shiftKey?40:12, k=e.key, moved=true;
+      if(k==='ArrowLeft')cur.x-=step;else if(k==='ArrowRight')cur.x+=step;else if(k==='ArrowUp')cur.y-=step;else if(k==='ArrowDown')cur.y+=step;
+      else if(k==='Enter'||k===' '){e.preventDefault();check(cur.x,cur.y,svg);return;}
+      else moved=false;
+      if(moved){e.preventDefault();cur.x=Math.max(10,Math.min(390,cur.x));cur.y=Math.max(10,Math.min(310,cur.y));cg.setAttribute('visibility','visible');place();}
+    });
+  });
+
+  // ---------- hint ----------
+  $('hint').addEventListener('click',function(){
+    if(done) return;
+    var left=DIFFS.filter(function(d){return !found[d.id];});
+    if(!left.length) return;
+    startClock();
+    var d=left[Math.floor(Math.random()*left.length)];
+    hints++;penalty+=10;$('time').textContent=fmtT(total());
+    var ox=(Math.random()-0.5)*30, oy=(Math.random()-0.5)*30;
+    pics.forEach(function(svg){
+      var h=svg.querySelector('.hints');h.innerHTML='';
+      var c=el('circle',{cx:d.cx+ox,cy:d.cy+oy,r:58,fill:'rgba(255,255,255,.12)',stroke:'#fff','stroke-width':3,'stroke-dasharray':'8 6',class:'hintc'});
+      h.appendChild(c);
+      setTimeout(function(){if(c.parentNode)c.remove();},3400);
+    });
+    say('Hint: '+d.hint+' (10 seconds added)');
+  });
+
+  // ---------- win ----------
+  function rankFor(t){
+    if(t<45) return ['Eagle-eyed Bookworm','Faster than a cat spotting a dropped prawn.'];
+    if(t<90) return ['Sharp-sighted Browser','A proper detective. Sherlock would lend you his magnifying glass.'];
+    if(t<180) return ['Patient Page-Turner','Slow and steady, just like a good long read.'];
+    return ['Cosy Ponderer','You took your time and enjoyed the view. We like your style.'];
+  }
+  function win(){
+    done=true;stopClock();
+    var t=total(), r=rankFor(t);
+    $('rank').textContent=r[0];$('rewardLine').textContent=r[1];
+    $('statTime').textContent='Time '+fmtT(t);
+    $('statHints').textContent=hints+(hints===1?' hint':' hints');
+    var best=null;
+    try{best=parseFloat(localStorage.getItem('dep-spot-best'));if(!(best>0)||t<best){localStorage.setItem('dep-spot-best',String(t));}}catch(e){}
+    var sb=$('statBest');
+    if(best>0){sb.hidden=false;sb.textContent=t<best?'New best time!':'Best '+fmtT(best);}else sb.hidden=true;
+    $('hint').disabled=true;
+    setTimeout(function(){
+      var rw=$('reward');rw.hidden=false;
+      rw.scrollIntoView({behavior:reduce?'auto':'smooth',block:'start'});
+      setTimeout(function(){rw.focus({preventScroll:true});},reduce?0:500);
+      if(!reduce) confetti();
+    },reduce?0:700);
+  }
+
+  function confetti(){
+    var cv=document.createElement('canvas');cv.setAttribute('aria-hidden','true');
+    cv.style.cssText='position:fixed;inset:0;pointer-events:none;z-index:25';
+    var W=cv.width=innerWidth,H=cv.height=innerHeight;document.body.appendChild(cv);
+    var ctx=cv.getContext('2d'),cols=['#b23a48','#e3a72f','#4f9a94','#fff3d6','#1f4e52','#f08aa0'];
+    var ps=[];for(var i=0;i<160;i++)ps.push({x:Math.random()*W,y:-Math.random()*H*0.6,vx:(Math.random()-0.5)*3,vy:Math.random()*3+2,w:Math.random()*8+5,h:Math.random()*5+4,a:Math.random()*6,va:(Math.random()-0.5)*0.3,c:cols[i%cols.length]});
+    var f=0;
+    (function loop(){
+      ctx.clearRect(0,0,W,H);
+      ps.forEach(function(p){p.x+=p.vx+Math.sin((f+p.a*10)/15)*0.8;p.y+=p.vy;p.a+=p.va;ctx.save();ctx.translate(p.x,p.y);ctx.rotate(p.a);ctx.fillStyle=p.c;ctx.fillRect(-p.w/2,-p.h/2,p.w,p.h);ctx.restore();});
+      if(++f<200) requestAnimationFrame(loop); else cv.remove();
+    })();
+  }
+
+  // ---------- reward actions ----------
+  var tt;function toast(m){var t=$('toast');t.textContent=m;t.classList.add('show');clearTimeout(tt);tt=setTimeout(function(){t.classList.remove('show');},2200);}
+  function copyText(text,okMsg){
+    if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(text).then(function(){toast(okMsg);},function(){toast('Could not copy, sorry');});}
+    else toast('Copying is not available here');
+  }
+  $('copy').addEventListener('click',function(){copyText('DEMO10','Code copied (it is only an example!)');});
+  $('share').addEventListener('click',function(){
+    var text='I spotted all 5 differences in The Dog-Eared Page window in '+fmtT(total())+'. Can you beat me?';
+    if(navigator.share){navigator.share({title:'Spot the difference',text:text}).catch(function(){});}
+    else copyText(text,'Copied to your clipboard');
+  });
+
+  $('leadForm').addEventListener('submit',function(e){
+    e.preventDefault();
+    var em=$('email'),ok=/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em.value.trim());
+    $('emailErr').hidden=ok;em.setAttribute('aria-invalid',ok?'false':'true');
+    if(!ok){em.focus();return;}
+    this.reset();this.hidden=true;var n=$('demoNote');n.hidden=false;n.focus();
+  });
+
+  $('again').addEventListener('click',function(){
+    found={};nFound=0;started=false;elapsed=0;penalty=0;hints=0;done=false;clearInterval(timer);
+    $('time').textContent='0:00';$('count').textContent='0';$('hint').disabled=false;
+    pics.forEach(function(svg){svg.querySelector('.marks').innerHTML='';svg.querySelector('.hints').innerHTML='';});
+    buildUi();
+    $('reward').hidden=true;$('leadForm').reset();$('leadForm').hidden=false;$('demoNote').hidden=true;$('emailErr').hidden=true;
+    say('Fresh start! Tap a spot on either picture to start the clock.');
+    window.scrollTo({top:0,behavior:reduce?'auto':'smooth'});
+    pics[0].focus({preventScroll:true});
+  });
+})();
+</script>
+</body>
+</html>
