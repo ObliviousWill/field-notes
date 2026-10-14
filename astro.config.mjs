@@ -36,7 +36,7 @@ export default defineConfig({
 			},
 		},
 		{
-			// stand-in handwriting until Will's own handwriting font is ready
+			// Will's own handwriting (punctuation borrowed from Caveat, OFL)
 			provider: fontProviders.local(),
 			name: 'Hand',
 			cssVariable: '--font-hand',
@@ -44,8 +44,8 @@ export default defineConfig({
 			options: {
 				variants: [
 					{
-						src: ['./src/assets/fonts/caveat-600.woff'],
-						weight: 600,
+						src: ['./src/assets/fonts/will-hand.woff2'],
+						weight: 400,
 						style: 'normal',
 						display: 'swap',
 					},

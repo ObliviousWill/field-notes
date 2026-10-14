@@ -38,6 +38,8 @@ A web page is written to be looked at, not listened to. Read it out word for wor
 - **On-screen tools are skipped.** Several guides have interactive exercises. You can't use those when you're listening, so the script leaves them out, along with the line that introduces them.
 - **Long posts are sent in chunks**, each one carrying a little of the text either side, so the voice keeps its rhythm across the joins.
 
+<aside class="margin-note">Always build in a retry.</aside>
+
 The first run in my voice cut out partway through the longest post when the connection dropped. So the script now retries automatically.
 
 ## What it cost
@@ -45,6 +47,8 @@ The first run in my voice cut out partway through the longest post when the conn
 Voice services charge by the number of characters they read. Every post and guide on the site came to roughly 68,000 characters. That fits within a paid monthly plan, but it isn't free, so it's worth checking your allowance before you voice a whole site at once. The free Kokoro version cost nothing at all.
 
 ## Where I drew the line
+
+<aside class="margin-note">The most important part of this post.</aside>
 
 A cloned voice is powerful, and it's easy to use it badly. My rules:
 

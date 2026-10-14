@@ -4,7 +4,9 @@ import CategoryChip from '../components/CategoryChip.astro';
 import Footer from '../components/Footer.astro';
 import Header from '../components/Header.astro';
 import NewsletterBlock from '../components/NewsletterBlock.astro';
+import { Image } from 'astro:assets';
 import { SITE_TITLE } from '../consts';
+import portrait from '../assets/about/will.jpg';
 
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 const description =
@@ -20,6 +22,10 @@ const description =
 		<Header current="about" />
 		<main>
 			<header class="hero">
+				<figure class="polaroid taped">
+					<Image src={portrait} alt="Will, smiling, on a cobbled harbourside" width={400} height={400} loading="eager" />
+					<figcaption class="hand">Hello, I'm Will</figcaption>
+				</figure>
 				<h1>About</h1>
 				<div class="byline">
 					<strong>Will</strong>
@@ -135,6 +141,33 @@ const description =
 	.hero {
 		margin-bottom: 44px;
 	}
+	.hero::after {
+		content: '';
+		display: block;
+		clear: both;
+	}
+	.polaroid {
+		float: right;
+		width: 220px;
+		margin: 6px 0 20px 32px;
+		padding: 12px 12px 6px;
+		background: #fff;
+		box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08), 0 10px 24px -12px rgba(40, 30, 10, 0.35);
+		transform: rotate(2.5deg);
+	}
+	.polaroid img {
+		display: block;
+		width: 100%;
+		height: auto;
+		aspect-ratio: 1;
+		object-fit: cover;
+	}
+	.polaroid figcaption {
+		text-align: center;
+		font-size: 24px;
+		color: var(--ink);
+		padding: 8px 0 2px;
+	}
 	.hero h1 {
 		font-family: var(--font-display);
 		font-weight: 500;
@@ -226,6 +259,19 @@ const description =
 	@media (max-width: 720px) {
 		.hero {
 			margin-bottom: 32px;
+		}
+		.polaroid {
+			width: 138px;
+			margin: 0 0 14px 18px;
+			padding: 8px 8px 4px;
+		}
+		.polaroid figcaption {
+			font-size: 18px;
+			padding-top: 4px;
+		}
+		.byline {
+			clear: both;
+			padding-top: 4px;
 		}
 		.hero h1 {
 			font-size: 54px;

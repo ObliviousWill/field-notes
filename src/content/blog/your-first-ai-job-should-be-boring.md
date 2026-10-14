@@ -40,6 +40,8 @@ The instructions are where the work is. Write them as if you're briefing a new a
 
 ## The rules that stop it going wrong
 
+<aside class="margin-note">Steal these rules. They work for any automatic job.</aside>
+
 A job that runs while you're asleep needs to be honest with you. Every one of mine has some version of these rules:
 
 **Never make up a number.** If it can't get a figure, it says so. A report that is quietly wrong is worse than no report.
@@ -53,6 +55,8 @@ A job that runs while you're asleep needs to be honest with you. Every one of mi
 **Tell a person.** It always sends one short message, and anything that needs a human comes first. An automatic job should always tell someone when something needs a look.
 
 ## Put it where people already look
+
+<aside class="margin-note">Learned this one the slow way.</aside>
 
 My first news briefings came as an attached file, which is easy to miss in a busy inbox. Now the whole briefing is in the body of the email, readable on a phone in two minutes.
 

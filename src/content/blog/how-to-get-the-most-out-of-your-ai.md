@@ -50,6 +50,8 @@ A few moves that consistently raise the quality of the brief:
 
 **Hand over the raw material.** If you have the half-formed notes, the previous email, the messy transcript, the document, give it to Claude rather than summarising it yourself. You summarising first throws away exactly the detail it could have used. Paste the lot and let it do the sorting.
 
+<aside class="margin-note">My favourite. Try it today.</aside>
+
 **Ask for the best one, not a list, if that's what you want.** This is a preference, but it's mine and I'll defend it: a menu of five options is the model declining to make a decision. If you'd rather it commit and reason, tell it to. If you want to compare approaches, ask for that instead. Either way, decide which you want rather than accepting the hedge by default.
 
 **Treat it as a conversation, not a vending machine.** The first answer is a draft, not a verdict. "Good, but too formal and the second paragraph buries the ask. Fix both" gets you somewhere a fresh prompt won't. The people who get the most out of Claude are the ones who argue with it.
@@ -63,6 +65,8 @@ Modes one and two get you dramatically better individual answers. The third mode
 There are three things worth understanding here, in rising order of leverage.
 
 **Projects are dedicated workspaces.** Each one has its own instructions and its own knowledge: documents you upload once that Claude then has at hand in every conversation inside that project. The point isn't tidiness. It's that you stop re-establishing context for recurring work. If you run the same kind of task repeatedly (drafting in a particular brand voice, analysing against a fixed framework, writing within a strategy you've already set) a project means you set the stage once and every chat inside it starts halfway up the hill. A separate project keeps unrelated work from bleeding together, so the context stays sharp instead of turning to soup.
+
+<aside class="margin-note">This is the bit that changed how I work.</aside>
 
 **Skills are the step most people don't know exists, and they're the closest thing to a superpower in the whole product.** A skill teaches Claude to do something your way, permanently. Not "remember this fact", but "follow this procedure every time." I have one that produces documents in our exact brand format, colours and typography included, so I never have to re-specify it. You can build one for your analysis process, your reporting template, the way you like project plans laid out, anything you do repeatedly in a consistent way. And you don't have to write it by hand: you tell Claude you want a skill, describe the procedure, and it builds the thing for you. The mental shift is from asking Claude to do tasks toward teaching it how you work, so the asking gets shorter and the output gets more like you every time.
 

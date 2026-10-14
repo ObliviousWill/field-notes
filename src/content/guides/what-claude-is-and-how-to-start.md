@@ -38,9 +38,13 @@ Don't start with a test question to see if it's clever. Start with something rea
 - "I've got a meeting with my manager about a pay rise. Help me plan what to say."
 - "Here's a long email thread. Summarise it in three points and tell me what the next step is."
 
+<aside class="margin-note">If you only remember one thing, make it this.</aside>
+
 Then **reply to its answer**. This is the bit most people skip. If it's too long, say "shorter". If it's too formal, say "more casual". If it got something wrong, tell it. It's a conversation, not a one-off question.
 
 ## Three things to know early
+
+<aside class="margin-note">Please don't skip this bit.</aside>
 
 **It can be wrong, and sound sure.** Claude is right most of the time, but it can make mistakes and still sound confident. For anything that matters, such as health, money, law or facts you'll repeat, check it. Ask it "how sure are you?" or "where could this be wrong?". It will usually tell you honestly.
 
