@@ -8,7 +8,7 @@ The handwriting on this site is now mine.
 
 I wrote the alphabet, in capitals and lower case, plus the numbers 0 to 9, on a sheet of paper and took a photo. Claude did the rest: it turned the photo the right way up, picked out each letter, smoothed the pen lines and built a font from them. The letters still wobble a bit, because my handwriting does.
 
-I didn't write any punctuation, so for now the full stops, commas and question marks are borrowed from a free handwriting font. That's next on the list.
+I forgot the punctuation the first time, so I sent a second photo with full stops, commas, question marks, brackets and the rest. A few rarer symbols, like £ and %, still come from a free handwriting font.
 
 Also new:
 

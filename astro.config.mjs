@@ -36,7 +36,7 @@ export default defineConfig({
 			},
 		},
 		{
-			// Will's own handwriting (punctuation borrowed from Caveat, OFL)
+			// Will's own handwriting (a few rare symbols borrowed from Caveat, OFL)
 			provider: fontProviders.local(),
 			name: 'Hand',
 			cssVariable: '--font-hand',
