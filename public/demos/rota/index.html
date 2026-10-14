@@ -1,0 +1,1310 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Team cover rota</title>
+<meta name="description" content="A demo of a small support team's cover rota: tap to swap who is on, see the workload forecast, and share the load fairly. Made-up data.">
+<meta name="robots" content="noindex">
+<style>
+:root{
+  color-scheme:light;
+  --bg:#EEE9DF; --ink:#2C3B4D; --muted:#4F5D6F; --accent:#FFB162; --accent-ink:#B86A1E;
+  --panel:#F7F3EC; --surface:#FFFFFF;
+  --hairline:#DDD5C7; --track:#E3DCCF; --accent-hover:#F5A04D;
+  --warn-bg:#FCE7CE; --warn-rule:#F2C08A;
+  --bad:#B5452F; --bad-bg:#F6DFD7; --bad-rule:#E3A898;
+  --fill:#7D8A99;
+  --s1:#D8D3C9; --s2:#B9BFC6; --s3:#8C98A6; --s4:#5E6C7D; --s5:#2C3B4D;
+  --font:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --r-btn:6px; --r-card:12px; --r-pill:999px;
+  --shadow:0 1px 2px rgba(44,59,77,.06),0 4px 14px rgba(44,59,77,.06);
+  --shadow-lg:0 12px 32px rgba(44,59,77,.16);
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0; background:var(--bg); color:var(--ink); font-family:var(--font); font-size:15px;
+  line-height:1.5; -webkit-font-smoothing:antialiased; font-variant-numeric:tabular-nums}
+h1,h2{margin:0; text-wrap:balance}
+p{margin:0}
+button,select,input{font-family:inherit; font-size:inherit; color:inherit}
+:focus-visible{outline:3px solid var(--accent-ink); outline-offset:2px; border-radius:4px}
+
+.t-big{font-weight:800; font-size:32px; letter-spacing:-.02em; line-height:1.1}
+.t-h2{font-weight:800; font-size:22px; letter-spacing:-.015em; line-height:1.2}
+.t-label{font-size:12px; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:.07em}
+.t-meta{font-size:14px; color:var(--muted)}
+
+.wrap{max-width:1220px; margin:0 auto; padding:20px 16px 40px; display:flex; flex-direction:column; gap:18px}
+
+.demo{display:flex; flex-wrap:wrap; gap:10px 16px; align-items:center; justify-content:space-between;
+  background:var(--panel); border:1px solid var(--hairline); border-left:4px solid var(--accent);
+  border-radius:var(--r-card); padding:10px 12px 10px 14px; font-size:14px}
+.demo p{flex:1 1 260px}
+.demo b{font-weight:700}
+
+.mast__row{display:flex; flex-wrap:wrap; gap:14px 28px; align-items:flex-end; justify-content:space-between}
+.mast__sub{margin-top:6px}
+
+.verdict{display:flex; gap:8px; flex-wrap:wrap; align-items:center}
+.pill{display:inline-flex; align-items:center; gap:7px; min-height:32px; padding:4px 13px;
+  border-radius:var(--r-pill); font-weight:700; font-size:13.5px;
+  background:var(--panel); color:var(--ink); border:1px solid var(--hairline)}
+.pill .n{font-weight:800}
+.pill--bad{background:var(--bad-bg); color:var(--bad); border-color:var(--bad-rule)}
+.pill--warn{background:var(--warn-bg); color:var(--accent-ink); border-color:var(--warn-rule)}
+.dot{width:8px; height:8px; border-radius:50%; flex:none; background:currentColor}
+
+.btn{display:inline-flex; align-items:center; justify-content:center; gap:8px;
+  min-height:44px; padding:0 16px; border-radius:var(--r-btn);
+  font-weight:700; font-size:14.5px; line-height:1; cursor:pointer;
+  border:1px solid var(--hairline); background:var(--panel); color:var(--ink);
+  transition:background .15s ease, transform .08s ease}
+.btn:hover{background:var(--surface)}
+.btn:active{transform:translateY(1px)}
+.btn--primary{background:var(--accent); border-color:var(--accent); color:var(--ink)}
+.btn--primary:hover{background:var(--accent-hover)}
+.btn--icon{width:44px; padding:0; font-size:17px}
+.btn--sm{min-height:36px; font-size:13.5px; padding:0 12px}
+
+.toolbar{display:flex; flex-wrap:wrap; gap:10px; align-items:center; justify-content:space-between}
+.toolbar .grp{display:flex; gap:8px; align-items:center; flex-wrap:wrap}
+.range{font-weight:800; font-size:16px; padding:0 4px}
+.state{display:inline-flex; align-items:center; gap:8px; min-height:32px; padding:4px 13px;
+  border-radius:var(--r-pill); font-size:13px; font-weight:700; background:var(--panel);
+  color:var(--muted); border:1px solid var(--hairline)}
+.state--warn{background:var(--warn-bg); color:var(--accent-ink)}
+
+.card{background:var(--panel); border:1px solid var(--hairline); border-radius:var(--r-card); box-shadow:var(--shadow)}
+
+.fortnight{display:flex; flex-direction:column; gap:14px}
+.wk__head{display:flex; flex-wrap:wrap; gap:8px 18px; align-items:center; justify-content:space-between; padding:14px 16px 12px}
+.wk__title{display:flex; align-items:center; gap:10px; flex-wrap:wrap}
+.wk__title strong{font-weight:800; font-size:17px}
+.tag{display:inline-flex; align-items:center; height:24px; padding:0 10px; border-radius:var(--r-pill);
+  background:var(--bg); color:var(--ink); font-size:11.5px; font-weight:700; letter-spacing:.04em}
+.tally{display:flex; gap:6px 16px; flex-wrap:wrap; font-size:13px; color:var(--muted)}
+.tally span{display:inline-flex; align-items:center; gap:6px}
+.tally b{font-weight:800; color:var(--ink)}
+.tally b.over{color:var(--accent-ink)}
+.tally b.under{color:var(--bad)}
+
+.days{display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); border-top:1px solid var(--hairline)}
+.day{position:relative; padding:14px 14px 15px; border-right:1px solid var(--hairline);
+  display:flex; flex-direction:column; gap:12px; min-width:0; background:var(--panel)}
+.day:last-child{border-right:none}
+.day::before{content:""; position:absolute; left:0; top:0; bottom:0; width:3px; background:transparent}
+.day--short{background:var(--bad-bg)}
+.day--short::before{background:var(--bad)}
+.day--heavy{background:var(--warn-bg)}
+.day--heavy::before{background:var(--accent)}
+.day--today .d-dow{background:var(--accent); color:var(--ink); padding:0 7px; border-radius:var(--r-pill)}
+.day--hol{background:var(--bg)}
+.day--hol .d-num,.day--hol .d-dow{opacity:.55}
+.day--hol .d-mon{font-weight:700; color:var(--accent-ink)}
+
+.d-head{display:flex; align-items:baseline; gap:9px}
+.d-num{font-weight:800; font-size:26px; letter-spacing:-.03em; line-height:1}
+.d-dow{font-size:11.5px; font-weight:700; letter-spacing:.07em; text-transform:uppercase; color:var(--muted)}
+.d-mon{font-size:11.5px; color:var(--muted); margin-left:auto}
+
+.chips{display:flex; flex-direction:column; gap:5px}
+.pchip{display:flex; align-items:center; gap:9px; width:100%; text-align:left;
+  min-height:36px; padding:0 10px 0 8px; border-radius:var(--r-btn);
+  border:1.5px solid var(--hairline); background:var(--surface);
+  color:var(--muted); font-size:13.5px; cursor:pointer; transition:border-color .15s ease}
+.pchip:hover:not([disabled]){border-color:var(--accent)}
+.pchip[data-on="true"]{border-color:var(--ink); color:var(--ink); font-weight:700}
+.pchip .nm{flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+.pchip .mk{font-size:10.5px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; opacity:.75}
+.pchip[data-dis="true"]{cursor:not-allowed; opacity:.55}
+.pchip[data-dis="true"] .nm{text-decoration:line-through}
+.tick{width:18px; height:18px; border-radius:5px; flex:none; display:flex; align-items:center; justify-content:center;
+  background:var(--surface); border:1.5px solid var(--hairline)}
+.tick svg{width:13px; height:13px; display:block; opacity:0}
+.tick path{fill:none; stroke:var(--ink); stroke-width:2.8; stroke-linecap:round; stroke-linejoin:round}
+.pchip[data-on="true"] .tick{background:var(--accent); border-color:var(--accent)}
+.pchip[data-on="true"] .tick svg{opacity:1}
+.pchip--cover{border-style:dashed}
+.pchip--cover[data-on="true"]{border-style:dashed; border-color:var(--accent-ink)}
+.covertag{font-size:9.5px; font-weight:700; letter-spacing:.07em; text-transform:uppercase; color:var(--accent-ink)}
+.addcover{align-self:flex-start; min-height:28px; padding:0 4px; border:none; background:none;
+  color:var(--muted); font-size:12.5px; font-weight:700; cursor:pointer; border-radius:var(--r-btn)}
+.addcover:hover{color:var(--accent-ink)}
+
+#covermenu{position:absolute; z-index:40; width:210px; padding:8px; display:none;
+  background:var(--surface); border:1px solid var(--hairline); border-radius:var(--r-card); box-shadow:var(--shadow-lg)}
+#covermenu[data-open="true"]{display:block}
+#covermenu .hd{font-size:10.5px; font-weight:700; letter-spacing:.07em; text-transform:uppercase; color:var(--muted); padding:2px 6px 7px}
+#covermenu .opt{display:flex; align-items:center; gap:8px; width:100%; text-align:left;
+  min-height:36px; padding:0 8px; border:none; border-radius:var(--r-btn); background:none;
+  font-size:13.5px; font-weight:700; cursor:pointer}
+#covermenu .opt:hover{background:var(--bg)}
+#covermenu .opt .drop{margin-left:auto; color:var(--muted); font-weight:400; font-size:15px; padding:0 4px}
+#covermenu .opt .drop:hover{color:var(--bad)}
+#covermenu .new{display:flex; gap:6px; margin-top:6px; padding-top:8px; border-top:1px solid var(--hairline)}
+#covermenu .new input{flex:1; min-width:0; height:36px; padding:0 9px; font-size:14px;
+  border:1.5px solid var(--hairline); border-radius:var(--r-btn); background:var(--surface)}
+#covermenu .new button{height:36px; padding:0 12px; border:none; border-radius:var(--r-btn);
+  background:var(--accent); font-weight:700; cursor:pointer}
+
+.load{display:flex; flex-direction:column; gap:5px; margin-top:auto; padding-top:11px; border-top:1px solid var(--hairline)}
+.load__lbl{font-size:10px; font-weight:700; letter-spacing:.11em; text-transform:uppercase; color:var(--muted)}
+.load__lbl--act{color:var(--ink)}
+.tuned{color:var(--accent-ink); margin-left:3px; letter-spacing:.06em}
+.vs{font-size:11px; color:var(--muted)}
+.vs--off{color:var(--accent-ink); font-weight:700}
+.load__n{font-weight:800; font-size:22px; letter-spacing:-.03em; line-height:1}
+.load__n .x{font-size:15px; font-weight:700; margin-left:1px}
+.load__n--warn{color:var(--accent-ink)}
+.load__n--bad{color:var(--bad)}
+.track{height:6px; border-radius:var(--r-pill); background:var(--track); overflow:hidden}
+.fill{height:100%; border-radius:var(--r-pill); display:block; background:var(--fill)}
+.fill--warn{background:var(--accent)}
+.fill--bad{background:var(--bad)}
+.fill--proj{background-image:repeating-linear-gradient(115deg, rgba(255,255,255,.6) 0 3px, rgba(255,255,255,0) 3px 7px)}
+.load__fig{font-size:11.5px; color:var(--muted)}
+.load__fig b{font-weight:700; color:var(--ink)}
+.queue{display:flex; align-items:baseline; gap:6px; font-size:11.5px; color:var(--muted); flex-wrap:wrap}
+.queue__lbl{font-size:10px; font-weight:700; letter-spacing:.09em; text-transform:uppercase}
+.queue__v{font-weight:700; color:var(--ink)}
+.queue__ar{font-weight:800; font-size:13px; line-height:1}
+.queue--up .queue__ar,.queue--up .queue__v--end{color:var(--bad)}
+.queue--down .queue__ar,.queue--down .queue__v--end{color:var(--ink)}
+.d-status{font-size:12px; font-weight:700; display:flex; align-items:center; gap:7px}
+.d-status--bad{color:var(--bad)}
+.d-status--warn{color:var(--accent-ink)}
+
+.keyline{display:flex; flex-wrap:wrap; gap:6px 20px; align-items:center; margin-top:-4px; font-size:12.5px; color:var(--muted)}
+.keyline span{display:inline-flex; align-items:center; gap:7px}
+.keyline b{font-weight:800; color:var(--ink)}
+.keyline .sw{width:22px; height:7px; border-radius:var(--r-pill); display:block; flex:none; background:var(--fill)}
+.keyline .sw--proj{background-image:repeating-linear-gradient(115deg, rgba(255,255,255,.6) 0 3px, rgba(255,255,255,0) 3px 7px)}
+
+.panel{padding:18px}
+.panel__head{display:flex; flex-wrap:wrap; gap:10px 18px; align-items:flex-end; justify-content:space-between}
+.panel__head .t-label{margin-bottom:3px}
+.dek{font-size:14px; color:var(--muted); max-width:72ch; margin-top:8px}
+
+.chart-wrap{position:relative; margin-top:20px}
+.chart-inner{position:relative; padding-left:38px}
+.grid-l{position:absolute; left:38px; right:0; border-top:1px solid var(--hairline)}
+.grid-l span{position:absolute; left:-38px; top:-8px; font-size:11px; font-weight:700; color:var(--muted)}
+.bars{position:relative; height:176px; display:grid; gap:3px; align-items:end}
+.bars--q{height:86px}
+.qlabel{margin:16px 0 6px}
+.bcol{position:relative; height:100%; display:flex; flex-direction:column; justify-content:flex-end;
+  background:none; border:none; padding:0; cursor:pointer}
+.bcol--q{cursor:default}
+.bcol .bar{border-radius:4px 4px 0 0; width:100%; display:block}
+.bcol:hover .bar{filter:brightness(1.1)}
+.bcol .flag{position:absolute; left:50%; transform:translateX(-50%); top:0; font-size:10.5px; font-weight:800;
+  padding:2px 6px; border-radius:var(--r-pill); white-space:nowrap}
+.bcol .flag--bad{background:var(--bad-bg); color:var(--bad)}
+.bcol .flag--warn{background:var(--warn-bg); color:var(--accent-ink)}
+.bcol--now{border-left:2px dashed var(--ink); margin-left:-1px}
+.bcol--now .bar{outline:2.5px solid var(--accent); outline-offset:1px}
+.qnote{font-size:12.5px; color:var(--muted); margin-top:10px; max-width:76ch}
+.xaxis{display:grid; gap:3px; margin-top:9px; border-top:1px solid var(--hairline); padding-top:8px}
+.xt{font-size:10.5px; color:var(--muted); text-align:center; line-height:1.35; overflow:hidden}
+.xt b{display:block; font-weight:800; font-size:11.5px; color:var(--ink)}
+.tip{position:absolute; pointer-events:none; opacity:0; transform:translate(-50%,-100%); z-index:5;
+  background:var(--ink); color:#fff; padding:9px 12px; border-radius:var(--r-btn);
+  font-size:13px; line-height:1.45; white-space:nowrap; transition:opacity .12s ease; box-shadow:var(--shadow-lg)}
+.tip b{font-weight:800; color:var(--accent)}
+.legend{display:flex; flex-wrap:wrap; gap:8px 18px; font-size:12.5px; color:var(--muted); margin-top:16px}
+.legend span{display:inline-flex; align-items:center; gap:7px}
+.legend i{width:11px; height:11px; border-radius:3px; display:block; flex:none}
+
+.cols{display:grid; grid-template-columns:1.2fr 1fr; gap:16px; align-items:start}
+.lv-form{display:flex; flex-wrap:wrap; gap:10px; margin-top:16px; align-items:flex-end}
+.fld{display:flex; flex-direction:column; gap:6px; flex:1 1 120px; min-width:0}
+.fld label{font-size:11.5px; font-weight:700; letter-spacing:.07em; text-transform:uppercase; color:var(--muted)}
+.fld select,.fld input{background:var(--surface); border:1.5px solid var(--hairline); border-radius:var(--r-btn);
+  padding:0 10px; height:44px; font-size:14.5px; font-weight:700; width:100%; min-width:0}
+.rows{list-style:none; margin:16px 0 0; padding:0}
+.rows li{display:flex; align-items:center; gap:10px; padding:12px 0; border-bottom:1px solid var(--hairline); font-size:14.5px; flex-wrap:wrap}
+.rows li:last-child{border-bottom:none}
+.lv-who{font-weight:700; min-width:70px}
+.lv-when{color:var(--muted); flex:1 1 140px; min-width:0}
+.x{background:none; border:none; color:var(--muted); cursor:pointer; padding:6px 10px;
+  border-radius:var(--r-btn); font-size:18px; line-height:1}
+.x:hover{background:var(--bad-bg); color:var(--bad)}
+.empty{margin:16px 0 0; font-size:14px; color:var(--muted); padding:18px; border-radius:var(--r-card); text-align:center; background:var(--bg)}
+
+.set{list-style:none; margin:16px 0 0; padding:0}
+.set li{display:flex; align-items:center; justify-content:space-between; gap:14px; padding:12px 0; border-bottom:1px solid var(--hairline)}
+.set li:last-child{border-bottom:none}
+.set .k{font-size:14.5px; font-weight:700; min-width:0}
+.set .k small{display:block; color:var(--muted); font-size:12.5px; font-weight:400; margin-top:2px; max-width:36ch}
+.set input[type=number]{width:86px; flex:none; text-align:right; background:var(--surface);
+  border:1.5px solid var(--hairline); border-radius:var(--r-btn); height:44px; padding:0 10px; font-weight:800; font-size:15px}
+.shape{margin-top:18px}
+.shape__bars{display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:6px; margin-top:10px; align-items:end}
+.shape__col{display:flex; flex-direction:column; align-items:center; gap:5px}
+.shape__v{font-size:11.5px; font-weight:800}
+.shape__bar{width:100%; border-radius:4px 4px 0 0; background:var(--s2); display:block}
+.shape__bar--hot{background:var(--accent)}
+.shape__d{font-size:10.5px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:var(--muted)}
+.shape__note{font-size:13px; color:var(--muted); margin-top:12px}
+.shape__note b{font-weight:700; color:var(--ink)}
+.acc,.note-card{margin-top:16px; padding:13px 15px; border-radius:var(--r-card); background:var(--bg); font-size:13px}
+.acc .t-label,.note-card .t-label{display:block; margin-bottom:4px}
+.acc b{font-weight:800}
+.note-card{border-left:3px solid var(--accent)}
+.foot{font-size:12.5px; color:var(--muted); padding-top:4px}
+
+@media (max-width:1000px){ .cols{grid-template-columns:1fr} }
+@media (max-width:860px){
+  .t-big{font-size:26px}
+  .days{grid-template-columns:1fr}
+  .day{border-right:none; border-bottom:1px solid var(--hairline)}
+  .day:last-child{border-bottom:none}
+  .chips{flex-direction:row; flex-wrap:wrap}
+  .pchip{width:auto; flex:1 1 40%}
+  .addcover{flex-basis:100%}
+  .chart-wrap{overflow-x:auto; -webkit-overflow-scrolling:touch}
+  .chart-inner{min-width:1000px}
+}
+@media (prefers-reduced-motion:reduce){ *{transition:none !important} }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="demo" role="note">
+    <p><b>Demo with made-up data.</b> Changes are saved only in your browser.</p>
+    <button class="btn btn--sm" id="reset" type="button">Reset demo data</button>
+  </div>
+
+  <header class="mast__row">
+    <div>
+      <h1 class="t-big">Team cover rota</h1>
+      <p class="t-meta mast__sub" id="sub"></p>
+    </div>
+    <div class="verdict" id="verdict" aria-live="polite"></div>
+  </header>
+
+  <div class="toolbar">
+    <div class="grp">
+      <button class="btn btn--icon" id="prev" type="button" aria-label="Previous fortnight">&#8592;</button>
+      <span class="range" id="range"></span>
+      <button class="btn btn--icon" id="next" type="button" aria-label="Next fortnight">&#8594;</button>
+      <button class="btn" id="today" type="button">Today</button>
+    </div>
+    <div class="grp">
+      <span class="state" id="savestate"></span>
+      <button class="btn" id="export" type="button">Export CSV</button>
+    </div>
+  </div>
+
+  <div class="fortnight" id="board"></div>
+  <div id="covermenu" data-open="false" role="dialog" aria-label="Add cover"></div>
+
+  <p class="keyline">
+    <span><b>&times;</b> is the workload per person on duty, where <b>1.00&times;</b> is a normal day at full cover.</span>
+    <span><i class="sw sw--proj"></i>Striped is projected</span>
+    <span><i class="sw"></i>Solid is what actually happened</span>
+  </p>
+
+  <section class="card panel">
+    <div class="panel__head">
+      <div>
+        <p class="t-label">Workload</p>
+        <h2 class="t-h2">Eight weeks back, sixteen ahead</h2>
+      </div>
+    </div>
+    <p class="dek">The whole team's workload: tickets plus calls, with each call weighted by how long it takes. Solid bars left of the dashed line are what actually happened; striped bars to the right are projected, so you can judge the forecast against its own track record. A flag marks weeks where the standard rota leaves a day short or under heavy load. Tap a week to jump the board to it.</p>
+    <div class="chart-wrap" id="chartwrap">
+      <div class="chart-inner">
+        <div id="gridlines"></div>
+        <div class="bars" id="bars"></div>
+        <p class="qlabel"><span class="t-label">Where the unassigned queue ends up</span></p>
+        <div id="qgrid"></div>
+        <div class="bars bars--q" id="qbars"></div>
+        <div class="xaxis" id="xaxis"></div>
+        <p class="qnote" id="qnote"></p>
+      </div>
+      <div class="tip" id="tip"></div>
+    </div>
+    <div class="legend">
+      <span><i style="background:var(--s2)"></i>Quiet week</span>
+      <span><i style="background:var(--s5)"></i>Peak week</span>
+      <span><i style="background:var(--warn-bg);border:1px solid var(--warn-rule)"></i>&#9650; Heavy load on standard cover</span>
+      <span><i style="background:var(--bad-bg);border:1px solid var(--bad-rule)"></i>&#9679; Day short of cover</span>
+    </div>
+  </section>
+
+  <div class="cols">
+    <section class="card panel">
+      <p class="t-label">Absence</p>
+      <h2 class="t-h2">Booked leave</h2>
+      <p class="dek">Anyone away drops off cover automatically, and the board shows where that leaves a gap. The rota only needs to know someone is away, not why.</p>
+      <div class="lv-form">
+        <div class="fld"><label for="lv-who">Who</label><select id="lv-who"></select></div>
+        <div class="fld"><label for="lv-from">From</label><input type="date" id="lv-from"></div>
+        <div class="fld"><label for="lv-to">To</label><input type="date" id="lv-to"></div>
+        <div class="fld"><label for="lv-kind">Type</label>
+          <select id="lv-kind"><option>Holiday</option><option>Training</option><option>Unavailable</option></select>
+        </div>
+        <button class="btn btn--primary" id="lv-add" type="button">Add</button>
+      </div>
+      <ul class="rows" id="lv-list"></ul>
+      <p class="empty" id="lv-empty">No leave booked. Add a date range and it will show on the board.</p>
+    </section>
+
+    <section class="card panel">
+      <p class="t-label">Assumptions</p>
+      <h2 class="t-h2">Forecast model</h2>
+      <p class="dek">Change these if the forecast reads wrong. They only affect the predictions, never who is on the rota.</p>
+      <ul class="set">
+        <li><label class="k" for="s-baseT">Tickets a weekday<small>Typical day for the whole team, with seasonal swings taken out</small></label>
+          <input type="number" id="s-baseT" min="5" max="2000" step="1"></li>
+        <li><label class="k" for="s-baseC">Calls a weekday<small>Typical day, seasonal swings taken out</small></label>
+          <input type="number" id="s-baseC" min="0" max="500" step="1"></li>
+        <li><label class="k" for="s-weight">A call is worth<small>How many tickets' worth of time one call takes</small></label>
+          <input type="number" id="s-weight" min="0.5" max="10" step="0.5"></li>
+        <li><label class="k" for="s-ai">AI assistant handles (%)<small>Share of tickets answered without the team. Lower it to see the work come back</small></label>
+          <input type="number" id="s-ai" min="0" max="95" step="1"></li>
+        <li><label class="k" for="s-backlog">Unassigned queue now<small>Tickets waiting for someone to pick them up</small></label>
+          <input type="number" id="s-backlog" min="0" max="20000" step="5"></li>
+        <li><label class="k" for="s-thru">One person gets through<small>Work units a day at a comfortable, sustainable pace</small></label>
+          <input type="number" id="s-thru" min="5" max="500" step="1"></li>
+        <li><label class="k" for="s-target">Target cover<small>People on duty on a normal day</small></label>
+          <input type="number" id="s-target" min="1" max="5" step="1"></li>
+        <li><label class="k" for="s-busy">Busy threshold<small>Load per person that counts as busy</small></label>
+          <input type="number" id="s-busy" min="1" max="4" step="0.05"></li>
+        <li><label class="k" for="s-heavy">Heavy threshold<small>Load per person where an extra pair of hands would help</small></label>
+          <input type="number" id="s-heavy" min="1" max="6" step="0.05"></li>
+      </ul>
+      <div class="shape">
+        <span class="t-label">A typical week at target cover</span>
+        <div class="shape__bars" id="shapebars"></div>
+        <p class="shape__note" id="shapenote"></p>
+      </div>
+      <div class="acc" id="acc" hidden></div>
+      <div class="note-card">
+        <span class="t-label">Worth knowing</span>
+        A load of 1.00&times; is a typical day shared by the target number of people. The aim is to spread the work evenly, so nobody carries a heavy day alone and quiet days are used to catch up.
+      </div>
+    </section>
+  </div>
+
+  <footer class="foot">
+    Everything here is invented: the team, the volumes and the leave. UK bank holidays are real, so the forecast dips on those days.
+  </footer>
+</div>
+
+<script>
+(function(){
+"use strict";
+
+/* ---------- storage: localStorage with an in-memory fallback ---------- */
+var NS = "fn-demo-rota:";
+var mem = {};
+var storageOK = (function(){
+  try{ var k = NS + "probe"; localStorage.setItem(k, "1"); localStorage.removeItem(k); return true; }
+  catch(e){ return false; }
+})();
+function load(key){
+  var raw = null;
+  try{ raw = storageOK ? localStorage.getItem(NS + key) : (mem[key] || null); }
+  catch(e){ raw = mem[key] || null; }
+  if(raw == null) return null;
+  try{ return JSON.parse(raw); }catch(e){ return null; }
+}
+function store(key, val){
+  var s = JSON.stringify(val);
+  mem[key] = s;
+  if(!storageOK) return;
+  try{ localStorage.setItem(NS + key, s); }catch(e){}
+}
+function clearAll(){
+  mem = {};
+  try{
+    var del = [];
+    for(var i = 0; i < localStorage.length; i++){
+      var k = localStorage.key(i);
+      if(k && k.indexOf(NS) === 0) del.push(k);
+    }
+    del.forEach(function(k){ localStorage.removeItem(k); });
+  }catch(e){}
+}
+
+/* ---------- invented model constants ---------- */
+/* Seasonal index by ISO week: 1.00 is an ordinary week. */
+var WEEK_IDX = {};
+(function(){
+  for(var w = 1; w <= 53; w++) WEEK_IDX[w] = +(1 + 0.05 * Math.sin(2 * Math.PI * (w - 8) / 52)).toFixed(3);
+  var over = {1:0.55, 2:1.18, 3:1.12, 4:1.05, 13:0.92, 14:0.86, 22:0.92, 30:0.86, 31:0.82, 32:0.84,
+    33:0.88, 35:1.04, 36:1.14, 37:1.20, 38:1.12, 39:1.06, 44:0.94, 47:1.10, 48:1.16, 49:1.06,
+    50:0.96, 51:0.78, 52:0.40, 53:0.50};
+  for(var k in over) WEEK_IDX[k] = over[k];
+})();
+var WEEK_NOTE = {1:"New year", 2:"January rush", 3:"January rush", 14:"Spring break",
+  31:"Summer lull", 36:"Autumn rush", 37:"Autumn rush", 38:"Autumn rush",
+  47:"Sales week", 48:"Sales week", 51:"Winter break", 52:"Christmas"};
+/* Each weekday's share of the week, times five. Calls lean harder on Monday. */
+var DOW_T = [1.22, 1.12, 1.00, 0.92, 0.74];
+var DOW_C = [1.30, 1.15, 0.98, 0.88, 0.69];
+var CALL_SEASON = {1:0.4, 2:1.25, 31:0.8, 36:1.2, 37:1.2, 52:0.3, 53:0.3};
+
+/* England and Wales bank holidays. */
+var BANK_HOL = {
+  "2026-01-01":1,"2026-04-03":1,"2026-04-06":1,"2026-05-04":1,"2026-05-25":1,
+  "2026-08-31":1,"2026-12-25":1,"2026-12-28":1,
+  "2027-01-01":1,"2027-03-26":1,"2027-03-29":1,"2027-05-03":1,"2027-05-31":1,
+  "2027-08-30":1,"2027-12-27":1,"2027-12-28":1
+};
+var HOL_T = 0.25, HOL_C = 0.05;
+
+var PEOPLE = [
+  {id:"priya", name:"Priya", contract:4},
+  {id:"tom",   name:"Tom",   contract:4},
+  {id:"grace", name:"Grace", contract:4},
+  {id:"sam",   name:"Sam",   contract:3, part:true}
+];
+var BY_ID = {};
+PEOPLE.forEach(function(p){ BY_ID[p.id] = p; });
+var COVER_SEED = ["Leon", "Aisha"];
+
+/* The repeating fortnight. Week A is the week commencing 5 January 2026. */
+var ANCHOR = "2026-01-05";
+var PATTERN = {
+  A:[["priya","tom","grace"],["priya","tom","sam"],["priya","tom","grace"],
+     ["priya","grace","sam"],["tom","grace","sam"]],
+  B:[["priya","grace","sam"],["priya","tom","grace"],["tom","grace","sam"],
+     ["priya","tom","sam"],["priya","tom","grace"]]
+};
+
+var AI_MEASURED = 15;
+var DEFAULTS = {baseTickets:60, baseCalls:14, callWeight:2, aiShare:15,
+                target:3, busy:1.3, heavy:1.6, backlog:42, throughput:32};
+/* What the made-up history was really generated from: a touch busier than the
+   default assumptions, so the model check has something to say. */
+var TRUE_T = 63, TRUE_C = 15;
+
+var WEEKEND_IN = 0.20;
+var OUT_WEEKS = 16, OUT_BACK = 8, OUT_TOTAL = OUT_BACK + OUT_WEEKS;
+var SETTLE_DAYS = 2;
+var LEARN_MIN = 3, LEARN_DAMP = 0.5, LEARN_LO = 0.7, LEARN_HI = 1.4;
+
+/* ---------- dates ---------- */
+var MS = 86400000;
+var DNAME = ["Monday","Tuesday","Wednesday","Thursday","Friday"];
+var DABBR = ["Mon","Tue","Wed","Thu","Fri"];
+var MON = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+function iso(d){ return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); }
+function parse(s){ var p = String(s).split("-"); return new Date(+p[0], +p[1]-1, +p[2]); }
+function add(d,n){ var x = new Date(d.getTime()); x.setDate(x.getDate()+n); return x; }
+function today0(){ var t = new Date(); t.setHours(0,0,0,0); return t; }
+function mondayOf(d){ var x = new Date(d.getFullYear(), d.getMonth(), d.getDate()); x.setDate(x.getDate() - ((x.getDay()+6)%7)); return x; }
+function isoWeek(d){
+  var t = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+  t.setDate(t.getDate() + 3 - ((t.getDay()+6)%7));
+  var jan4 = new Date(t.getFullYear(), 0, 4);
+  return 1 + Math.round(((t - jan4)/MS - 3 + ((jan4.getDay()+6)%7)) / 7);
+}
+function fmtShort(d){ return d.getDate()+" "+MON[d.getMonth()]; }
+function fmtLong(d){ return d.getDate()+" "+MON[d.getMonth()]+" "+d.getFullYear(); }
+function weekLetter(d){
+  var n = Math.round((mondayOf(d) - mondayOf(parse(ANCHOR))) / (MS*7));
+  return ((n % 2) + 2) % 2 === 0 ? "A" : "B";
+}
+function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
+/* Stable pseudo-random number in [0,1) from a string, so the made-up history
+   is the same on every visit. */
+function h01(s){
+  var h = 2166136261;
+  for(var i = 0; i < s.length; i++){ h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); }
+  h ^= h >>> 13; h = Math.imul(h, 2246822507); h ^= h >>> 16;
+  return (h >>> 0) / 4294967296;
+}
+
+/* ---------- state ---------- */
+var state = {
+  settings: Object.assign({}, DEFAULTS),
+  overrides: {}, leave: {}, roster: [],
+  actuals: {}, calib: {}, qlog: {},
+  cursor: mondayOf(new Date())
+};
+
+function seed(){
+  var m = mondayOf(new Date());
+  state.settings = Object.assign({}, DEFAULTS);
+  state.roster = COVER_SEED.slice();
+  state.leave = {
+    l1:{person:"grace", start:iso(add(m, 7)), end:iso(add(m, 9)), kind:"Holiday"},
+    l2:{person:"tom",   start:iso(add(m, 3)), end:iso(add(m, 3)), kind:"Training"},
+    l3:{person:"priya", start:iso(add(m, 25)), end:iso(add(m, 29)), kind:"Holiday"}
+  };
+  state.overrides = {};
+  /* Leon already drafted in for one of Grace's days off. */
+  var d = add(m, 8);
+  state.overrides[iso(d)] = {on:patternFor(d).filter(function(id){ return id !== "grace"; }), cover:["Leon"]};
+  store("settings", state.settings);
+  store("roster", state.roster);
+  store("leave", state.leave);
+  store("overrides", state.overrides);
+  store("seeded", 1);
+}
+function hydrate(){
+  if(!load("seeded")){ seed(); return; }
+  var s = load("settings") || {};
+  state.settings = Object.assign({}, DEFAULTS);
+  Object.keys(DEFAULTS).forEach(function(k){
+    if(typeof s[k] === "number" && isFinite(s[k])) state.settings[k] = s[k];
+  });
+  var ov = load("overrides"); state.overrides = ov && typeof ov === "object" ? ov : {};
+  var lv = load("leave"); state.leave = lv && typeof lv === "object" ? lv : {};
+  var r = load("roster"); state.roster = Array.isArray(r) ? r.filter(function(x){ return typeof x === "string" && x; }) : [];
+}
+
+/* Invented history for the last eight weeks up to yesterday. */
+function buildHistory(){
+  state.actuals = {}; state.qlog = {};
+  var t0 = today0(), start = add(mondayOf(t0), -OUT_BACK * 7);
+  for(var d = new Date(start.getTime()); d < t0; d = add(d, 1)){
+    var dow = (d.getDay()+6)%7;
+    if(dow > 4) continue;
+    var w = isoWeek(d), wi = WEEK_IDX[w] || 1, cs = CALL_SEASON[w] || 1, hol = !!BANK_HOL[iso(d)];
+    var bias = 1 + (h01("wk" + d.getFullYear() + "-" + w) - 0.5) * 0.26;
+    var n1 = 1 + (h01("t" + iso(d)) - 0.5) * 0.18, n2 = 1 + (h01("c" + iso(d)) - 0.5) * 0.3;
+    var t = Math.round(TRUE_T * wi * DOW_T[dow] * bias * n1 * (hol ? HOL_T : 1));
+    var c = Math.round(TRUE_C * wi * DOW_C[dow] * cs * bias * n2 * (hol ? HOL_C : 1));
+    state.actuals[iso(d)] = {t:t, c:c};
+    if(dow === 4) state.qlog[iso(d)] = Math.round(DEFAULTS.backlog * (0.7 + (bias - 0.87) * 1.8 + h01("q" + iso(d)) * 0.3));
+  }
+}
+
+function patternFor(date){
+  var dow = (date.getDay()+6)%7;
+  if(dow > 4) return [];
+  return PATTERN[weekLetter(date)][dow].slice();
+}
+var LEAVE_KINDS = {Holiday:1, Training:1, Unavailable:1};
+function leaveKind(k){ var v = String(k || "").trim(); return LEAVE_KINDS[v] ? v : "Unavailable"; }
+function onLeave(dateStr){
+  var out = {};
+  for(var k in state.leave){
+    var l = state.leave[k];
+    if(l && l.start <= dateStr && dateStr <= l.end) out[l.person] = leaveKind(l.kind);
+  }
+  return out;
+}
+function rosterFor(date){
+  var s = iso(date), ov = state.overrides[s];
+  var base = ov && Array.isArray(ov.on) ? ov.on.slice() : patternFor(date);
+  var lv = onLeave(s);
+  return base.filter(function(id){ return !lv[id] && BY_ID[id]; });
+}
+function coverFor(date){
+  var ov = state.overrides[iso(date)];
+  return ov && Array.isArray(ov.cover) ? ov.cover.slice() : [];
+}
+function onDuty(date){ return rosterFor(date).length + coverFor(date).length; }
+
+function actualFor(date){
+  var s = iso(date);
+  if(s >= iso(new Date())) return null;
+  var rec = state.actuals[s];
+  if(!rec) return null;
+  var age = Math.round((today0() - new Date(date.getFullYear(), date.getMonth(), date.getDate())) / MS);
+  return {t:rec.t, c:rec.c, provisional: age <= SETTLE_DAYS};
+}
+function numbersFor(date){
+  var a = actualFor(date);
+  if(a) return {t:a.t, c:a.c, work:a.t + a.c * state.settings.callWeight, actual:true, provisional:a.provisional};
+  var f = forecastFor(date);
+  f.actual = false;
+  return f;
+}
+function weekFactor(w){
+  var rec = state.calib[String(w)];
+  if(!rec || rec.n < LEARN_MIN) return 1;
+  var mean = rec.s / rec.n;
+  if(!isFinite(mean) || mean <= 0) return 1;
+  return Math.max(LEARN_LO, Math.min(LEARN_HI, 1 + LEARN_DAMP * (mean - 1)));
+}
+function forecastFor(date, raw){
+  var dow = (date.getDay()+6)%7;
+  if(dow > 4) return {t:0, c:0, work:0};
+  var w = isoWeek(date), wi = WEEK_IDX[w] || 1, cs = CALL_SEASON[w] || 1;
+  var s = state.settings, hol = !!BANK_HOL[iso(date)];
+  var deflect = (100 - Math.min(95, s.aiShare)) / (100 - AI_MEASURED);
+  var lf = raw ? 1 : weekFactor(w);
+  var t = Math.round(s.baseTickets * wi * DOW_T[dow] * deflect * lf * (hol ? HOL_T : 1));
+  var c = Math.round(s.baseCalls * wi * DOW_C[dow] * cs * lf * (hol ? HOL_C : 1));
+  return {t:t, c:c, work:t + c * s.callWeight, hol:hol, learned:lf !== 1};
+}
+function loadFor(date, count){
+  var s = state.settings;
+  var norm = (s.baseTickets + s.baseCalls * s.callWeight) / Math.max(1, s.target);
+  return (numbersFor(date).work / Math.max(1, count)) / norm;
+}
+
+/* ---------- the queue: walked forward a day at a time ---------- */
+var QUEUE = {};
+function buildQueue(){
+  QUEUE = {};
+  var s = state.settings, b = s.backlog, d = today0();
+  for(var i = 0; i < 140; i++, d = add(d, 1)){
+    var key = iso(d), dow = (d.getDay()+6)%7;
+    if(dow > 4){ b += Math.round(s.baseTickets * (WEEK_IDX[isoWeek(d)] || 1) * WEEKEND_IN); continue; }
+    var f = numbersFor(d), n = onDuty(d);
+    var cap = Math.max(0, n * s.throughput - f.c * s.callWeight);
+    var avail = b + f.t, cleared = Math.min(cap, avail);
+    QUEUE[key] = {open:Math.round(b), cap:Math.round(cap), close:Math.round(avail - cleared)};
+    b = avail - cleared;
+  }
+}
+function queueFor(date){ return QUEUE[iso(date)] || null; }
+
+function accuracy(){
+  var d = add(new Date(), -1), n = 0, sum = 0, worst = null;
+  for(var i = 0; i < 120 && n < 40; i++, d = add(d, -1)){
+    if((d.getDay()+6)%7 > 4) continue;
+    var a = actualFor(d);
+    if(!a || a.provisional || BANK_HOL[iso(d)]) continue;
+    var f = forecastFor(d, true);
+    if(!f.work) continue;
+    var r = (a.t + a.c * state.settings.callWeight) / f.work;
+    sum += r; n++;
+    if(!worst || Math.abs(r - 1) > Math.abs(worst.r - 1)) worst = {r:r, d:new Date(d.getTime())};
+  }
+  return n ? {days:n, ratio:sum/n, worst:worst} : null;
+}
+function recomputeCalibration(){
+  var next = {};
+  Object.keys(state.actuals).forEach(function(ds){
+    var d = parse(ds);
+    if(BANK_HOL[ds]) return;
+    var av = actualFor(d);
+    if(!av || av.provisional) return;
+    var f = forecastFor(d, true);
+    if(!f.work) return;
+    var r = (av.t + av.c * state.settings.callWeight) / f.work;
+    if(!isFinite(r) || r <= 0 || r > 6) return;
+    var w = String(isoWeek(d)), e = next[w] || (next[w] = {s:0, n:0});
+    e.s += r; e.n++;
+  });
+  state.calib = next;
+}
+function calibSummary(){
+  var weeks = 0, days = 0, sum = 0;
+  Object.keys(state.calib).forEach(function(w){
+    var rec = state.calib[w];
+    days += rec.n;
+    if(rec.n >= LEARN_MIN){ weeks++; sum += Math.abs(weekFactor(+w) - 1); }
+  });
+  return {weeks:weeks, days:days, avg:weeks ? sum/weeks : 0};
+}
+function pressure(l){
+  if(l >= state.settings.heavy) return "heavy";
+  if(l >= state.settings.busy) return "busy";
+  if(l < 0.7) return "quiet";
+  return "steady";
+}
+function seqStep(frac){
+  var i = frac >= 0.85 ? 5 : frac >= 0.66 ? 4 : frac >= 0.47 ? 3 : frac >= 0.28 ? 2 : 1;
+  return "var(--s"+i+")";
+}
+
+/* ---------- render ---------- */
+var board = document.getElementById("board");
+function render(){
+  buildQueue();
+  renderSub();
+  renderBoard();
+  renderVerdict();
+  renderChart();
+  renderLeave();
+  renderShape();
+  renderAccuracy();
+  document.getElementById("range").textContent = fmtShort(state.cursor) + " to " + fmtLong(add(state.cursor, 11));
+}
+var WORDS = ["Nobody","One","Two","Three","Four","Five"];
+function renderSub(){
+  var t = state.settings.target;
+  document.getElementById("sub").textContent =
+    (WORDS[t] || t) + " on cover each weekday · " +
+    PEOPLE.map(function(p, i){ return p.name + " " + p.contract + (i === 0 ? " days" : "") + (p.part ? " (part time)" : ""); }).join(", ") +
+    " · two-week pattern, with cover from " + (state.roster.length ? state.roster.join(" and ") : "outside the team") + " when needed";
+}
+
+function renderBoard(){
+  board.innerHTML = "";
+  var todayStr = iso(new Date());
+  for(var w = 0; w < 2; w++){
+    var monday = add(state.cursor, w*7);
+    var wk = document.createElement("section");
+    wk.className = "card";
+    var head = document.createElement("div");
+    head.className = "wk__head";
+    var title = document.createElement("div");
+    title.className = "wk__title";
+    title.innerHTML = "<strong>w/c " + fmtLong(monday) + "</strong>" +
+      '<span class="tag">Week ' + weekLetter(monday) + " &middot; W" + isoWeek(monday) + "</span>";
+    head.appendChild(title);
+
+    var counts = {}, offCounts = {}, days = [];
+    PEOPLE.forEach(function(p){ counts[p.id] = 0; offCounts[p.id] = 0; });
+    for(var i = 0; i < 5; i++){
+      var d = add(monday, i), on = rosterFor(d), lv = onLeave(iso(d)), pat = patternFor(d);
+      on.forEach(function(id){ counts[id]++; });
+      PEOPLE.forEach(function(p){ if(lv[p.id] && pat.indexOf(p.id) >= 0) offCounts[p.id]++; });
+      days.push({d:d, on:on, lv:lv});
+    }
+    var tally = document.createElement("div");
+    tally.className = "tally";
+    tally.title = "Days on cover this week against each person's usual days";
+    PEOPLE.forEach(function(p){
+      var n = counts[p.id], diff = n + offCounts[p.id] - p.contract;
+      var cls = diff > 0 ? "over" : diff < 0 ? "under" : "";
+      var badge = diff > 0 ? " +" + diff : diff < 0 ? " " + diff : "";
+      var off = offCounts[p.id] ? " · " + offCounts[p.id] + " away" : "";
+      var s = document.createElement("span");
+      s.innerHTML = p.name + ' <b class="' + cls + '">' + n + "/" + p.contract + badge + "</b>" + off;
+      tally.appendChild(s);
+    });
+    head.appendChild(tally);
+    wk.appendChild(head);
+
+    var grid = document.createElement("div");
+    grid.className = "days";
+    days.forEach(function(info, i){ grid.appendChild(dayCell(info, i, todayStr)); });
+    wk.appendChild(grid);
+    board.appendChild(wk);
+  }
+}
+
+var TICK = '<span class="tick"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.2 8.4l3.1 3.1 6.5-6.5"/></svg></span>';
+function dayCell(info, i, todayStr){
+  var d = info.d, on = info.on, lv = info.lv;
+  var s = iso(d), cov = coverFor(d), total = on.length + cov.length;
+  var f = numbersFor(d), l = loadFor(d, total), p = pressure(l);
+  var isShort = total < state.settings.target;
+
+  var cell = document.createElement("div");
+  cell.className = "day" + (isShort ? " day--short" : (p === "heavy" ? " day--heavy" : "")) +
+    (s === todayStr ? " day--today" : "") + (BANK_HOL[s] ? " day--hol" : "");
+  cell.setAttribute("data-date", s);
+  var head = document.createElement("div");
+  head.className = "d-head";
+  head.innerHTML = '<span class="d-num">' + d.getDate() + "</span>" +
+    '<span class="d-dow">' + DABBR[i] + "</span>" +
+    '<span class="d-mon">' + (BANK_HOL[s] ? "Bank hol" : MON[d.getMonth()]) + "</span>";
+  cell.appendChild(head);
+
+  var chips = document.createElement("div");
+  chips.className = "chips";
+  PEOPLE.forEach(function(person){
+    var isOn = on.indexOf(person.id) >= 0, isLv = !!lv[person.id];
+    var b = document.createElement("button");
+    b.type = "button";
+    b.className = "pchip";
+    b.setAttribute("data-on", isOn ? "true" : "false");
+    b.setAttribute("data-person", person.id);
+    if(isLv) b.setAttribute("data-dis", "true");
+    b.disabled = isLv;
+    b.setAttribute("aria-pressed", isOn ? "true" : "false");
+    b.innerHTML = TICK + '<span class="nm">' + person.name + "</span>" +
+      (isLv ? '<span class="mk">' + lv[person.id] + "</span>" : "");
+    b.title = isLv ? person.name + " is away this day"
+      : (isOn ? "Take " + person.name + " off " : "Put " + person.name + " on ") + DNAME[i];
+    b.addEventListener("click", function(){ toggle(s, person.id); });
+    chips.appendChild(b);
+  });
+  cov.forEach(function(name){
+    var b = document.createElement("button");
+    b.type = "button";
+    b.className = "pchip pchip--cover";
+    b.setAttribute("data-on", "true");
+    b.setAttribute("aria-pressed", "true");
+    b.innerHTML = TICK + '<span class="nm">' + esc(name) + '</span><span class="covertag">Cover</span>';
+    b.title = "Take " + name + " off " + DNAME[i];
+    b.addEventListener("click", function(){ toggleCover(s, name); });
+    chips.appendChild(b);
+  });
+  var addBtn = document.createElement("button");
+  addBtn.type = "button";
+  addBtn.className = "addcover";
+  addBtn.textContent = "+ Cover";
+  addBtn.title = "Bring someone in on " + DNAME[i];
+  addBtn.addEventListener("click", function(ev){ openCoverMenu(ev.currentTarget, s); });
+  chips.appendChild(addBtn);
+  cell.appendChild(chips);
+
+  var sfx = p === "heavy" ? "--bad" : p === "busy" ? "--warn" : "";
+  var vs = "";
+  if(f.actual){
+    var age = Math.round((today0() - new Date(d.getFullYear(), d.getMonth(), d.getDate())) / MS);
+    if(age <= 8){
+      var base = forecastFor(d, true);
+      if(base.work){
+        var off = Math.round((f.work / base.work - 1) * 100);
+        var word = Math.abs(off) < 5 ? "on target" : Math.abs(off) + "% " + (off > 0 ? "busier" : "quieter") + " than forecast";
+        vs = '<span class="vs' + (Math.abs(off) >= 20 ? " vs--off" : "") + '" title="Forecast said ' +
+          base.t + " tickets and " + base.c + ' calls">' + word + "</span>";
+      }
+    }
+  }
+  var load = document.createElement("div");
+  load.className = "load";
+  load.innerHTML =
+    '<div class="load__lbl' + (f.actual ? " load__lbl--act" : "") + '">' +
+      (f.actual ? (f.provisional ? "Actual so far" : "Actual") : "Forecast") +
+      (!f.actual && f.learned ? '<span class="tuned" title="Adjusted from what this week actually did in the past">&#183; tuned</span>' : "") +
+    "</div>" +
+    '<div class="load__n' + (sfx ? " load__n" + sfx : "") + '">' + l.toFixed(2) + '<span class="x">&times;</span></div>' +
+    '<div class="track"><span class="fill' + (sfx ? " fill" + sfx : "") + (f.actual ? "" : " fill--proj") +
+      '" style="width:' + Math.min(100, Math.round(l/2.5*100)) + '%"></span></div>' +
+    '<div class="load__fig"><b>' + f.t + "</b> tickets &middot; <b>" + f.c + "</b> calls</div>" + vs;
+  load.title = (f.actual ? "What came in on " : "Projected for ") + fmtLong(d) + ": " + f.t + " tickets and " +
+    f.c + " calls, " + l.toFixed(2) + "× a normal day's work per person on duty.";
+  cell.appendChild(load);
+
+  var q = queueFor(d);
+  if(q){
+    var delta = q.close - q.open;
+    var dir = delta > 3 ? "up" : delta < -3 ? "down" : "flat";
+    var qEl = document.createElement("div");
+    qEl.className = "queue queue--" + dir;
+    qEl.innerHTML = '<span class="queue__lbl">Queue</span><span class="queue__v">' + q.open + "</span>" +
+      '<span class="queue__ar">' + (dir === "up" ? "↗" : dir === "down" ? "↘" : "→") + "</span>" +
+      '<span class="queue__v queue__v--end">' + q.close + "</span>";
+    qEl.title = "Starts with " + q.open + " unassigned tickets, " + f.t + " more arrive, and " + onDuty(d) +
+      " on cover can pick up about " + q.cap + " once " + f.c + " calls are taken, so about " + q.close +
+      " are still waiting at the end of the day.";
+    cell.appendChild(qEl);
+  }
+  if(isShort || p === "heavy"){
+    var st = document.createElement("div");
+    st.className = "d-status d-status--" + (isShort ? "bad" : "warn");
+    st.innerHTML = '<span class="dot"></span>' + (isShort
+      ? (total === 0 ? "Nobody on cover" : total + " on, needs " + state.settings.target)
+      : "Heavy for " + total + ", worth an extra pair of hands");
+    cell.appendChild(st);
+  }
+  return cell;
+}
+
+function renderVerdict(){
+  var short = 0, heavy = 0, days = 0;
+  for(var i = 0; i < 14; i++){
+    var d = add(state.cursor, i);
+    if((d.getDay()+6)%7 > 4) continue;
+    days++;
+    var n = onDuty(d);
+    if(n < state.settings.target) short++;
+    else if(pressure(loadFor(d, n)) === "heavy") heavy++;
+  }
+  var v = document.getElementById("verdict");
+  v.innerHTML = "";
+  function pill(cls, txt, n){
+    var c = document.createElement("span");
+    c.className = "pill " + cls;
+    c.innerHTML = '<span class="dot"></span>' + (n === null ? "" : '<span class="n">' + n + "</span> ") + txt;
+    v.appendChild(c);
+  }
+  if(short) pill("pill--bad", short === 1 ? "day short of cover" : "days short of cover", short);
+  if(heavy) pill("pill--warn", heavy === 1 ? "day under heavy load" : "days under heavy load", heavy);
+  if(!short && !heavy) pill("", "All " + days + " days covered", null);
+  var first = null, last = null;
+  for(var j = 0; j < 14; j++){
+    var q = queueFor(add(state.cursor, j));
+    if(!q) continue;
+    if(first === null) first = q.open;
+    last = q.close;
+  }
+  if(first !== null){
+    var move = last - first;
+    pill(move > 20 ? "pill--bad" : "", "queue " + first + " → " + last, null);
+  }
+}
+
+function renderChart(){
+  var bars = document.getElementById("bars"), xax = document.getElementById("xaxis"),
+      gl = document.getElementById("gridlines"), tip = document.getElementById("tip"),
+      wrapEl = document.getElementById("chartwrap");
+  bars.innerHTML = ""; xax.innerHTML = ""; gl.innerHTML = "";
+  bars.style.gridTemplateColumns = "repeat(" + OUT_TOTAL + ",minmax(0,1fr))";
+  xax.style.gridTemplateColumns = "repeat(" + OUT_TOTAL + ",minmax(0,1fr))";
+
+  var start = add(mondayOf(new Date()), -OUT_BACK * 7), rows = [], max = 0;
+  for(var w = 0; w < OUT_TOTAL; w++){
+    var monday = add(start, w*7), total = 0, tix = 0, calls = 0, short = 0, heavyD = 0, settled = 0;
+    for(var i = 0; i < 5; i++){
+      var d = add(monday, i), n = onDuty(d), f = numbersFor(d);
+      total += f.work; tix += f.t; calls += f.c;
+      if(f.actual) settled++;
+      if(n < state.settings.target) short++;
+      else if(pressure(loadFor(d, n)) === "heavy") heavyD++;
+    }
+    total = Math.round(total);
+    if(total > max) max = total;
+    var qEnd = null;
+    for(var k = 4; k >= 0; k--){ var qq = queueFor(add(monday, k)); if(qq){ qEnd = qq.close; break; } }
+    rows.push({monday:monday, total:total, tix:tix, calls:calls, settled:settled, short:short, heavy:heavyD, wk:isoWeek(monday), q:qEnd});
+  }
+  var step = Math.pow(10, Math.floor(Math.log(Math.max(max,1))/Math.LN10)) / 2;
+  var top = Math.max(step, Math.ceil(max/step) * step);
+  var H = 176, usable = H * 0.86;
+  [0, 0.5, 1].forEach(function(fr){
+    var line = document.createElement("div");
+    line.className = "grid-l";
+    line.style.top = Math.round(H - usable*fr - 1) + "px";
+    line.innerHTML = "<span>" + Math.round(top*fr) + "</span>";
+    gl.appendChild(line);
+  });
+  rows.forEach(function(r, idx){
+    var frac = r.total / top;
+    var b = document.createElement("button");
+    b.type = "button";
+    b.className = "bcol" + (idx === OUT_BACK ? " bcol--now" : "");
+    var bar = document.createElement("span");
+    bar.className = "bar" + (r.settled >= 5 ? "" : " fill--proj");
+    bar.style.height = Math.max(3, Math.round(usable * frac)) + "px";
+    bar.style.backgroundColor = seqStep(frac);
+    b.appendChild(bar);
+    if(r.short || r.heavy){
+      var m = document.createElement("span");
+      m.className = "flag " + (r.short ? "flag--bad" : "flag--warn");
+      m.textContent = (r.short ? "● " + r.short : "▲ " + r.heavy);
+      b.appendChild(m);
+    }
+    var note = WEEK_NOTE[r.wk];
+    var msg = "w/c " + fmtLong(r.monday) + " (W" + r.wk + ")<br><b>" + r.tix + "</b> tickets and <b>" + r.calls + "</b> calls" +
+      (r.settled >= 5 ? " (actual)" : r.settled ? " (" + r.settled + " days actual)" : " projected") +
+      (note ? "<br>" + note : "") +
+      (r.short ? "<br><b>" + r.short + "</b> day" + (r.short > 1 ? "s" : "") + " short of cover" : "") +
+      (!r.short && r.heavy ? "<br><b>" + r.heavy + "</b> heavy day" + (r.heavy > 1 ? "s" : "") : "");
+    function show(){
+      tip.innerHTML = msg;
+      tip.style.opacity = "1";
+      var wr = wrapEl.getBoundingClientRect(), br = b.getBoundingClientRect();
+      var x = br.left - wr.left + br.width/2 + wrapEl.scrollLeft;
+      var half = tip.offsetWidth / 2;
+      x = Math.max(wrapEl.scrollLeft + half + 4, Math.min(x, wrapEl.scrollLeft + wrapEl.clientWidth - half - 4));
+      tip.style.left = x + "px";
+      tip.style.top = (br.top - wr.top - 6) + "px";
+    }
+    function hide(){ tip.style.opacity = "0"; }
+    b.addEventListener("mouseenter", show);
+    b.addEventListener("focus", show);
+    b.addEventListener("mouseleave", hide);
+    b.addEventListener("blur", hide);
+    b.addEventListener("click", function(){
+      state.cursor = mondayOf(r.monday);
+      render();
+      window.scrollTo({top:0, behavior:"smooth"});
+    });
+    b.setAttribute("aria-label", "Week commencing " + fmtLong(r.monday) + ", " + r.tix + " tickets and " + r.calls + " calls");
+    bars.appendChild(b);
+    var t = document.createElement("div");
+    t.className = "xt";
+    t.innerHTML = "<b>" + fmtShort(r.monday) + "</b>" + (note || "");
+    xax.appendChild(t);
+  });
+  renderQueueChart(rows);
+}
+
+function loggedQueue(monday){
+  var best = null;
+  for(var i = 0; i < 7; i++){
+    var v = state.qlog[iso(add(monday, i))];
+    if(typeof v === "number") best = v;
+  }
+  return best;
+}
+function renderQueueChart(rows){
+  var qb = document.getElementById("qbars"), qg = document.getElementById("qgrid");
+  qb.innerHTML = ""; qg.innerHTML = "";
+  qb.style.gridTemplateColumns = "repeat(" + OUT_TOTAL + ",minmax(0,1fr))";
+  var vals = rows.map(function(r, idx){ return idx < OUT_BACK ? loggedQueue(r.monday) : r.q; });
+  var qmax = state.settings.backlog;
+  vals.forEach(function(v){ if(v !== null && v > qmax) qmax = v; });
+  var step = Math.pow(10, Math.floor(Math.log(Math.max(qmax,1))/Math.LN10)) / 2;
+  var top = Math.max(step, Math.ceil(qmax/step) * step);
+  var H = 86, usable = H * 0.88, start = state.settings.backlog;
+  [0, 1].forEach(function(fr){
+    var line = document.createElement("div");
+    line.className = "grid-l";
+    line.style.top = Math.round(H - usable*fr - 1) + "px";
+    line.innerHTML = "<span>" + Math.round(top*fr) + "</span>";
+    qg.appendChild(line);
+  });
+  rows.forEach(function(r, idx){
+    var col = document.createElement("div");
+    col.className = "bcol bcol--q";
+    var past = idx < OUT_BACK, v = vals[idx];
+    if(v !== null){
+      var bar = document.createElement("span");
+      bar.className = "bar" + (past ? "" : " fill--proj");
+      bar.style.height = Math.max(3, Math.round(usable * (v/top))) + "px";
+      bar.style.backgroundColor = v > start * 1.15 ? "var(--bad)" : "var(--fill)";
+      col.appendChild(bar);
+      col.title = "w/c " + fmtLong(r.monday) + ": " + (past ? "" : "about ") + v + " unassigned tickets " +
+        (past ? "waiting at the end of the week" : "left waiting at the end of the week") + ". It is " + start + " now.";
+    }
+    qb.appendChild(col);
+  });
+  document.getElementById("qnote").textContent =
+    "Solid bars are the queue as it stood at the end of each past week; striped bars are where it is heading on the current rota. Red means it is growing well past today's level.";
+}
+
+function renderShape(){
+  var s = state.settings, bars = document.getElementById("shapebars");
+  var unit = s.baseTickets + s.baseCalls * s.callWeight, vals = [], max = 0;
+  for(var i = 0; i < 5; i++){
+    var v = (s.baseTickets * DOW_T[i] + s.baseCalls * s.callWeight * DOW_C[i]) / unit;
+    vals.push(v); if(v > max) max = v;
+  }
+  bars.innerHTML = "";
+  vals.forEach(function(v, i){
+    var col = document.createElement("div");
+    col.className = "shape__col";
+    col.innerHTML = '<span class="shape__v">' + v.toFixed(2) + "&times;</span>" +
+      '<span class="shape__bar' + (v >= s.busy ? " shape__bar--hot" : "") + '" style="height:' +
+      Math.max(4, Math.round(v/max*54)) + 'px"></span><span class="shape__d">' + DABBR[i] + "</span>";
+    bars.appendChild(col);
+  });
+  var peak = Math.max.apply(null, vals), pi = vals.indexOf(peak), peakDay = DNAME[pi];
+  var lowest = Math.min.apply(null, vals), li = vals.indexOf(lowest), lowDay = DNAME[li];
+  var contracted = PEOPLE.reduce(function(a, p){ return a + p.contract; }, 0);
+  var note = document.getElementById("shapenote");
+  var html = "<b>" + peakDay + "</b> is the hard day at <b>" + peak.toFixed(2) + "&times;</b>, <b>" + lowDay +
+    "</b> the easy one at <b>" + lowest.toFixed(2) + "&times;</b>. ";
+  if(s.target > 1){
+    var lowLess = lowest * s.target / (s.target - 1), peakMore = peak * s.target / (s.target + 1);
+    html += lowLess < peak
+      ? "Moving one person from " + lowDay + " to " + peakDay + " would leave " + lowDay + " at <b>" + lowLess.toFixed(2) +
+        "&times;</b> and bring " + peakDay + " down to <b>" + peakMore.toFixed(2) + "&times;</b>, a fairer split."
+      : "Moving one person from " + lowDay + " to " + peakDay + " would push " + lowDay + " to <b>" + lowLess.toFixed(2) +
+        "&times;</b>, worse than the peak it relieves, so " + s.target + " a day is already the fairest flat shape.";
+  }
+  html += " The team has <b>" + contracted + "</b> days a week between them against <b>" + (s.target * 5) + "</b> needed.";
+  note.innerHTML = html;
+}
+
+function renderAccuracy(){
+  var el = document.getElementById("acc"), a = accuracy();
+  if(!a){ el.hidden = true; return; }
+  el.hidden = false;
+  var pct = Math.round(Math.abs(a.ratio - 1) * 100);
+  var verdict = pct < 5 ? "tracked real volume to within <b>" + Math.max(pct,1) + "%</b>"
+    : "run <b>" + pct + "%</b> " + (a.ratio > 1 ? "under" : "over") + " what arrived";
+  var c = calibSummary();
+  var learning = c.weeks === 0
+    ? "It needs " + LEARN_MIN + " settled days in a week before it starts adjusting that week."
+    : "It has learned from <b>" + c.days + "</b> settled days and is adjusting <b>" + c.weeks + "</b> week" +
+      (c.weeks === 1 ? "" : "s") + " of the year by <b>" + Math.round(c.avg * 100) + "%</b> on average.";
+  el.innerHTML = '<span class="t-label">Model check</span>Across the last <b>' + a.days + "</b> settled weekdays the underlying forecast has " +
+    verdict + ". " + learning + (a.worst ? " Biggest single miss: <b>" + fmtShort(a.worst.d) + "</b> at <b>" + a.worst.r.toFixed(2) + "&times;</b> forecast." : "") +
+    " Try changing the tickets a weekday above and watch this update.";
+}
+
+function renderLeave(){
+  var ul = document.getElementById("lv-list"), empty = document.getElementById("lv-empty");
+  ul.innerHTML = "";
+  var items = Object.keys(state.leave).map(function(k){ return {id:k, l:state.leave[k]}; })
+    .filter(function(x){ return x.l && BY_ID[x.l.person] && x.l.start; })
+    .sort(function(a,b){ return a.l.start < b.l.start ? -1 : 1; });
+  empty.style.display = items.length ? "none" : "block";
+  items.forEach(function(x){
+    var p = BY_ID[x.l.person], li = document.createElement("li");
+    var span = x.l.start === x.l.end ? fmtLong(parse(x.l.start)) : fmtShort(parse(x.l.start)) + " to " + fmtLong(parse(x.l.end));
+    li.innerHTML = '<span class="lv-who">' + p.name + '</span><span class="lv-when">' + span + "</span>" +
+      '<span class="tag">' + leaveKind(x.l.kind) + "</span>";
+    var btn = document.createElement("button");
+    btn.className = "x"; btn.type = "button"; btn.innerHTML = "&times;";
+    btn.title = "Remove this leave";
+    btn.setAttribute("aria-label", "Remove " + p.name + "'s leave");
+    btn.addEventListener("click", function(){ delete state.leave[x.id]; store("leave", state.leave); render(); });
+    li.appendChild(btn);
+    ul.appendChild(li);
+  });
+}
+
+/* ---------- cover menu ---------- */
+function shortName(s){
+  var parts = String(s).trim().replace(/\s+/g, " ").split(" ");
+  if(parts.length === 1) return parts[0];
+  var second = parts[1].replace(/\./g, "");
+  return second.length === 1 ? parts[0] + " " + second.toUpperCase() : parts[0];
+}
+var coverMenu = document.getElementById("covermenu"), menuDate = null;
+function openCoverMenu(anchor, dateStr){
+  if(menuDate === dateStr && coverMenu.getAttribute("data-open") === "true"){ closeCoverMenu(); return; }
+  menuDate = dateStr;
+  var on = coverFor(parse(dateStr));
+  coverMenu.innerHTML = "";
+  var hd = document.createElement("div");
+  hd.className = "hd";
+  hd.textContent = "Cover for " + fmtShort(parse(dateStr));
+  coverMenu.appendChild(hd);
+  state.roster.forEach(function(name){
+    var row = document.createElement("button");
+    row.type = "button"; row.className = "opt";
+    row.innerHTML = (on.indexOf(name) >= 0 ? "✓ " : "") + esc(name) +
+      '<span class="drop" role="button" aria-label="Remove ' + esc(name) + ' from the cover list">&times;</span>';
+    row.addEventListener("click", function(ev){
+      if(ev.target && ev.target.classList.contains("drop")){
+        ev.stopPropagation();
+        state.roster = state.roster.filter(function(n){ return n !== name; });
+        store("roster", state.roster);
+        render();
+        closeCoverMenu();
+        return;
+      }
+      toggleCover(dateStr, name);
+      closeCoverMenu();
+    });
+    coverMenu.appendChild(row);
+  });
+  var wrap = document.createElement("div");
+  wrap.className = "new";
+  var input = document.createElement("input");
+  input.type = "text"; input.maxLength = 24;
+  input.placeholder = state.roster.length ? "Another first name" : "First name";
+  input.setAttribute("aria-label", "First name of the person covering");
+  var go = document.createElement("button");
+  go.type = "button"; go.textContent = "Add";
+  function submit(){
+    var v = shortName(input.value);
+    if(!v) return;
+    if(state.roster.indexOf(v) < 0){ state.roster = state.roster.concat([v]); store("roster", state.roster); }
+    toggleCover(dateStr, v, true);
+    closeCoverMenu();
+  }
+  go.addEventListener("click", submit);
+  input.addEventListener("keydown", function(e){ if(e.key === "Enter"){ e.preventDefault(); submit(); } });
+  wrap.appendChild(input); wrap.appendChild(go);
+  coverMenu.appendChild(wrap);
+  coverMenu.setAttribute("data-open", "true");
+  var r = anchor.getBoundingClientRect(), vw = document.documentElement.clientWidth;
+  coverMenu.style.top = (r.bottom + window.scrollY + 6) + "px";
+  coverMenu.style.left = Math.max(8, Math.min(r.left + window.scrollX, window.scrollX + vw - 218)) + "px";
+}
+function closeCoverMenu(){ coverMenu.setAttribute("data-open", "false"); menuDate = null; }
+document.addEventListener("click", function(e){
+  if(coverMenu.getAttribute("data-open") !== "true") return;
+  if(coverMenu.contains(e.target)) return;
+  if(e.target.closest && e.target.closest(".addcover")) return;
+  closeCoverMenu();
+});
+document.addEventListener("keydown", function(e){ if(e.key === "Escape") closeCoverMenu(); });
+
+/* ---------- writes ---------- */
+function writeDay(dateStr, on, cover){
+  state.overrides[dateStr] = {on:on, cover:cover};
+  store("overrides", state.overrides);
+  render();
+}
+function toggle(dateStr, personId){
+  var on = rosterFor(parse(dateStr)), i = on.indexOf(personId);
+  if(i >= 0) on.splice(i, 1); else on.push(personId);
+  var ordered = PEOPLE.filter(function(p){ return on.indexOf(p.id) >= 0; }).map(function(p){ return p.id; });
+  writeDay(dateStr, ordered, coverFor(parse(dateStr)));
+}
+function toggleCover(dateStr, name, forceOn){
+  var d = parse(dateStr), cov = coverFor(d), i = cov.indexOf(name);
+  if(i >= 0 && !forceOn) cov.splice(i, 1);
+  else if(i < 0) cov.push(name);
+  writeDay(dateStr, rosterFor(d), cov);
+}
+
+/* ---------- settings ---------- */
+var FIELDS = {baseTickets:"s-baseT", baseCalls:"s-baseC", callWeight:"s-weight", aiShare:"s-ai",
+  backlog:"s-backlog", throughput:"s-thru", target:"s-target", busy:"s-busy", heavy:"s-heavy"};
+var ZERO_OK = {baseCalls:1, aiShare:1, backlog:1};
+var COERCE = {callWeight:1, busy:2, heavy:2};
+function syncFields(){
+  Object.keys(FIELDS).forEach(function(k){ document.getElementById(FIELDS[k]).value = state.settings[k]; });
+}
+Object.keys(FIELDS).forEach(function(key){
+  var el = document.getElementById(FIELDS[key]);
+  el.addEventListener("change", function(){
+    var v = +el.value;
+    v = COERCE[key] ? +v.toFixed(COERCE[key]) : Math.round(v);
+    var min = +el.min, max = +el.max;
+    if(!isFinite(v) || v < 0 || (!ZERO_OK[key] && v <= 0)){ el.value = state.settings[key]; return; }
+    if(isFinite(min)) v = Math.max(min, v);
+    if(isFinite(max)) v = Math.min(max, v);
+    state.settings[key] = v;
+    el.value = v;
+    if(key === "baseTickets" || key === "baseCalls" || key === "callWeight") recomputeCalibration();
+    store("settings", state.settings);
+    render();
+  });
+});
+
+/* ---------- export ---------- */
+function exportCsv(){
+  var lines = ["Date,Day,ISO week,Pattern,On cover,Headcount,Basis,Tickets,Calls,Workload,Load per person,Status"];
+  var start = add(mondayOf(new Date()), -OUT_BACK * 7);
+  for(var w = 0; w < OUT_TOTAL; w++){
+    for(var i = 0; i < 5; i++){
+      var d = add(start, w*7 + i), on = rosterFor(d), cov = coverFor(d);
+      var n = on.length + cov.length, l = loadFor(d, n), f = numbersFor(d);
+      var names = on.map(function(id){ return BY_ID[id].name; }).concat(cov.map(function(c){ return c + " (cover)"; }));
+      lines.push([iso(d), DNAME[i], "W" + isoWeek(d), "Week " + weekLetter(d),
+        '"' + names.join(", ").replace(/"/g, '""') + '"', n, f.actual ? "actual" : "forecast",
+        f.t, f.c, Math.round(f.work), l.toFixed(2),
+        n < state.settings.target ? "SHORT" : pressure(l).toUpperCase()].join(","));
+    }
+  }
+  try{
+    var blob = new Blob([lines.join("\r\n")], {type:"text/csv"});
+    var url = URL.createObjectURL(blob), a = document.createElement("a");
+    a.href = url; a.download = "team-rota-" + iso(new Date()) + ".csv";
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(function(){ URL.revokeObjectURL(url); }, 1000);
+  }catch(e){}
+}
+
+/* ---------- wiring ---------- */
+document.getElementById("prev").addEventListener("click", function(){ state.cursor = add(state.cursor, -14); render(); });
+document.getElementById("next").addEventListener("click", function(){ state.cursor = add(state.cursor, 14); render(); });
+document.getElementById("today").addEventListener("click", function(){ state.cursor = mondayOf(new Date()); render(); });
+document.getElementById("export").addEventListener("click", exportCsv);
+document.getElementById("reset").addEventListener("click", function(){
+  clearAll(); seed(); recomputeCalibration();
+  state.cursor = mondayOf(new Date());
+  closeCoverMenu(); syncFields(); render();
+});
+
+var whoSel = document.getElementById("lv-who");
+PEOPLE.forEach(function(p){
+  var o = document.createElement("option"); o.value = p.id; o.textContent = p.name; whoSel.appendChild(o);
+});
+var fromEl = document.getElementById("lv-from"), toEl = document.getElementById("lv-to");
+fromEl.value = toEl.value = iso(mondayOf(new Date()));
+fromEl.addEventListener("change", function(){ if(!toEl.value || toEl.value < fromEl.value) toEl.value = fromEl.value; });
+document.getElementById("lv-add").addEventListener("click", function(){
+  var from = fromEl.value, to = toEl.value;
+  if(!from) return;
+  if(!to || to < from) to = from;
+  var id = "l" + Date.now().toString(36) + Math.random().toString(36).slice(2,6);
+  state.leave[id] = {person:whoSel.value, start:from, end:to, kind:leaveKind(document.getElementById("lv-kind").value)};
+  store("leave", state.leave);
+  render();
+});
+
+var ss = document.getElementById("savestate");
+if(storageOK){
+  ss.innerHTML = '<span class="dot"></span>Saved in this browser';
+}else{
+  ss.className = "state state--warn";
+  ss.innerHTML = '<span class="dot"></span>Storage blocked, changes last until you reload';
+}
+
+hydrate();
+buildHistory();
+recomputeCalibration();
+syncFields();
+render();
+})();
+</script>
+</body>
+</html>

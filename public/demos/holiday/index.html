@@ -1,0 +1,1037 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Team holiday planner</title>
+<meta name="description" content="A demo of a team holiday planner with made-up data: pace through the year, month by month view, clash checks and team rules.">
+<meta name="robots" content="noindex">
+<style>
+:root{
+  color-scheme:light;
+  --bg:#EEE9DF; --ink:#2C3B4D; --muted:#4F5D6F; --accent:#FFB162; --accent-ink:#B86A1E;
+  --panel:#F7F3EC; --card:#FBF9F5;
+  --hair:#DDD5C7; --track:#E4DDD0;
+  --warn-fg:#8A4E14; --warn-bg:#FCE9D3;
+  --ok-fg:#2C3B4D; --ok-bg:#E3E8EC;
+  --clash-fg:#7A3A12; --clash-bg:#F8DCC3;
+  --font:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --r-btn:6px; --r-card:12px; --r-pill:999px;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0; background:var(--bg); color:var(--ink); font-family:var(--font); font-size:15px;
+  line-height:1.5; font-variant-numeric:tabular-nums; -webkit-font-smoothing:antialiased}
+h1,h2,h3{margin:0; text-wrap:balance}
+p{margin:0}
+button,select,input{font:inherit; color:inherit}
+:focus-visible{outline:3px solid var(--accent-ink); outline-offset:2px; border-radius:4px}
+[hidden]{display:none!important}
+
+.t-big{font-weight:800; font-size:32px; letter-spacing:-.02em; line-height:1.1}
+.t-h2{font-weight:800; font-size:22px; letter-spacing:-.015em; line-height:1.2}
+.t-h3{font-weight:800; font-size:16px}
+.t-label{font-size:12px; font-weight:700; color:var(--accent-ink); text-transform:uppercase; letter-spacing:.07em}
+.t-meta{font-size:14px; color:var(--muted)}
+
+.wrap{max-width:1180px; margin:0 auto; padding:18px 20px 40px; display:flex; flex-direction:column; gap:18px}
+
+/* demo banner */
+.demo{display:flex; flex-wrap:wrap; gap:10px 16px; align-items:center; justify-content:space-between;
+  background:var(--panel); border:1px dashed var(--accent-ink); border-radius:var(--r-card);
+  padding:10px 14px; font-size:14px}
+.demo strong{font-weight:700}
+
+.mast{display:flex; flex-direction:column; gap:10px}
+.mast__sub{max-width:70ch}
+.verdict{display:flex; gap:8px; flex-wrap:wrap}
+.pill{display:inline-flex; align-items:center; gap:7px; min-height:32px; padding:4px 13px;
+  border-radius:var(--r-pill); font-weight:700; font-size:13.5px; background:var(--panel); color:var(--ink)}
+.pill .n{font-weight:800}
+.pill--warm{background:var(--warn-bg); color:var(--warn-fg)}
+.dot{width:8px; height:8px; border-radius:50%; flex:none; background:currentColor}
+
+.btn{display:inline-flex; align-items:center; justify-content:center; gap:8px; min-height:44px;
+  padding:0 16px; border-radius:var(--r-btn); font-weight:700; font-size:14.5px; line-height:1.1;
+  cursor:pointer; border:1.5px solid var(--hair); background:var(--card); color:var(--ink)}
+.btn:hover{background:var(--panel); border-color:var(--accent-ink)}
+.btn--primary{background:var(--accent); border-color:var(--accent); color:var(--ink)}
+.btn--primary:hover{background:#FFA445; border-color:#FFA445}
+.btn--sm{min-height:36px; padding:0 12px; font-size:13.5px}
+
+.toolbar{display:flex; flex-wrap:wrap; gap:10px; align-items:center; justify-content:space-between}
+.state{display:inline-flex; align-items:center; gap:8px; min-height:34px; padding:4px 14px;
+  border-radius:var(--r-pill); font-size:13px; font-weight:700; background:var(--panel); color:var(--muted)}
+
+.card{background:var(--card); border-radius:var(--r-card); border:1px solid var(--hair)}
+.panel{padding:20px; min-width:0}
+.panel__head{display:flex; flex-wrap:wrap; gap:10px 18px; align-items:flex-end; justify-content:space-between}
+.panel__head .t-label{margin-bottom:3px}
+.dek{font-size:14px; color:var(--muted); max-width:78ch; margin-top:8px}
+
+/* pace list */
+.pace{list-style:none; margin:18px 0 0; padding:0}
+.pace li{display:grid; grid-template-columns:160px 1fr 170px; gap:8px 18px; align-items:center;
+  padding:15px 0; border-bottom:1px solid var(--hair)}
+.pace li:last-child{border-bottom:none}
+.who{min-width:0}
+.who b{display:block; font-weight:800; font-size:17px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+.who small{display:block; font-size:12.5px; color:var(--muted); overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+.meter{position:relative; height:24px; border-radius:var(--r-pill); background:var(--track)}
+.meter__fill{position:absolute; left:0; top:0; bottom:0; border-radius:var(--r-pill) 0 0 var(--r-pill); background:var(--ink)}
+.meter__book{position:absolute; top:0; bottom:0; background:var(--accent);
+  background-image:repeating-linear-gradient(115deg, rgba(255,255,255,.55) 0 3px, rgba(255,255,255,0) 3px 7px)}
+.meter__tick{position:absolute; top:3px; bottom:3px; width:1px; background:rgba(44,59,77,.28)}
+.meter__tgt{position:absolute; top:-5px; bottom:-5px; width:3px; margin-left:-1px; border-radius:2px; background:var(--accent-ink)}
+.share{text-align:right}
+.share .n{font-weight:800; font-size:23px; letter-spacing:-.02em; line-height:1}
+.share small{display:block; font-size:12px; color:var(--muted); margin-top:4px; line-height:1.4}
+.flags{grid-column:1 / -1; display:flex; flex-wrap:wrap; gap:6px}
+.flag{display:inline-flex; align-items:center; gap:6px; min-height:26px; padding:3px 11px;
+  border-radius:var(--r-pill); font-size:12.5px; font-weight:700}
+.flag--clash{background:var(--clash-bg); color:var(--clash-fg)}
+.flag--warn{background:var(--warn-bg); color:var(--warn-fg)}
+.flag--ok{background:var(--ok-bg); color:var(--ok-fg)}
+.flag--mute{background:var(--panel); color:var(--muted)}
+
+.keyline{display:flex; flex-wrap:wrap; gap:6px 20px; align-items:center; margin-top:16px; font-size:12.5px; color:var(--muted)}
+.keyline span{display:inline-flex; align-items:center; gap:7px}
+.keyline i{width:20px; height:9px; border-radius:var(--r-pill); display:block; flex:none; background:var(--ink)}
+.keyline i.bk{background:var(--accent); background-image:repeating-linear-gradient(115deg, rgba(255,255,255,.55) 0 3px, rgba(255,255,255,0) 3px 7px)}
+.keyline i.tg{width:3px; height:15px; border-radius:2px; background:var(--accent-ink)}
+.keyline i.bz{width:14px; height:14px; border-radius:3px; background:var(--warn-bg); border:1px solid var(--accent)}
+
+/* nudges */
+.nudge{list-style:none; margin:18px 0 0; padding:0; display:flex; flex-direction:column; gap:10px}
+.nudge li{padding:13px 15px; border-radius:var(--r-card); background:var(--panel)}
+.nudge h3{font-weight:800; font-size:15.5px}
+.nudge p{font-size:14px; margin-top:4px; max-width:82ch}
+
+/* months */
+.months{display:grid; grid-template-columns:repeat(12,minmax(0,1fr)); gap:5px; align-items:end; height:170px; margin-top:20px}
+.mcol{position:relative; height:100%; display:flex; flex-direction:column; justify-content:flex-end; gap:4px; min-width:0; border-radius:4px}
+.mcol--busy{background:var(--warn-bg); box-shadow:inset 0 0 0 1px var(--accent)}
+.mcol__v{font-size:11px; font-weight:800; text-align:center}
+.mcol__bars{display:flex; flex-direction:column; justify-content:flex-end; gap:2px; padding:0 2px}
+.mcol__bar{width:100%; border-radius:3px 3px 0 0; background:var(--ink); display:block; min-height:2px}
+.mcol__bar--book{background:var(--accent); background-image:repeating-linear-gradient(115deg, rgba(255,255,255,.55) 0 3px, rgba(255,255,255,0) 3px 7px)}
+.maxis{display:grid; grid-template-columns:repeat(12,minmax(0,1fr)); gap:5px; margin-top:8px; border-top:1px solid var(--hair); padding-top:8px}
+.mt{font-size:10.5px; font-weight:700; letter-spacing:.04em; text-transform:uppercase; color:var(--muted); text-align:center; min-width:0}
+.mt--now{color:var(--accent-ink)}
+.mt--q{display:block; font-weight:400; letter-spacing:0; text-transform:none; font-size:10px}
+.note{background:var(--panel); border-radius:var(--r-card); padding:14px 16px; margin-top:18px; font-size:14px}
+.note .t-label{display:block; margin-bottom:4px}
+
+/* rows */
+.rows{list-style:none; margin:16px 0 0; padding:0}
+.rows li{display:flex; align-items:center; gap:8px 12px; padding:12px 0; border-bottom:1px solid var(--hair); font-size:14.5px; flex-wrap:wrap}
+.rows li:last-child{border-bottom:none}
+.rows li.past{opacity:.72}
+.rows .flags{flex:1 1 100%}
+.rows .nm{font-weight:700; flex:0 0 auto; min-width:90px}
+.rows .dt{color:var(--muted); flex:1 1 180px; min-width:0}
+.rows .acts{display:flex; gap:6px; margin-left:auto}
+.x{background:none; border:none; color:var(--muted); cursor:pointer; padding:6px 10px; border-radius:var(--r-btn); font-size:18px; line-height:1}
+.x:hover{background:var(--warn-bg); color:var(--warn-fg)}
+.empty{margin:16px 0 0; font-size:14px; color:var(--muted); padding:18px; border-radius:var(--r-card); text-align:center; background:var(--panel)}
+
+/* forms */
+.form{display:flex; flex-wrap:wrap; gap:10px; margin-top:16px; align-items:flex-end}
+.fld{display:flex; flex-direction:column; gap:6px; flex:1 1 130px; min-width:0}
+.fld--n{flex:0 1 100px}
+.fld label{font-size:11.5px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:var(--muted)}
+.fld select,.fld input[type=text],.fld input[type=date],.fld input[type=number]{background:#fff; border:1.5px solid var(--hair);
+  border-radius:var(--r-btn); padding:0 10px; height:44px; font-size:15px; font-weight:600; width:100%; min-width:0}
+.chk{display:flex; align-items:center; gap:8px; min-height:44px; font-weight:600; font-size:14.5px}
+.chk input{width:20px; height:20px; accent-color:var(--accent-ink)}
+.check{margin-top:14px; padding:12px 14px; border-radius:var(--r-card); background:var(--panel); font-size:14px}
+.check .flags{margin-top:6px}
+
+.set{list-style:none; margin:16px 0 0; padding:0}
+.set li{display:flex; align-items:center; justify-content:space-between; gap:14px; padding:12px 0; border-bottom:1px solid var(--hair)}
+.set li:last-child{border-bottom:none}
+.set .k{font-size:14.5px; font-weight:700; min-width:0}
+.set .k small{display:block; color:var(--muted); font-size:12.5px; font-weight:400; margin-top:2px; max-width:46ch}
+.set input[type=number]{width:84px; flex:none; text-align:right; background:#fff; border:1.5px solid var(--hair);
+  border-radius:var(--r-btn); height:44px; padding:0 10px; font-weight:800; font-size:15px}
+.ckpts{display:flex; flex-wrap:wrap; gap:6px; margin-top:6px}
+
+/* people */
+.ppl{list-style:none; margin:16px 0 0; padding:0}
+.ppl li{display:grid; grid-template-columns:1fr 84px 96px 40px; gap:10px; align-items:center; padding:10px 0; border-bottom:1px solid var(--hair)}
+.ppl li:last-child{border-bottom:none}
+.ppl .hd{font-size:10.5px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:var(--muted); padding-bottom:6px}
+.ppl .hd span{text-align:right}
+.ppl .hd span:first-child{text-align:left}
+.ppl input{width:100%; min-width:0; background:#fff; border:1.5px solid var(--hair); border-radius:var(--r-btn); font-size:14px}
+.ppl input[type=number]{text-align:right; height:40px; padding:0 8px; font-weight:700}
+.ppl .pn{min-width:0}
+.ppl .pn b{display:block; font-weight:800; font-size:15px}
+.ppl .pn input{height:32px; padding:0 8px; color:var(--muted); margin-top:3px}
+.ppl .lab{display:none; font-size:10.5px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:var(--muted)}
+
+.cols{display:grid; grid-template-columns:1.1fr 1fr; gap:16px; align-items:start}
+.foot{display:flex; flex-wrap:wrap; gap:8px 24px; justify-content:space-between; font-size:12.5px; color:var(--muted); padding-top:4px}
+
+@media (max-width:1000px){ .cols{grid-template-columns:1fr} }
+@media (max-width:820px){
+  .t-big{font-size:27px}
+  .pace li{grid-template-columns:1fr; gap:8px}
+  .share{text-align:left; display:flex; align-items:baseline; gap:8px; flex-wrap:wrap}
+  .share small{margin-top:0}
+  .months{height:140px; gap:3px}
+  .maxis{gap:3px}
+  .mt{font-size:9.5px; letter-spacing:0}
+  .mt--q{font-size:8.5px}
+}
+@media (max-width:560px){
+  .wrap{padding:14px 16px 32px}
+  .panel{padding:16px}
+  .ppl .hd{display:none}
+  .ppl li{grid-template-columns:1fr 1fr 40px; grid-template-areas:"pn pn del" "dpw ent ent"}
+  .ppl .pn{grid-area:pn} .ppl .c-dpw{grid-area:dpw} .ppl .c-ent{grid-area:ent} .ppl .x{grid-area:del}
+  .ppl .lab{display:block; margin-bottom:3px}
+  .mcol__v{font-size:9.5px}
+  .set li{flex-wrap:wrap}
+}
+@media (prefers-reduced-motion:reduce){ *{transition:none!important; animation:none!important} }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="demo" role="note">
+    <span><strong>Demo with made-up data.</strong> Changes are saved only in your browser.</span>
+    <button class="btn btn--sm" id="reset">Reset demo data</button>
+  </div>
+
+  <header class="mast">
+    <h1 class="t-big">Team holiday planner</h1>
+    <p class="t-meta mast__sub" id="subtitle"></p>
+    <div class="verdict" id="verdict"></div>
+  </header>
+
+  <div class="toolbar">
+    <span class="state" id="ckpt"></span>
+    <button class="btn btn--sm" id="export">Export CSV</button>
+  </div>
+
+  <!-- pace -->
+  <section class="card panel" aria-labelledby="pace-title">
+    <p class="t-label">Pace</p>
+    <h2 class="t-h2" id="pace-title">How everyone's year is shaping up</h2>
+    <p class="dek" id="pace-dek"></p>
+    <ul class="pace" id="pace"></ul>
+    <p class="empty" id="pace-empty" hidden>No one on the team yet. Add people further down.</p>
+    <p class="keyline">
+      <span><i></i>Taken</span>
+      <span><i class="bk"></i>Booked, still to come</span>
+      <span><i class="tg"></i>Next checkpoint</span>
+    </p>
+  </section>
+
+  <!-- nudges -->
+  <section class="card panel" aria-labelledby="nudge-title">
+    <div class="panel__head">
+      <div>
+        <p class="t-label" id="nudge-count">Holiday still to plan</p>
+        <h2 class="t-h2" id="nudge-title">Suggested nudges</h2>
+      </div>
+      <button class="btn btn--sm" id="copy1">Copy all</button>
+    </div>
+    <p class="dek">Friendly reminders to plan time off. Days that are not planned tend to pile up at the end of the year, when they are hardest to fit in, so a gentle prompt now helps everyone get a proper break.</p>
+    <ul class="nudge" id="nudge"></ul>
+    <p class="empty" id="nudge-empty" hidden>Everyone has their holiday planned for the year. Nothing to nudge.</p>
+  </section>
+
+  <!-- month by month -->
+  <section class="card panel" aria-labelledby="shape-title">
+    <p class="t-label">Month by month</p>
+    <h2 class="t-h2" id="shape-title">When the team is away</h2>
+    <p class="dek">Every day of holiday the team has taken or booked, by month. Solid is taken, striped is still to come. Shaded months contain a busy week.</p>
+    <div class="months" id="months"></div>
+    <div class="maxis" id="maxis"></div>
+    <p class="keyline">
+      <span><i></i>Taken</span>
+      <span><i class="bk"></i>Booked</span>
+      <span><i class="bz"></i>Month with a busy week</span>
+    </p>
+    <div class="note" id="shape-note"></div>
+  </section>
+
+  <!-- requests -->
+  <section class="card panel" aria-labelledby="req-title">
+    <p class="t-label">Request time off</p>
+    <h2 class="t-h2" id="req-title">Check dates against the team rules</h2>
+    <p class="dek">Pick someone and some dates. The check updates as you type, so you can see straight away whether the dates leave the team short, overlap with a cover partner or land in a busy week. Try 29 to 30 December for Nadia to see a clash.</p>
+    <div class="form" id="req-form">
+      <div class="fld"><label for="q-who">Who</label><select id="q-who"></select></div>
+      <div class="fld"><label for="q-from">From</label><input type="date" id="q-from" min="2026-01-01" max="2026-12-31"></div>
+      <div class="fld"><label for="q-to">To</label><input type="date" id="q-to" min="2026-01-01" max="2026-12-31"></div>
+      <div class="fld"><label for="q-kind">Type</label><select id="q-kind"><option>Holiday</option><option>Training</option><option>Unavailable</option></select></div>
+      <label class="chk"><input type="checkbox" id="q-half"> Half day</label>
+      <button class="btn btn--primary" id="q-add">Add request</button>
+    </div>
+    <div class="check" id="q-check" aria-live="polite"></div>
+
+    <h3 class="t-h3" style="margin-top:22px" id="pend-title">Requests</h3>
+    <ul class="rows" id="pend"></ul>
+    <p class="empty" id="pend-empty" hidden>No requests waiting. Add one above.</p>
+  </section>
+
+  <!-- clashes -->
+  <section class="card panel" aria-labelledby="clash-title">
+    <p class="t-label">Cover</p>
+    <h2 class="t-h2" id="clash-title">Clash checks on booked leave</h2>
+    <p class="dek">Days where more people are away than the team limit, where two cover partners are both away, or where someone is booked off during a busy week. These are prompts to sort out cover, nothing more.</p>
+    <ul class="rows" id="clash"></ul>
+    <p class="empty" id="clash-empty" hidden>No clashes with the team rules.</p>
+  </section>
+
+  <div class="cols">
+    <!-- people -->
+    <section class="card panel" aria-labelledby="ppl-title">
+      <p class="t-label">Team</p>
+      <h2 class="t-h2" id="ppl-title">People and allowances</h2>
+      <p class="dek">Each person's yearly holiday allowance in days. Leave it blank to use the team default, pro-rated for anyone working fewer than five days a week.</p>
+      <ul class="ppl" id="ppl"></ul>
+      <p class="empty" id="ppl-empty" hidden>No one added yet.</p>
+      <div class="form">
+        <div class="fld"><label for="p-name">First name</label><input id="p-name" type="text" placeholder="Priya" autocomplete="off"></div>
+        <div class="fld"><label for="p-role">Role</label><input id="p-role" type="text" placeholder="Designer" autocomplete="off"></div>
+        <div class="fld fld--n"><label for="p-dpw">Days a week</label><input id="p-dpw" type="number" min="0.5" max="5" step="0.5" value="5"></div>
+        <div class="fld fld--n"><label for="p-ent">Allowance</label><input id="p-ent" type="number" min="0" max="60" step="0.5" placeholder="Default"></div>
+        <button class="btn btn--primary" id="p-add">Add</button>
+      </div>
+    </section>
+
+    <!-- rules -->
+    <section class="card panel" aria-labelledby="rules-title">
+      <p class="t-label">Rules</p>
+      <h2 class="t-h2" id="rules-title">Team rules</h2>
+      <p class="dek">Agreed together and shared with everyone. Changing them here updates every figure on the page.</p>
+      <ul class="set">
+        <li>
+          <span class="k">Default allowance<small>Days a year for someone working five days a week.</small></span>
+          <input type="number" id="s-fte" min="1" max="60" step="0.5">
+        </li>
+        <li>
+          <span class="k">Most people away at once<small>Keeps enough of the team around to cover the work.</small></span>
+          <input type="number" id="s-maxoff" min="1" max="20" step="1">
+        </li>
+        <li>
+          <span class="k">Quarterly checkpoints<small>A guide to spreading holiday through the year: share of the allowance taken or booked by each date.</small><span class="ckpts" id="ckpts"></span></span>
+        </li>
+      </ul>
+
+      <h3 class="t-h3" style="margin-top:22px">Cover partners</h3>
+      <p class="t-meta" style="font-size:13px">Pairs who cover each other, so ideally are not both away.</p>
+      <ul class="rows" id="pairs"></ul>
+      <p class="empty" id="pairs-empty" hidden>No cover partners set.</p>
+      <div class="form">
+        <div class="fld"><label for="pr-a">Person</label><select id="pr-a"></select></div>
+        <div class="fld"><label for="pr-b">Covers with</label><select id="pr-b"></select></div>
+        <button class="btn btn--primary" id="pr-add">Add pair</button>
+      </div>
+
+      <h3 class="t-h3" style="margin-top:22px">Busy weeks</h3>
+      <p class="t-meta" style="font-size:13px">Please avoid booking these if you can. Set them early so everyone can plan around them.</p>
+      <ul class="rows" id="blk"></ul>
+      <p class="empty" id="blk-empty" hidden>No busy weeks set.</p>
+      <div class="form">
+        <div class="fld"><label for="b-from">From</label><input type="date" id="b-from" min="2026-01-01" max="2026-12-31"></div>
+        <div class="fld"><label for="b-to">To</label><input type="date" id="b-to" min="2026-01-01" max="2026-12-31"></div>
+        <div class="fld"><label for="b-why">Reason</label><input type="text" id="b-why" placeholder="Product launch" autocomplete="off"></div>
+        <button class="btn btn--primary" id="b-add">Add</button>
+      </div>
+    </section>
+  </div>
+
+  <!-- booked leave -->
+  <section class="card panel" aria-labelledby="lv-title">
+    <p class="t-label">Calendar</p>
+    <h2 class="t-h2" id="lv-title">Booked time off</h2>
+    <p class="dek">Types are kept simple: Holiday, Training and Unavailable. Only Holiday counts towards the allowance. Weekends and England and Wales bank holidays are not counted.</p>
+    <ul class="rows" id="lv"></ul>
+    <p class="empty" id="lv-empty" hidden>Nothing booked for this year yet.</p>
+  </section>
+
+  <footer class="foot">
+    <span>A demo of a small planning tool. Every name, date and number here is invented.</span>
+    <span>Nothing leaves your browser.</span>
+  </footer>
+</div>
+
+<script>
+(function(){
+"use strict";
+
+/* Team holiday planner, demo build.
+   All data is invented. State lives in localStorage under the
+   fn-demo-holiday: prefix, or in memory if storage is blocked. */
+
+var MS = 86400000;
+var STORE_KEY = "fn-demo-holiday:state-v1";
+
+/* England and Wales bank holidays, 2026. */
+var BANK_HOL = {
+  "2026-01-01":1,"2026-04-03":1,"2026-04-06":1,"2026-05-04":1,"2026-05-25":1,
+  "2026-08-31":1,"2026-12-25":1,"2026-12-28":1
+};
+var MON = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+var MONL = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+
+/* The demo is pinned to a fixed date so the picture stays the same for every visitor. */
+var TODAY = "2026-10-14";
+var YEAR = 2026, YSTART = "2026-01-01", YEND = "2026-12-31";
+
+/* ---------- dates ---------- */
+function parse(s){ var p = String(s).slice(0,10).split("-"); return new Date(+p[0], +p[1] - 1, +p[2]); }
+function iso(d){ var m = d.getMonth() + 1, dd = d.getDate();
+  return d.getFullYear() + "-" + (m < 10 ? "0" : "") + m + "-" + (dd < 10 ? "0" : "") + dd; }
+function add(d, n){ var x = new Date(d.getTime()); x.setDate(x.getDate() + n); return x; }
+function addDaysIso(s, n){ return iso(add(parse(s), n)); }
+function fmtShort(d){ return d.getDate() + " " + MON[d.getMonth()]; }
+function fmtLong(d){ return d.getDate() + " " + MONL[d.getMonth()] + " " + d.getFullYear(); }
+function isWorkday(s){ var w = parse(s).getDay(); return w !== 0 && w !== 6 && !BANK_HOL[s]; }
+function inYear(s){ return s >= YSTART && s <= YEND; }
+function r1(n){ return Math.round(n * 10) / 10; }
+function d1(n){ var v = r1(n); return v % 1 === 0 ? String(v) : v.toFixed(1); }
+function plural(n, one, many){ return n === 1 ? one : many; }
+function days(n){ return d1(n) + " " + plural(r1(n), "day", "days"); }
+
+var MONTHS = [];
+for(var mi = 0; mi < 12; mi++){
+  MONTHS.push({key: YEAR + "-" + (mi < 9 ? "0" : "") + (mi + 1), label: MON[mi], m: mi, y: YEAR});
+}
+
+/* ---------- quarterly checkpoints ---------- */
+var CHECKPOINTS = [
+  {label:"end of March", end:"2026-03-31", pct:0.25},
+  {label:"end of June", end:"2026-06-30", pct:0.50},
+  {label:"end of September", end:"2026-09-30", pct:0.75},
+  {label:"end of December", end:"2026-12-31", pct:1.00}
+];
+var CKPT = CHECKPOINTS[3];
+for(var ci = 0; ci < CHECKPOINTS.length; ci++){ if(TODAY <= CHECKPOINTS[ci].end){ CKPT = CHECKPOINTS[ci]; break; } }
+
+/* ---------- seed data (all invented) ---------- */
+function seed(){
+  var people = {
+    ellie:  {id:"ellie",  name:"Ellie",  role:"Team lead",      dpw:5, ent:25},
+    marcus: {id:"marcus", name:"Marcus", role:"Designer",       dpw:5, ent:25},
+    jade:   {id:"jade",   name:"Jade",   role:"Content writer", dpw:4, ent:20},
+    owen:   {id:"owen",   name:"Owen",   role:"Analyst",        dpw:5, ent:27},
+    nadia:  {id:"nadia",  name:"Nadia",  role:"Coordinator",    dpw:3, ent:15},
+    chris:  {id:"chris",  name:"Chris",  role:"Developer",      dpw:5, ent:25}
+  };
+  var L = [
+    ["ellie","2026-02-16","2026-02-20"],["ellie","2026-04-07","2026-04-10"],
+    ["ellie","2026-05-11","2026-05-11","Training"],["ellie","2026-07-27","2026-08-07"],
+    ["ellie","2026-10-26","2026-10-30"],["ellie","2026-12-24","2026-12-24"],
+    ["marcus","2026-03-30","2026-04-02"],["marcus","2026-06-15","2026-06-19"],
+    ["marcus","2026-08-17","2026-08-21"],["marcus","2026-09-14","2026-09-14","Holiday",true],
+    ["marcus","2026-11-09","2026-11-13"],
+    ["jade","2026-01-26","2026-01-30"],["jade","2026-05-26","2026-05-29"],
+    ["jade","2026-08-19","2026-08-19"],["jade","2026-09-21","2026-09-22","Training"],
+    ["jade","2026-12-29","2026-12-31"],
+    ["owen","2026-01-02","2026-01-02"],["owen","2026-03-16","2026-03-17"],
+    ["owen","2026-07-06","2026-07-17"],["owen","2026-08-17","2026-08-21"],
+    ["owen","2026-10-15","2026-10-16"],["owen","2026-12-24","2026-12-24"],
+    ["nadia","2026-02-09","2026-02-13"],["nadia","2026-07-20","2026-07-24"],
+    ["nadia","2026-09-03","2026-09-03","Unavailable"],
+    ["chris","2026-01-05","2026-01-09"],["chris","2026-04-13","2026-04-17"],
+    ["chris","2026-06-22","2026-06-26"],["chris","2026-10-05","2026-10-09"],
+    ["chris","2026-12-29","2026-12-31"]
+  ];
+  var leave = {};
+  L.forEach(function(r, i){
+    leave["lv" + (i + 1)] = {person:r[0], start:r[1], end:r[2], kind:r[3] || "Holiday", half:!!r[4]};
+  });
+  return {
+    settings:{fte:25, maxOff:2},
+    people:people,
+    leave:leave,
+    requests:{
+      rq1:{person:"owen", start:"2026-11-23", end:"2026-11-24", kind:"Holiday", half:false},
+      rq2:{person:"marcus", start:"2026-12-21", end:"2026-12-23", kind:"Holiday", half:false}
+    },
+    busy:{
+      bz1:{start:"2026-03-16", end:"2026-03-20", reason:"Spring launch"},
+      bz2:{start:"2026-11-23", end:"2026-11-27", reason:"Year-end wrap-up"}
+    },
+    pairs:{
+      pr1:{a:"marcus", b:"chris"},
+      pr2:{a:"jade", b:"nadia"}
+    }
+  };
+}
+
+/* ---------- storage: localStorage if allowed, memory otherwise ---------- */
+var state;
+function load(){
+  var raw = null;
+  try{ raw = window.localStorage.getItem(STORE_KEY); }catch(e){ raw = null; }
+  if(raw){
+    try{
+      var s = JSON.parse(raw);
+      if(s && s.people && s.leave && s.settings){
+        ["requests","busy","pairs"].forEach(function(k){ if(!s[k]) s[k] = {}; });
+        return s;
+      }
+    }catch(e){}
+  }
+  return seed();
+}
+function persist(){
+  try{ window.localStorage.setItem(STORE_KEY, JSON.stringify(state)); }catch(e){}
+}
+function resetAll(){
+  try{ window.localStorage.removeItem(STORE_KEY); }catch(e){}
+  state = seed();
+  syncFields();
+  render();
+}
+state = load();
+function uid(p){ return p + Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
+
+/* ---------- day maths ---------- */
+function dayParts(it){
+  var out = [], d = parse(it.start), end = parse(it.end || it.start), guard = 0;
+  while(d.getTime() <= end.getTime() && guard++ < 400){
+    var s = iso(d);
+    if(isWorkday(s) && inYear(s)) out.push({date:s, part:1});
+    d = add(d, 1);
+  }
+  if(it.half) out = out.length ? [{date:out[0].date, part:0.5}] : [];
+  return out;
+}
+function dayMap(personId, kinds){
+  var map = {};
+  Object.keys(state.leave).forEach(function(id){
+    var it = state.leave[id];
+    if(it.person !== personId) return;
+    if(kinds && kinds.indexOf(it.kind) < 0) return;
+    dayParts(it).forEach(function(dp){ if(!map[dp.date] || map[dp.date] < dp.part) map[dp.date] = dp.part; });
+  });
+  return map;
+}
+function sumMap(map, from, to){
+  var t = 0;
+  Object.keys(map).forEach(function(k){ if(from && k < from) return; if(to && k > to) return; t += map[k]; });
+  return t;
+}
+
+function calc(p){
+  var dpw = p.dpw > 0 ? p.dpw : 5;
+  var entKnown = p.ent > 0;
+  var ent = entKnown ? r1(p.ent) : r1(state.settings.fte * dpw / 5);
+  var hol = dayMap(p.id, ["Holiday"]);
+  var taken = r1(sumMap(hol, YSTART, TODAY));
+  var booked = Math.max(0, r1(sumMap(hol) - taken));
+  var target = r1(ent * CKPT.pct);
+  var bookedByCkpt = r1(sumMap(hol, addDaysIso(TODAY, 1), CKPT.end));
+  var planned = r1(taken + bookedByCkpt);
+  var toPlanCkpt = r1(Math.max(0, target - planned));
+  var toPlan = r1(Math.max(0, ent - taken - booked));
+  var soonEnd = addDaysIso(TODAY, 42);
+  var bookedSoon = r1(sumMap(hol, addDaysIso(TODAY, 1), soonEnd));
+  return {p:p, dpw:dpw, ent:ent, entKnown:entKnown, hol:hol, taken:taken, booked:booked,
+          target:target, bookedByCkpt:bookedByCkpt, planned:planned, toPlanCkpt:toPlanCkpt,
+          toPlan:toPlan, bookedSoon:bookedSoon};
+}
+function people(){
+  return Object.keys(state.people).map(function(id){ return state.people[id]; })
+    .sort(function(a, b){ return a.name.localeCompare(b.name); });
+}
+function calcAll(){ return people().map(calc); }
+function nameOf(id){ var p = state.people[id]; return p ? p.name : "Someone"; }
+
+/* ---------- render helpers ---------- */
+function esc(s){
+  return String(s == null ? "" : s).replace(/&/g,"&amp;").replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+}
+function el(id){ return document.getElementById(id); }
+function rangeLabel(it){
+  var a = parse(it.start), b = parse(it.end || it.start);
+  return iso(a) === iso(b) ? fmtShort(a) : fmtShort(a) + " to " + fmtShort(b);
+}
+
+function render(){
+  var rows = calcAll();
+  renderHead(rows);
+  renderPace(rows);
+  renderNudges(rows);
+  renderShape(rows);
+  syncSelects();
+  renderCheck();
+  renderRequests();
+  renderClashes(rows);
+  renderPeople(rows);
+  renderRules();
+  renderLeave();
+}
+
+function renderHead(rows){
+  el("subtitle").textContent = "Holiday year " + fmtLong(parse(YSTART)) + " to " + fmtLong(parse(YEND)) +
+    ". Showing the picture as of " + fmtLong(parse(TODAY)) + ". Helping everyone spread their time off through the year and keep the team covered.";
+  var daysLeft = Math.round((parse(CKPT.end) - parse(TODAY)) / MS);
+  el("ckpt").innerHTML = '<span class="dot" style="background:var(--accent)"></span>Next checkpoint: ' +
+    esc(CKPT.label) + ", " + Math.round(CKPT.pct * 100) + "% planned, " + daysLeft + " " + plural(daysLeft, "day", "days") + " away";
+  var onTrack = 0, toPlan = 0, withDays = 0;
+  rows.forEach(function(c){ if(c.toPlanCkpt <= 0) onTrack++; if(c.toPlan > 0) withDays++; toPlan += c.toPlan; });
+  var v = [];
+  if(!rows.length) v.push('<span class="pill">No one added yet</span>');
+  else {
+    v.push('<span class="pill"><span class="n">' + onTrack + "</span> of " + rows.length + " planned for " + esc(CKPT.label) + "</span>");
+    if(withDays) v.push('<span class="pill pill--warm"><span class="dot"></span><span class="n">' + withDays + "</span> with holiday still to plan</span>");
+    v.push('<span class="pill"><span class="n">' + d1(toPlan) + "</span> days still to plan across the team</span>");
+  }
+  el("verdict").innerHTML = v.join("");
+}
+
+function renderPace(rows){
+  el("pace-dek").innerHTML = "Each bar is that person's own allowance, end to end. Solid is taken, striped is booked and still to come. " +
+    "The marker shows the " + Math.round(CKPT.pct * 100) + "% checkpoint at " + esc(CKPT.label) +
+    ", and the faint lines are the other quarters. Booked days count, so nobody needs to have taken the time yet, only to have it planned.";
+  el("pace-empty").hidden = rows.length > 0;
+  el("pace").innerHTML = rows.map(function(c){
+    var pool = Math.max(c.ent, c.taken + c.booked, 1);
+    var pT = Math.min(100, c.taken / pool * 100);
+    var pB = Math.min(100 - pT, c.booked / pool * 100);
+    var ticks = CHECKPOINTS.filter(function(k){ return k !== CKPT && k.pct < 1; }).map(function(k){
+      return '<span class="meter__tick" style="left:' + (c.ent * k.pct / pool * 100).toFixed(1) + '%"></span>';
+    }).join("");
+    var pTgt = Math.min(100, c.target / pool * 100);
+    var flags = [];
+    if(c.toPlanCkpt > 0) flags.push('<span class="flag flag--warn">' + days(c.toPlanCkpt) + " to plan before " + esc(CKPT.label) + "</span>");
+    else flags.push('<span class="flag flag--ok">Planned for ' + esc(CKPT.label) + "</span>");
+    if(c.toPlan > 0 && c.toPlan !== c.toPlanCkpt) flags.push('<span class="flag flag--mute">' + days(c.toPlan) + " still to plan this year</span>");
+    if(!c.entKnown) flags.push('<span class="flag flag--mute">Using the default allowance</span>');
+    return "<li>" +
+      '<span class="who"><b>' + esc(c.p.name) + "</b><small>" + esc(c.p.role || "Role not set") + ", " +
+        d1(c.dpw) + " " + plural(c.dpw, "day", "days") + " a week</small></span>" +
+      '<span class="meter" role="img" aria-label="' + esc(c.p.name) + ": " + d1(c.taken) + " taken, " + d1(c.booked) + " booked of " + d1(c.ent) + '">' +
+        '<span class="meter__fill" style="width:' + pT.toFixed(1) + '%"></span>' +
+        '<span class="meter__book" style="left:' + pT.toFixed(1) + "%;width:" + pB.toFixed(1) + '%"></span>' +
+        ticks +
+        '<span class="meter__tgt" style="left:' + pTgt.toFixed(1) + '%"></span>' +
+      "</span>" +
+      '<span class="share"><span class="n">' + d1(c.planned) + " of " + d1(c.ent) + "</span>" +
+        "<small>" + d1(c.taken) + " taken, " + d1(c.booked) + " booked<br>checkpoint " + d1(c.target) + " by " + esc(CKPT.label) + "</small></span>" +
+      '<span class="flags">' + flags.join("") + "</span></li>";
+  }).join("");
+}
+
+function upcomingBusy(n){
+  var lim = addDaysIso(TODAY, n);
+  return Object.keys(state.busy).map(function(id){ return state.busy[id]; })
+    .filter(function(b){ return b.end >= TODAY && b.start <= lim; })
+    .sort(function(a, b){ return a.start < b.start ? -1 : 1; });
+}
+function nudgeLine(c){
+  var bits = [];
+  bits.push(c.p.name + " has " + days(c.toPlan) + " of holiday still to plan this year.");
+  if(c.bookedSoon > 0) bits.push(days(c.bookedSoon) + " already booked in the next six weeks, which is great.");
+  else bits.push("Nothing is booked in the next six weeks, so this could be a nice moment to pick some dates.");
+  var bz = upcomingBusy(90);
+  if(bz.length) bits.push("Worth planning around " + bz.map(function(b){ return b.reason + " (" + rangeLabel(b) + ")"; }).join(" and ") + ".");
+  return bits.join(" ");
+}
+function nudgeRows(rows){ return rows.filter(function(c){ return c.toPlan > 0; }); }
+function renderNudges(rows){
+  var need = nudgeRows(rows);
+  el("nudge-count").textContent = need.length ? "Holiday still to plan: " + need.length + " of " + rows.length : "Holiday still to plan";
+  el("nudge-empty").hidden = need.length > 0 || rows.length === 0;
+  el("nudge").innerHTML = need.map(function(c){
+    return "<li><h3>" + esc(c.p.name) + "</h3><p>" + esc(nudgeLine(c)) + "</p></li>";
+  }).join("");
+}
+
+function monthHasBusy(m){
+  var from = m.key + "-01", to = iso(new Date(m.y, m.m + 1, 0));
+  return Object.keys(state.busy).some(function(id){ var b = state.busy[id]; return b.start <= to && b.end >= from; });
+}
+function renderShape(rows){
+  var tM = {}, bM = {}, total = 0, toPlan = 0;
+  MONTHS.forEach(function(m){ tM[m.key] = 0; bM[m.key] = 0; });
+  rows.forEach(function(c){
+    toPlan += c.toPlan;
+    Object.keys(c.hol).forEach(function(d){
+      var k = d.slice(0, 7);
+      if(!(k in tM)) return;
+      if(d <= TODAY) tM[k] += c.hol[d]; else bM[k] += c.hol[d];
+      total += c.hol[d];
+    });
+  });
+  var peak = 1, peakM = null;
+  MONTHS.forEach(function(m){ var v = tM[m.key] + bM[m.key]; if(v > peak){ peak = v; peakM = m; } });
+  var H = 120, nowKey = TODAY.slice(0, 7);
+  el("months").innerHTML = MONTHS.map(function(m){
+    var t = tM[m.key], b = bM[m.key], v = t + b;
+    var hT = Math.round(t / peak * H), hB = Math.round(b / peak * H);
+    return '<div class="mcol' + (monthHasBusy(m) ? " mcol--busy" : "") + '" title="' + esc(MONL[m.m]) + ": " + d1(v) + ' days">' +
+      '<span class="mcol__v">' + (v > 0 ? d1(v) : "") + "</span>" +
+      '<span class="mcol__bars">' +
+        (hB > 0 ? '<span class="mcol__bar mcol__bar--book" style="height:' + hB + 'px"></span>' : "") +
+        (hT > 0 ? '<span class="mcol__bar" style="height:' + hT + 'px"></span>' : "") +
+      "</span></div>";
+  }).join("");
+  el("maxis").innerHTML = MONTHS.map(function(m, i){
+    var q = (i === 2 || i === 5 || i === 8 || i === 11) ? Math.round((i + 1) / 12 * 100) + "%" : "";
+    return '<span class="mt' + (m.key === nowKey ? " mt--now" : "") + '">' + esc(m.label) +
+      (q ? '<span class="mt--q">' + q + "</span>" : "") + "</span>";
+  }).join("");
+  var msg;
+  if(total === 0) msg = "Nothing booked yet this year. " + days(toPlan) + " to plan across the team.";
+  else {
+    msg = "The busiest month so far is " + (peakM ? MONL[peakM.m] : "summer") + ", with " + days(peak) + " away across the team. " +
+      days(toPlan) + " " + (r1(toPlan) === 1 ? "is" : "are") + " still to plan. ";
+    var dec = (tM[YEAR + "-12"] || 0) + (bM[YEAR + "-12"] || 0);
+    msg += dec > 0 ? days(dec) + " already fall in December, so spreading the rest across October and November keeps cover easier for everyone."
+                   : "Spreading the rest across the remaining months keeps cover easier for everyone.";
+  }
+  el("shape-note").innerHTML = '<span class="t-label">The year so far</span>' + esc(msg);
+}
+
+/* ---------- clash checks ---------- */
+function concurrentMap(excludePerson){
+  var seen = {}, map = {};
+  Object.keys(state.leave).forEach(function(id){
+    var it = state.leave[id];
+    if(excludePerson && it.person === excludePerson) return;
+    dayParts(it).forEach(function(dp){
+      var k = dp.date + "|" + it.person;
+      if(seen[k]) return;
+      seen[k] = 1;
+      map[dp.date] = (map[dp.date] || 0) + 1;
+    });
+  });
+  return map;
+}
+function personOffOn(pid, d){
+  return Object.keys(state.leave).some(function(id){
+    var it = state.leave[id];
+    return it.person === pid && d >= it.start && d <= (it.end || it.start);
+  });
+}
+function peopleOffOn(d){
+  var out = [];
+  Object.keys(state.leave).forEach(function(id){
+    var it = state.leave[id];
+    if(d < it.start || d > (it.end || it.start)) return;
+    var n = nameOf(it.person);
+    if(out.indexOf(n) < 0) out.push(n);
+  });
+  return out.sort();
+}
+function partnersOf(pid){
+  var out = [];
+  Object.keys(state.pairs).forEach(function(id){
+    var pr = state.pairs[id];
+    if(pr.a === pid && out.indexOf(pr.b) < 0) out.push(pr.b);
+    if(pr.b === pid && out.indexOf(pr.a) < 0) out.push(pr.a);
+  });
+  return out;
+}
+function checkRequest(q){
+  var out = [], ds = dayParts(q).map(function(d){ return d.date; });
+  if(!ds.length) return [{cls:"flag--mute", t:"No working days in that range"}];
+  var off = concurrentMap(q.person), max = state.settings.maxOff;
+  var over = ds.filter(function(d){ return (off[d] || 0) + 1 > max; });
+  if(over.length) out.push({cls:"flag--clash", t:"Would mean " + ((off[over[0]] || 0) + 1) + " people away on " +
+    fmtShort(parse(over[0])) + (over.length > 1 ? " and " + (over.length - 1) + " more " + plural(over.length - 1, "day", "days") : "") +
+    " (limit " + max + ")"});
+  partnersOf(q.person).forEach(function(pid){
+    var hit = ds.filter(function(d){ return personOffOn(pid, d); });
+    if(hit.length) out.push({cls:"flag--clash", t:"Cover partner " + nameOf(pid) + " is also away on " + fmtShort(parse(hit[0])) +
+      (hit.length > 1 ? " and " + (hit.length - 1) + " more" : "")});
+  });
+  var bz = [];
+  ds.forEach(function(d){
+    Object.keys(state.busy).forEach(function(id){
+      var b = state.busy[id];
+      if(d >= b.start && d <= b.end && bz.indexOf(b.reason) < 0) bz.push(b.reason || "Busy week");
+    });
+  });
+  if(bz.length) out.push({cls:"flag--warn", t:"Falls in a busy week: " + bz.join(", ")});
+  var mine = ds.filter(function(d){ return personOffOn(q.person, d); });
+  if(mine.length) out.push({cls:"flag--mute", t:"Already booked off on " + fmtShort(parse(mine[0]))});
+  var p = state.people[q.person];
+  if(p && q.kind === "Holiday"){
+    var c = calc(p), n = q.half ? 0.5 : ds.length;
+    if(n > c.toPlan) out.push({cls:"flag--mute", t:"Uses " + days(n) + ", with " + days(c.toPlan) + " left to plan"});
+  }
+  return out;
+}
+function flagsHtml(list){
+  if(!list.length) return '<span class="flag flag--ok">No clashes, fits the team rules</span>';
+  return list.map(function(f){ return '<span class="flag ' + f.cls + '">' + esc(f.t) + "</span>"; }).join("");
+}
+function draftRequest(){
+  var f = el("q-from").value, t = el("q-to").value;
+  if(!f || !el("q-who").value) return null;
+  if(!t || t < f) t = f;
+  return {person:el("q-who").value, start:f, end:t, kind:el("q-kind").value, half:el("q-half").checked};
+}
+function renderCheck(){
+  var q = draftRequest(), box = el("q-check");
+  if(!q){ box.innerHTML = '<span class="t-meta">Pick a person and a start date to see the check.</span>'; return; }
+  var n = dayParts(q).reduce(function(t, d){ return t + d.part; }, 0);
+  box.innerHTML = "<strong>" + esc(nameOf(q.person)) + ", " + esc(rangeLabel(q)) + "</strong>" +
+    '<span class="t-meta"> (' + days(n) + " " + esc(q.kind.toLowerCase()) + ')</span><div class="flags">' + flagsHtml(checkRequest(q)) + "</div>";
+}
+function renderRequests(){
+  var ids = Object.keys(state.requests).sort(function(a, b){ return state.requests[a].start < state.requests[b].start ? -1 : 1; });
+  el("pend-empty").hidden = ids.length > 0;
+  el("pend-title").textContent = ids.length ? ids.length + " " + plural(ids.length, "request", "requests") + " to look at" : "Requests";
+  el("pend").innerHTML = ids.map(function(id){
+    var q = state.requests[id];
+    return '<li data-id="' + esc(id) + '">' +
+      '<span class="nm">' + esc(nameOf(q.person)) + "</span>" +
+      '<span class="dt">' + esc(rangeLabel(q)) + ", " + esc(q.kind) + (q.half ? ", half day" : "") + "</span>" +
+      '<span class="acts"><button class="btn btn--sm" data-ok="' + esc(id) + '">Add to calendar</button>' +
+      '<button class="x" data-delreq="' + esc(id) + '" title="Remove request" aria-label="Remove request">&times;</button></span>' +
+      '<span class="flags">' + flagsHtml(checkRequest(q)) + "</span></li>";
+  }).join("");
+}
+
+function workdaysBetween(a, b){
+  if(a >= b) return 0;
+  var n = 0, d = add(parse(a), 1), g = 0;
+  while(iso(d) <= b && g++ < 400){ if(isWorkday(iso(d))) n++; d = add(d, 1); }
+  return n;
+}
+function collapse(dates){
+  var out = [], run = null;
+  dates.sort().forEach(function(d){
+    if(run && workdaysBetween(run.end, d) <= 1) run.end = d;
+    else { run = {start:d, end:d}; out.push(run); }
+  });
+  return out;
+}
+function renderClashes(){
+  var items = [], off = concurrentMap(), max = state.settings.maxOff;
+  var overDays = Object.keys(off).filter(function(d){ return off[d] > max; });
+  collapse(overDays).forEach(function(r){
+    items.push({cls:"flag--clash", nm:"Short on cover",
+      dt:rangeLabel(r) + ": " + off[r.start] + " away, team limit is " + max, ex:peopleOffOn(r.start).join(", ")});
+  });
+  Object.keys(state.pairs).forEach(function(id){
+    var pr = state.pairs[id], hits = [];
+    Object.keys(off).forEach(function(d){ if(personOffOn(pr.a, d) && personOffOn(pr.b, d)) hits.push(d); });
+    collapse(hits).forEach(function(r){
+      items.push({cls:"flag--clash", nm:"Cover partners", dt:nameOf(pr.a) + " and " + nameOf(pr.b) + " both away, " + rangeLabel(r), ex:""});
+    });
+  });
+  Object.keys(state.busy).forEach(function(bid){
+    var b = state.busy[bid], who = [];
+    Object.keys(state.leave).forEach(function(id){
+      var it = state.leave[id];
+      if(it.start > b.end || (it.end || it.start) < b.start) return;
+      var n = nameOf(it.person); if(who.indexOf(n) < 0) who.push(n);
+    });
+    if(who.length) items.push({cls:"flag--warn", nm:"Busy week", dt:(b.reason || "Busy week") + ", " + rangeLabel(b), ex:who.join(", ") + " away"});
+  });
+  el("clash-empty").hidden = items.length > 0;
+  el("clash").innerHTML = items.map(function(it){
+    return '<li><span class="flag ' + it.cls + '">' + esc(it.nm) + '</span><span class="dt">' + esc(it.dt) + "</span>" +
+      (it.ex ? '<span class="t-meta" style="font-size:13px">' + esc(it.ex) + "</span>" : "") + "</li>";
+  }).join("");
+}
+
+function renderPeople(){
+  var list = people();
+  el("ppl-empty").hidden = list.length > 0;
+  var head = list.length ? '<li class="hd"><span>Person</span><span>Days/wk</span><span>Allowance</span><span></span></li>' : "";
+  el("ppl").innerHTML = head + list.map(function(p){
+    var c = calc(p);
+    return '<li data-id="' + esc(p.id) + '">' +
+      '<span class="pn"><b>' + esc(p.name) + '</b><input type="text" data-f="role" value="' + esc(p.role || "") +
+        '" placeholder="Role" aria-label="Role for ' + esc(p.name) + '" autocomplete="off"></span>' +
+      '<span class="c-dpw"><span class="lab">Days/wk</span><input type="number" data-f="dpw" min="0.5" max="5" step="0.5" value="' + esc(p.dpw || 5) +
+        '" aria-label="Days a week for ' + esc(p.name) + '"></span>' +
+      '<span class="c-ent"><span class="lab">Allowance</span><input type="number" data-f="ent" min="0" max="60" step="0.5" value="' + esc(p.ent || "") +
+        '" placeholder="' + d1(c.ent) + '" aria-label="Allowance for ' + esc(p.name) + '"></span>' +
+      '<button class="x" data-del="' + esc(p.id) + '" title="Remove ' + esc(p.name) + '" aria-label="Remove ' + esc(p.name) + '">&times;</button></li>';
+  }).join("");
+}
+
+function renderRules(){
+  el("ckpts").innerHTML = CHECKPOINTS.map(function(k){
+    return '<span class="flag ' + (k === CKPT ? "flag--warn" : "flag--mute") + '">' + Math.round(k.pct * 100) + "% by " + esc(k.label) + "</span>";
+  }).join("");
+  var pids = Object.keys(state.pairs);
+  el("pairs-empty").hidden = pids.length > 0;
+  el("pairs").innerHTML = pids.map(function(id){
+    var pr = state.pairs[id];
+    return '<li><span class="dt"><strong>' + esc(nameOf(pr.a)) + "</strong> and <strong>" + esc(nameOf(pr.b)) +
+      "</strong> cover each other</span>" +
+      '<button class="x" data-delpair="' + esc(id) + '" title="Remove pair" aria-label="Remove pair">&times;</button></li>';
+  }).join("");
+  var bids = Object.keys(state.busy).sort(function(a, b){ return state.busy[a].start < state.busy[b].start ? -1 : 1; });
+  el("blk-empty").hidden = bids.length > 0;
+  el("blk").innerHTML = bids.map(function(id){
+    var b = state.busy[id];
+    return '<li><span class="nm">' + esc(rangeLabel(b)) + '</span><span class="dt">' + esc(b.reason || "Busy week") + "</span>" +
+      '<button class="x" data-delblk="' + esc(id) + '" title="Remove busy week" aria-label="Remove busy week">&times;</button></li>';
+  }).join("");
+}
+
+function renderLeave(){
+  var ids = Object.keys(state.leave).filter(function(id){ return inYear(state.leave[id].start); })
+    .sort(function(a, b){ return state.leave[a].start < state.leave[b].start ? -1 : (state.leave[a].start > state.leave[b].start ? 1 : 0); });
+  el("lv-empty").hidden = ids.length > 0;
+  el("lv").innerHTML = ids.map(function(id){
+    var it = state.leave[id];
+    var n = dayParts(it).reduce(function(t, d){ return t + d.part; }, 0);
+    var past = (it.end || it.start) <= TODAY;
+    return '<li class="' + (past ? "past" : "") + '"><span class="nm">' + esc(nameOf(it.person)) + "</span>" +
+      '<span class="dt">' + esc(rangeLabel(it)) + ", " + esc(it.kind) + ", " + days(n) + (past ? "" : ", still to come") + "</span>" +
+      '<button class="x" data-dellv="' + esc(id) + '" title="Remove" aria-label="Remove booking">&times;</button></li>';
+  }).join("");
+}
+
+function syncSelects(){
+  var list = people();
+  ["q-who","pr-a","pr-b"].forEach(function(id, i){
+    var s = el(id), prev = s.value;
+    s.innerHTML = list.map(function(p){ return '<option value="' + esc(p.id) + '">' + esc(p.name) + "</option>"; }).join("");
+    if(prev && state.people[prev]) s.value = prev;
+    else if(id === "pr-b" && list[1]) s.value = list[1].id;
+  });
+}
+function syncFields(){
+  el("s-fte").value = state.settings.fte;
+  el("s-maxoff").value = state.settings.maxOff;
+}
+
+/* ---------- actions ---------- */
+function commit(){ persist(); render(); }
+
+el("reset").addEventListener("click", resetAll);
+
+["q-who","q-from","q-to","q-kind","q-half"].forEach(function(id){
+  el(id).addEventListener("input", renderCheck);
+  el(id).addEventListener("change", renderCheck);
+});
+el("q-add").addEventListener("click", function(){
+  var q = draftRequest();
+  if(!q) { renderCheck(); return; }
+  state.requests[uid("rq")] = q;
+  commit();
+});
+el("pend").addEventListener("click", function(ev){
+  var t = ev.target, ok = t.getAttribute("data-ok"), del = t.getAttribute("data-delreq");
+  if(ok && state.requests[ok]){ state.leave[uid("lv")] = state.requests[ok]; delete state.requests[ok]; commit(); }
+  if(del){ delete state.requests[del]; commit(); }
+});
+el("lv").addEventListener("click", function(ev){
+  var id = ev.target.getAttribute("data-dellv");
+  if(id){ delete state.leave[id]; commit(); }
+});
+
+el("p-add").addEventListener("click", function(){
+  var name = String(el("p-name").value || "").trim().split(/\s+/)[0].replace(/[^A-Za-z'\-]/g, "");
+  if(!name) return;
+  var id = name.toLowerCase().replace(/[^a-z0-9]/g, "") || uid("p");
+  if(state.people[id]) id = id + "-" + Math.random().toString(36).slice(2, 5);
+  var dpw = +el("p-dpw").value, ent = +el("p-ent").value;
+  state.people[id] = {id:id, name:name, role:String(el("p-role").value || "").slice(0, 60),
+    dpw: dpw > 0 ? Math.min(5, dpw) : 5, ent: ent > 0 ? ent : 0};
+  el("p-name").value = ""; el("p-role").value = ""; el("p-ent").value = "";
+  commit();
+});
+el("ppl").addEventListener("change", function(ev){
+  var t = ev.target, f = t.getAttribute("data-f");
+  if(!f) return;
+  var li = t.closest("li"), p = li && state.people[li.getAttribute("data-id")];
+  if(!p) return;
+  if(f === "role") p.role = String(t.value).slice(0, 60);
+  else p[f] = Math.max(0, +t.value || 0);
+  if(f === "dpw") p.dpw = p.dpw > 0 ? Math.min(5, p.dpw) : 5;
+  commit();
+});
+el("ppl").addEventListener("click", function(ev){
+  var id = ev.target.getAttribute("data-del");
+  if(!id) return;
+  delete state.people[id];
+  ["leave","requests"].forEach(function(b){
+    Object.keys(state[b]).forEach(function(k){ if(state[b][k].person === id) delete state[b][k]; });
+  });
+  Object.keys(state.pairs).forEach(function(k){ var pr = state.pairs[k]; if(pr.a === id || pr.b === id) delete state.pairs[k]; });
+  commit();
+});
+
+el("pr-add").addEventListener("click", function(){
+  var a = el("pr-a").value, b = el("pr-b").value;
+  if(!a || !b || a === b) return;
+  var dup = Object.keys(state.pairs).some(function(k){ var p = state.pairs[k]; return (p.a === a && p.b === b) || (p.a === b && p.b === a); });
+  if(!dup) state.pairs[uid("pr")] = {a:a, b:b};
+  commit();
+});
+el("pairs").addEventListener("click", function(ev){
+  var id = ev.target.getAttribute("data-delpair");
+  if(id){ delete state.pairs[id]; commit(); }
+});
+el("b-add").addEventListener("click", function(){
+  var f = el("b-from").value, t = el("b-to").value;
+  if(!f) return;
+  if(!t || t < f) t = f;
+  state.busy[uid("bz")] = {start:f, end:t, reason:String(el("b-why").value || "").slice(0, 80)};
+  el("b-why").value = "";
+  commit();
+});
+el("blk").addEventListener("click", function(ev){
+  var id = ev.target.getAttribute("data-delblk");
+  if(id){ delete state.busy[id]; commit(); }
+});
+
+function bindSetting(id, key, coerce){
+  el(id).addEventListener("change", function(){
+    var v = coerce(el(id).value);
+    if(!isFinite(v) || v <= 0){ syncFields(); return; }
+    state.settings[key] = v;
+    commit();
+  });
+}
+bindSetting("s-fte", "fte", function(v){ return +(+v).toFixed(1); });
+bindSetting("s-maxoff", "maxOff", function(v){ return Math.round(+v); });
+
+el("export").addEventListener("click", function(){
+  var head = ["Name","Role","Days per week","Allowance","Taken","Booked","Checkpoint","Planned by checkpoint","Still to plan this year"];
+  var lines = [head.join(",")];
+  calcAll().forEach(function(c){
+    lines.push([c.p.name, (c.p.role || "").replace(/,/g, " "), d1(c.dpw), d1(c.ent), d1(c.taken), d1(c.booked),
+      d1(c.target), d1(c.planned), d1(c.toPlan)].join(","));
+  });
+  try{
+    var blob = new Blob([lines.join("\n")], {type:"text/csv"});
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "team-holiday-demo-" + YEAR + ".csv";
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(function(){ URL.revokeObjectURL(a.href); }, 1000);
+  }catch(e){}
+});
+el("copy1").addEventListener("click", function(){
+  var text = nudgeRows(calcAll()).map(function(c){ return nudgeLine(c); }).join("\n\n");
+  var b = el("copy1");
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(text).then(function(){
+      b.textContent = "Copied"; setTimeout(function(){ b.textContent = "Copy all"; }, 1600);
+    }).catch(function(){});
+  }
+});
+
+/* sensible starting values for the request form */
+el("q-from").value = "2026-11-02";
+el("q-to").value = "2026-11-03";
+
+syncFields();
+render();
+})();
+</script>
+</body>
+</html>
