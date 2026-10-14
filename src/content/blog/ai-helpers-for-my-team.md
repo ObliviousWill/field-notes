@@ -2,6 +2,7 @@
 title: 'AI helpers for my team: the rules mattered more than the AI'
 description: 'How I set up AI helpers that do early-morning groundwork for my team, and why the most important part was deciding what they are not allowed to do.'
 pubDate: 'Oct 13 2026'
+audio: '/blog/audio/ai-helpers-for-my-team.mp3'
 tags: ['ai', 'marketing']
 mentions:
   - ai-agent-team
