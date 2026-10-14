@@ -44,7 +44,7 @@ Ten minutes, instead of an evening of dreading it.
 
 ## Where to go next
 
-I've written seven short guides that walk through the four Ds one at a time, from "what is Claude?" to using it responsibly. They're free, take a few minutes each, and every one has an audio version if you'd rather listen:
+I've written eleven short guides that walk through the four Ds one at a time, from "what is Claude?" to using it responsibly. They're free, take a few minutes each, and every one has an audio version if you'd rather listen:
 
 👉 https://obliviouswill.github.io/field-notes/guides/
 

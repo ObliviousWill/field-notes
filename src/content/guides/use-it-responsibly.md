@@ -1,8 +1,8 @@
 ---
 title: 'Use it responsibly'
 description: "The fourth D is Diligence: being honest about where AI helped, protecting other people's information, and owning what you put out. The habit that makes the other three trustworthy."
-pubDate: 'Sep 22 2026'
-step: 7
+pubDate: 'Oct 13 2026'
+step: 11
 fourD: 'diligence'
 ---
 
@@ -10,22 +10,42 @@ The first three Ds make you good at using AI. The fourth makes you trustworthy w
 
 Diligence means taking responsibility for how you use AI: what you put in, what you put out, and who it affects. It sounds serious, and it is, but in practice it comes down to a few plain habits.
 
+## Three simple rules
+
+If you remember nothing else, remember these:
+
+1. **Keep personal details out.** Names, contact details, health information, anything about a specific person. If you're not sure, leave it out.
+2. **Keep confidential information out, unless you're using a tool your organisation has approved for it.**
+3. **Check before you use it.** Facts, numbers, names, and anything going to a customer. You're responsible for what you send.
+
+## You rarely need the personal details
+
+Most of the time you can get just as good an answer without them. Compare:
+
+> Write a reply to Sarah Jones at 14 Mill Lane, who's upset her order arrived late.
+
+> Write a reply to a customer who's upset their order arrived late. They've ordered from us before and we'd like to keep them.
+
+The second gives Claude everything it needs, and nothing it doesn't. Add the name yourself before you send it.
+
 ## Before: what you put in
 
-- **Protect other people's information.** Don't paste in someone else's private details, health information or anything you were told in confidence unless you're sure that's allowed.
-- **Follow your workplace's rules.** Many employers now have an AI policy. If yours does, read it. If it doesn't, ask.
-- **Think about the tool.** Different apps and settings handle your data differently. Check the privacy settings in whatever you use.
+- **Follow your workplace's guidance.** Many organisations now have guidance on using AI. If yours does, read it. If you're not sure, ask before you start.
+- **Think about the tool.** Different apps and settings handle your information differently. Check the privacy settings in whatever you use.
+- **Connect only what you need.** If you've connected Claude to other tools (guide 8), give it access to what the job needs and nothing more.
 
 ## During: how you work with it
 
 - **Stay in charge.** You decide what it does and you check what it gives back (that's Delegation and Discernment, from guides 2 and 5).
+- **Read before it acts.** If Claude can do things for you, like drafting an email in your inbox, read what it plans to do before you say yes.
 - **Notice bias.** AI learns from what people have written, and people have blind spots. If an answer stereotypes someone or leaves people out, push back.
 
 ## After: what you put out
 
 - **Own it.** If you send it, publish it or act on it, it's yours. "The AI said so" isn't a defence.
 - **Be open about AI help where it matters.** Your manager, your customers or your readers may reasonably want to know. On this site, the audio versions say plainly that an AI voice reads them.
-- **Think about who it affects.** A quick AI-written reply to a complaint is fine. An AI-written decision about someone's job isn't something to hand over.
+- **Keep people's decisions with people.** AI is great for preparing information. Decisions that affect someone, such as a complaint, a request or a judgement about their work, should be made by a person.
+- **If you make a mistake, say so early.** Everyone gets things wrong. Spotting it and saying so quickly is what matters.
 
 ## A simple test
 

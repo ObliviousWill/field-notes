@@ -1,6 +1,6 @@
 ---
 title: 'Reports that write themselves'
-summary: 'Every morning the key numbers for the business land in one place, already gathered, checked and laid out. Nobody copies anything from one system into another.'
+summary: 'Every morning the key numbers for the business are ready in one place, already gathered, checked and laid out, so the day starts with a shared picture.'
 status: 'shipped'
 area: 'work'
 startDate: 'Jul 09 2026'
@@ -9,24 +9,24 @@ facts:
     value: 'A daily numbers report and a weekly app report, both automatic'
   - label: 'Who uses it'
     value: 'Me, the leadership team and my managers'
-  - label: 'What it replaced'
-    value: 'Someone pulling numbers from several systems by hand'
+  - label: 'What it gives us'
+    value: 'One shared view of the numbers, ready before the day starts'
   - label: 'Built with'
     value: 'Claude, on a timer, reading our own systems'
 ---
 
-Most businesses have a morning ritual. Someone opens three or four systems, copies the numbers into a spreadsheet, tidies it up and sends it round. It takes the best part of an hour, it's dull, and when that person is off nobody gets the numbers.
+Most businesses look at the same handful of numbers every morning. Getting them together usually means opening several systems and copying figures into one place. That's time better spent acting on the numbers than gathering them.
 
-So I handed the whole job to Claude. While I'm still asleep, it does this:
+So I set Claude up to do the gathering. Early each morning it:
 
-1. It asks our booking system how much customers spent yesterday, this week and so far this year.
-2. It asks our customer database how many new enquiries came in and how many meetings got booked.
-3. It counts what the customer service team got through.
-4. It checks the numbers against each other. If something doesn't add up, it says so.
-5. It updates one shared page that everyone has bookmarked.
+1. asks our booking system for the latest sales figures
+2. asks our customer database for new enquiries and meetings
+3. counts the work the customer service team got through
+4. checks the numbers against each other, and says if anything doesn't add up
+5. updates one shared page that everyone has bookmarked
 
-The rule that matters most is simple: **if it can't get a number, it says so. It never guesses.** A report that is quietly wrong is worse than no report at all.
+The rule that matters most is simple: **if it can't get a number, it says so. It never guesses.**
 
-The same approach now runs a second report every Tuesday, on how many customers are using our new booking app.
+The same approach now produces a second report every Tuesday, on how our new booking app is doing.
 
-I'm not sharing the reports themselves. They are full of real figures. The updates below explain how they work and what went wrong on the way.
+I'm not sharing the reports themselves, because they contain real business figures. The updates below explain how they work.

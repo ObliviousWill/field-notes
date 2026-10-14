@@ -2,7 +2,6 @@
 title: 'Check what comes back'
 description: "The third D is Discernment: telling a good answer from one that only sounds good. Simple checks that catch most mistakes, and how to get Claude to check its own work."
 pubDate: 'Aug 25 2026'
-audio: '/guides/audio/check-what-comes-back.mp3'
 step: 5
 fourD: 'discernment'
 ---
@@ -27,6 +26,12 @@ Discernment, the third D, is the habit of judging what comes back instead of acc
 - **Read it as the person receiving it.** Would your manager, your customer or your mum understand it, and would they mind how it's put?
 - **Look for what's missing.** AI is good at answering what you asked and bad at noticing what you didn't.
 
+## Why it can be confidently wrong
+
+It helps to know why this happens. Claude doesn't look answers up the way a search engine does. It builds each answer fresh, based on patterns in everything it learned from. Most of the time that works brilliantly. But when it doesn't know something, it can fill the gap with something plausible, and say it in exactly the same confident tone. It also tends to want to give you what you asked for. That's also why you can get a slightly different answer each time.
+
+So the rule is simple: **trust it like a capable first draft, not like a reference book.**
+
 ## Make Claude check itself
 
 You can turn discernment into part of the conversation:
@@ -38,10 +43,16 @@ You can turn discernment into part of the conversation:
 
 It's surprisingly honest when asked. It won't catch everything, but it will catch a lot.
 
+For anything with numbers, add: **"Show me how you worked that out."** Then check one of the calculations yourself.
+
+## Practise spotting mistakes
+
+A good way to build this habit: ask Claude to explain something you know really well, like your own job, your hobby, or how something works where you live. Then read it critically. You'll spot things it got slightly wrong, or left out, that a stranger never would. That's exactly the eye you need to bring to topics you know less about.
+
 ## Know when to stop
 
 Sometimes the best judgement is to drop it and start again. If you've corrected the same thing three times, the conversation has gone off track. Start a fresh chat with a better brief (that's Description, from guides 3 and 4).
 
 ## Try this today
 
-Take the last useful thing Claude wrote for you. Ask it: "List every fact in this that I should double-check." Then check two of them.
+Ask Claude to explain something you know inside out. Find one thing it got wrong or missed. Then take the last useful thing it wrote for you, ask "List every fact in this that I should double-check", and check two of them.

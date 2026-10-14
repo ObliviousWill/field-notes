@@ -2,7 +2,6 @@
 title: 'What Claude is, and how to start'
 description: 'What an AI assistant actually is, how to get Claude on your phone and computer, and what to try in your first ten minutes.'
 pubDate: 'Jun 16 2026'
-audio: '/guides/audio/what-claude-is-and-how-to-start.mp3'
 step: 1
 ---
 
@@ -30,12 +29,13 @@ There's a free version, which is plenty for getting started. Paid plans give you
 
 ## Your first ten minutes
 
-Don't start with a test question to see if it's clever. Start with something real from your day. Some ideas:
+Don't start with a test question to see if it's clever. Start with something real. A good way in: **what's one thing that took you too long this week?** Start there. Some other ideas:
 
 - "Here's an email I need to reply to. I want to say no politely. Write me a reply." Then paste the email in.
 - "I have chicken, rice, a pepper and an onion. What can I cook in 30 minutes?"
 - "Explain what an ISA is, as if I'd never heard of one."
 - "I've got a meeting with my manager about a pay rise. Help me plan what to say."
+- "Here's a long email thread. Summarise it in three points and tell me what the next step is."
 
 Then **reply to its answer**. This is the bit most people skip. If it's too long, say "shorter". If it's too formal, say "more casual". If it got something wrong, tell it. It's a conversation, not a one-off question.
 

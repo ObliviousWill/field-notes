@@ -17,6 +17,15 @@ Anthropic, the company that makes Claude, teaches a free course on AI fluency, b
 3. **Discernment:** judging what comes back.
 4. **Diligence:** using it responsibly, and owning the result.
 
+Each one comes with a question worth asking yourself every time you use AI:
+
+| The D | The question to ask |
+| --- | --- |
+| Delegation | Is this the right job for AI, and where do I stay in charge? |
+| Description | Have I given it the full picture? |
+| Discernment | What could make this wrong? |
+| Diligence | Would I stand behind this? |
+
 The rest of these guides follow those four. This one is about the first.
 
 ## Why delegation comes first

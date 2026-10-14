@@ -2,7 +2,6 @@
 title: 'How to ask so you get a good answer'
 description: "The second D is Description. The biggest difference between a so-so answer and a great one is how you ask. A simple way to brief Claude like you'd brief a smart colleague."
 pubDate: 'Jul 14 2026'
-audio: '/guides/audio/how-to-ask-for-what-you-want.mp3'
 step: 3
 fourD: 'description'
 ---
@@ -44,6 +43,45 @@ Anthropic's course splits Description into three parts. They're worth knowing be
 - **The result:** what you want back. "A thank-you message, under 60 words."
 - **The method:** how you want it to go about it. "Ask me questions first." "Think it through step by step." "Give me three options, then recommend one."
 - **The manner:** how you want it to behave with you. "Be blunt." "Challenge me if I'm wrong." "Explain it like I'm new to this."
+
+## Watch one question get better
+
+Here's the same question asked three ways. Try it yourself with something from your own work.
+
+**1. The bare question.**
+
+> How do I get more people to come to my Christmas craft fair?
+
+You'll get a generic list. Nothing wrong with it, nothing useful either.
+
+**2. With the picture.**
+
+> I run a small Christmas craft fair in a village hall. It's in three weeks, I have about £100 to spend, and most visitors are local families. Suggest the three things most likely to bring more people in, and explain why.
+
+Much better, because now it knows your situation. But it's still guessing about things you know.
+
+**3. Let it ask you first.**
+
+> Before you answer, ask me the five questions you need answered to give me good advice.
+
+Answer its questions, then say:
+
+> Now give me your advice. Tell me what you're assuming, and what could make it wrong.
+
+This is usually the best answer of the three, because it found out what it didn't know before it started. Then comes the part only you can do: you know which ideas would never work in your village. AI gives you the options. You choose.
+
+## Lines worth copying
+
+Keep these somewhere handy. They work on almost anything:
+
+- "Before you answer, ask me the questions you need to do this well."
+- "What are you assuming here?"
+- "What could make this answer wrong?"
+- "Give me the strongest argument against this."
+- "How would a sceptical customer see this?"
+- "What should I be asking that I haven't asked?"
+
+A clearer question beats a longer one. Add the picture, not padding.
 
 ## Give it the raw material
 

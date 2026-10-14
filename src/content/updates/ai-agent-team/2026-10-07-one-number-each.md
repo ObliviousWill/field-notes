@@ -4,17 +4,17 @@ title: 'Simpler: one helper, one number'
 pubDate: 'Oct 07 2026'
 ---
 
-I threw away the production line. Now each helper looks after **one number** the business cares about, such as how many places we fill or how many new enquiries come in. A good manager would give a new starter a job described the same way.
+I simplified the design. Now each helper looks after **one area** the business cares about, such as how bookings are going, or how quickly new enquiries get a reply.
 
-Each helper has the same six things a new person would need:
+Each helper is set up with the same six things:
 
-1. **A clear job:** one number to look after.
-2. **Access:** read access to the systems it needs, and nothing more.
-3. **Working hours:** a set time each morning.
-4. **A manager:** me.
-5. **A check:** the checker reviews everything before it reaches me.
-6. **A memory:** it reads my past decisions and the reasons I gave.
+1. **A clear focus:** one area to look after.
+2. **The right access:** it can read the information it needs, and nothing more.
+3. **Set times:** it runs at the same time each morning.
+4. **An owner:** a person responsible for it.
+5. **A check:** the checker reviews its work before anyone sees it.
+6. **A memory:** it reads past feedback, so it gets more useful over time.
 
-Written instructions on their own do nothing. All six have to be in place.
+Written instructions on their own aren't enough. All six need to be in place.
 
-Suggestions go onto the same task board the human team already uses. I approve or reject them there, with one click and a short reason. I never have to open a chat to manage them.
+Suggestions appear on the same task board the team already uses, so there's nothing new to learn. Each one can be accepted or turned down in one click, with a short reason.

@@ -2,7 +2,6 @@
 title: 'Get Claude to make things, not just answer'
 description: 'Delegation, bigger: Claude can make documents, spreadsheets, slides, web pages and small tools, not just chat. What it can make, how to ask for it, and how to teach it your way of doing things.'
 pubDate: 'Sep 08 2026'
-audio: '/guides/audio/let-claude-make-things.mp3'
 step: 6
 fourD: 'delegation'
 ---
@@ -34,15 +33,7 @@ You describe it in plain English. You don't need to know any code. If it isn't r
 
 Some of the [projects on this site](/field-notes/projects/) started exactly like this.
 
-## Teach it your way, once: skills
-
-If you do the same job the same way again and again, such as a weekly report, a type of letter, or a set format for quotes, you can turn it into a **skill**. A skill is a set of instructions Claude follows every time that job comes up.
-
-You don't have to write it yourself. Do the job once with Claude, get it right, then say: "Turn what we just did into a skill so you do it this way every time." Look for skills in Claude's settings.
-
-## Connect it to your other apps
-
-Claude can link to tools you already use, such as your email, calendar or online documents, so it can read and work with them. These are called **connectors**, and you'll find them in settings. Only connect what you're comfortable with, and start with one.
+If you find yourself making the same kind of thing again and again, the next guide shows how to teach Claude to do it your way every time.
 
 ## A word of caution
 
@@ -52,4 +43,4 @@ The more Claude makes for you, the more it matters to check what it made. Open t
 
 Think of one thing you keep in your head or on scraps of paper: a list, a budget, a routine, a plan. Ask Claude to turn it into a document or a small tool. Then use it for a week.
 
-Next, the last of the four Ds: using all of this responsibly.
+Next: teaching Claude a job once, so you never have to explain it again.

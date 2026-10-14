@@ -4,8 +4,8 @@ title: 'First design: one long production line'
 pubDate: 'Sep 21 2026'
 ---
 
-The first version worked like a production line with seven stages. One helper looked at the numbers, another researched, another planned, another made the campaign, another critiqued it, and a last one learned from the results.
+The first version worked like a production line, with seven stages. One helper looked at the numbers, another researched, another planned, and so on down the line.
 
-It produced one campaign. The most useful thing it taught me was what went wrong. Two of the worst mistakes got through a check by the same helper that made them. **Something can't mark its own homework.** That's why the current design has a separate checker that can't edit anything.
+It worked, but it was slow and hard to follow. When you wanted to know why a suggestion had been made, you had to trace it back through seven steps.
 
-The production line was also too slow and too hard to follow. You couldn't easily say who was responsible when something went wrong.
+One principle from that version stayed: **the helper that does the work shouldn't be the one that checks it.** It's the same reason we ask a colleague to proofread rather than proofreading our own writing. So the current design has a separate checker, which can't edit anything. It can only pass work, or send it back with reasons.

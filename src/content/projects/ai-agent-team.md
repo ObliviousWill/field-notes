@@ -1,12 +1,12 @@
 ---
-title: 'A team of AI helpers for my marketing team'
-summary: 'Six AI helpers, each keeping an eye on one part of the business. Each morning they can suggest one thing for a person to decide on. A seventh checks their work first. None of them can approve anything.'
+title: 'AI helpers that support my team'
+summary: 'Six AI helpers that do early-morning groundwork for my team, each keeping an eye on one area. They can suggest one thing a day. A seventh checks their work first. People make every decision.'
 status: 'building'
 area: 'work'
 startDate: 'Sep 21 2026'
 facts:
   - label: 'What it is'
-    value: 'AI helpers that do the groundwork and suggest one action each'
+    value: 'AI helpers that prepare evidence and suggestions for the team'
   - label: 'Who decides'
     value: 'Always a person. The helpers can only suggest'
   - label: 'When they work'
@@ -15,29 +15,32 @@ facts:
     value: 'Trial: they can look, but not change anything'
 ---
 
-Most people use AI on their own: one person, one chat window, one task. That helps the person, but it stays with them. Nobody else gets the benefit and nothing builds up over time.
+Most people use AI on their own: one person, one chat window, one task. That's useful, but the benefit stays with that one person.
 
-I wanted something the whole team could rely on. So I've set up a small team of AI helpers. Each one works like a sharp junior colleague: it does the groundwork, shows its evidence and asks for a decision. A person always makes the call.
+I wanted something the whole team could benefit from. So I've set up a small set of AI helpers. Each one works like a good research assistant: it gathers the evidence, spots what's changed, and prepares a suggestion. The team and I decide what to do with it.
 
-## Who's on the team
+The aim is simple: less time digging through reports, more time on the work that needs people.
 
-- **The bookings helper** watches how many places we fill. When something is filling more slowly than usual, it works out why and suggests a fix.
-- **The enquiries helper** watches new business enquiries. It spots ones going cold and suggests what to do about them.
-- **The search helper** watches how many people find our website through Google, and where we're slipping.
-- **The website helper** keeps our web pages accurate and up to date.
-- **The writer** suggests articles that would help our customers. Once a topic is approved, it drafts the article.
-- **The checker** reviews everyone else's work before I see it. It's a hard marker.
+## The helpers
 
-## The rules that make it work
+- **The bookings helper** looks at how bookings are going and, when something looks unusual, suggests what might help.
+- **The enquiries helper** keeps an eye on new enquiries, so none of them slip through the cracks.
+- **The search helper** looks at how people find us on Google.
+- **The website helper** checks our web pages are accurate and up to date.
+- **The writer** suggests useful articles and, once a topic is agreed, prepares a first draft for us to edit.
+- **The checker** reviews everything the others produce before it reaches anyone.
 
-The thing I have least of is time to make decisions. So the rules are about protecting that:
+## The rules
 
-- **Suggest, never decide.** A helper can't approve, reject or finish anything.
-- **One suggestion a day, at most.** It should be the one that would make the biggest difference. If nothing is worth raising, raising nothing is a good day.
-- **One at a time.** If a helper already has something waiting for me, it doesn't add another.
-- **Short.** About 150 words, starting with the question I need to answer.
-- **Respect a no.** If I've turned an idea down, a helper only brings it back with new evidence.
+The rules are what make it work:
 
-Every morning I get one short list: at most three things that need me, already checked by the checker.
+- **People decide.** A helper can suggest, but it can't approve, publish or change anything.
+- **One suggestion a day, at most.** It has to be the most useful one. If there's nothing worth raising, raising nothing is a good day.
+- **One at a time.** A helper doesn't add a new suggestion while an earlier one is still waiting.
+- **Short and clear.** About 150 words, starting with the question that needs an answer.
+- **Show the evidence.** Every suggestion says where its numbers came from, so anyone can check them.
+- **Learn from feedback.** When a suggestion isn't taken up, the reason is recorded, and the helper takes it into account next time.
 
-The updates below show how it got here. I've also written up [what I learned setting it up](/field-notes/blog/i-gave-my-team-ai-colleagues/).
+Every morning there's one short list: at most three things worth a look, already checked.
+
+The updates below show how it developed. I've also written up [what I learned setting it up](/field-notes/blog/ai-helpers-for-my-team/).

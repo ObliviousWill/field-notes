@@ -2,7 +2,6 @@
 title: 'Your first job for AI should be a boring one'
 description: 'The AI work that has saved me the most time is the dullest: a news round-up every Monday and a numbers report every morning. How to set one up, and the rules that stop it going wrong.'
 pubDate: 'Sep 18 2026'
-audio: '/blog/audio/your-first-ai-job-should-be-boring.mp3'
 tags: ['ai', 'marketing']
 mentions:
   - sector-news
@@ -24,7 +23,7 @@ Boring jobs have three things going for them:
 
 1. **You already know exactly how to do them.** So you can write the instructions down, and you know a good result when you see one.
 2. **They happen again and again.** Set it up once and it pays you back every week.
-3. **Nobody misses doing them.** You won't meet any resistance from someone whose favourite task you've taken away.
+3. **They're low risk.** If something goes wrong, it's easy to spot and easy to fix.
 
 ## How to set one up
 
@@ -46,17 +45,17 @@ A job that runs while you're asleep needs to be honest with you. Every one of mi
 
 **Don't pad a quiet week.** If there are only two good stories, send two. A briefing that always finds three soon becomes noise.
 
-**Zero isn't the same as missing.** In the school holidays, some of our numbers really are zero. If a question fails, the report keeps yesterday's figure and labels it, rather than showing a zero that looks real.
+**Zero isn't the same as missing.** In the school holidays, some of our numbers really are zero. If a figure can't be fetched, the report says so clearly, rather than showing a zero that looks real.
 
-**Add it up two ways.** If the daily figures don't match the total, something is wrong. This has already caught a mistake.
+**Add it up two ways.** If the daily figures don't match the total, it flags it straight away.
 
-**Tell a person.** It always sends one short message, and anything that needs a human comes first. A scheduled job that finds a problem and tells nobody has failed.
+**Tell a person.** It always sends one short message, and anything that needs a human comes first. An automatic job should always tell someone when something needs a look.
 
 ## Put it where people already look
 
-My first news briefings came as an attached file. Nobody opened it. Now the whole briefing is in the body of the email, readable on a phone in two minutes.
+My first news briefings came as an attached file, which is easy to miss in a busy inbox. Now the whole briefing is in the body of the email, readable on a phone in two minutes.
 
-The same thing happened with the numbers. The first version produced a PDF that only I could see. Now it updates one shared page that everyone has bookmarked.
+The same thing happened with the numbers. The first version produced a PDF in my own chat. Now it updates one shared page that everyone has bookmarked.
 
 The best output in the world doesn't help if it lands somewhere nobody looks.
 

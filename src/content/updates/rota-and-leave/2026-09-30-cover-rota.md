@@ -4,10 +4,10 @@ title: 'The cover rota, with a forecast'
 pubDate: 'Sep 30 2026'
 ---
 
-The customer service team works a fixed two-week pattern. That's fine, except the pattern has no idea how busy each day will be.
+The customer service team works a regular two-week pattern. The rota now adds a simple forecast of how busy each day is likely to be, so the workload can be shared fairly.
 
-The rota now shows the next fortnight, and you tap a name to swap who's on. Behind it is a simple forecast. It looks at how busy the same week was in past years, what day of the week it is, and whether it's a school holiday. A phone call counts as roughly two emails' worth of work.
+The forecast looks at how busy the same week was in the past, what day of the week it is, and whether it's a school holiday. A phone call counts as roughly two emails' worth of work.
 
-The chart shows past weeks as solid bars and forecast weeks as striped bars. **A forecast should never look like a fact.** After each week, the page compares its forecast with what really happened and adjusts.
+The chart shows past weeks as solid bars and forecast weeks as striped bars. **A forecast should never look like a fact.** After each week, the page compares its forecast with what actually happened and adjusts.
 
-One button pulls holiday straight from the HR calendar, so anyone who's away drops off the rota without anybody retyping it.
+One button pulls in booked holiday from the shared calendar, so the rota is always up to date without anyone retyping it.

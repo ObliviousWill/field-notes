@@ -1,0 +1,52 @@
+---
+title: 'Hand over whole jobs, not single tasks'
+description: "Delegation at its fullest. Instead of asking for one thing at a time, give Claude a whole job in steps (gather, draft, check, format) and decide where you step in."
+pubDate: 'Oct 06 2026'
+step: 10
+fourD: 'delegation'
+---
+
+Most people use AI one task at a time. Summarise this. Draft that. Reword this.
+
+Once you're comfortable, you can hand over a **whole job**: several steps in a row, with you checking at the points that matter. That's where the biggest time savings are.
+
+## Think in steps
+
+Almost any job breaks down into the same four kinds of step:
+
+1. **Gather:** pull together the information.
+2. **Draft:** turn it into something.
+3. **Check:** look for gaps, mistakes and assumptions.
+4. **Format:** get it into the shape it needs to be.
+
+Give Claude the job with those steps spelled out, and decide where you step in.
+
+## Two examples
+
+**A weekly update.**
+
+> Look at my emails and calendar from this week (gather). Draft a short update for my manager: what got done, what's next, anything I need help with (draft). Then list anything you weren't sure about or might have missed (check). Put it in a draft email, but don't send it (format).
+
+**Preparing for a meeting.**
+
+> Read the agenda and my recent emails with these people (gather). Summarise where we got to last time, and list the questions I should ask (draft). Flag anything that looks unresolved (check). Give me a one-page brief (format).
+
+## Choose your checkpoints
+
+Here's the important part: **if an early step is wrong, every step after it is wrong too.** If it gathers the wrong information, you get a beautifully written update about the wrong things.
+
+So check early, not just at the end:
+
+- After **gather**: did it find the right things?
+- After **draft**: is it right, and does it sound like you?
+- Before anything leaves your hands: always read it yourself.
+
+## Can it run without me?
+
+Sometimes, for low-risk jobs you've checked many times, such as a weekly news round-up for yourself. I've written about [setting one up](/field-notes/blog/your-first-ai-job-should-be-boring/).
+
+But for anything going to other people, keep a person checking before it goes out. That's Diligence, and it's the subject of the final guide.
+
+## Try this today
+
+Pick one job you do every week. Write it out as four or five steps. Mark which steps Claude could do and which you need to do or check. Then run the first two steps with Claude and check them.
