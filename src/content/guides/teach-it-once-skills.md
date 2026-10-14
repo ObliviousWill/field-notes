@@ -2,6 +2,7 @@
 title: 'Teach it once: skills'
 description: "More Description. If you keep typing the same instructions, save them as a skill. Claude then does that job your way, every time, without being told again."
 pubDate: 'Sep 15 2026'
+audio: '/guides/audio/teach-it-once-skills.mp3'
 step: 7
 fourD: 'description'
 ---
