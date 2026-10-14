@@ -1,12 +1,15 @@
 ---
 import ContactCta from './ContactCta.astro';
+import Doodle from './Doodle.astro';
 
 const today = new Date();
 ---
 
 <ContactCta />
+<Doodle />
 
 <footer>
+	<p class="doodle-hint hand">Go on, doodle in the margins. It rubs itself out.</p>
 	<div class="copy">&copy; {today.getFullYear()} Will. All rights reserved.</div>
 	<a
 		class="linkedin"
@@ -34,6 +37,18 @@ const today = new Date();
 	}
 	.copy {
 		margin-bottom: 14px;
+	}
+	.doodle-hint {
+		display: none;
+		margin: 0 0 16px;
+		font-size: 22px;
+		color: var(--ink);
+		transform: rotate(-1.5deg);
+	}
+	@media (pointer: fine) {
+		.doodle-hint {
+			display: block;
+		}
 	}
 	.linkedin {
 		display: inline-flex;

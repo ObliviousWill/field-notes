@@ -16,3 +16,4 @@ Also new:
 - **A signature** at the end of every post and guide.
 - **A photo** on the About page, so you know who's writing.
 - **A pencil.** On a computer, your mouse pointer is now a little pencil. It turns red over anything you can click.
+- **Doodles.** Click and drag on any empty bit of the page and the pencil draws. Your doodle rubs itself out after a few seconds, so nobody else sees it and the page stays tidy. Dragging over text still selects it as normal.

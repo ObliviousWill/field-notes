@@ -1,0 +1,123 @@
+---
+// Lets visitors doodle in the empty space with the pencil cursor.
+// Mouse and trackpad only. Doodles fade away after a few seconds.
+---
+
+<canvas class="doodle-layer" aria-hidden="true" data-doodle></canvas>
+
+<style>
+	.doodle-layer {
+		position: fixed;
+		inset: 0;
+		width: 100vw;
+		height: 100vh;
+		pointer-events: none;
+		z-index: 40;
+		display: none;
+	}
+	@media (pointer: fine) {
+		.doodle-layer {
+			display: block;
+		}
+	}
+</style>
+
+<script>
+	const canvas = document.querySelector<HTMLCanvasElement>('[data-doodle]');
+	const fine = window.matchMedia('(pointer: fine)');
+	if (canvas && fine.matches) {
+		const ctx = canvas.getContext('2d')!;
+		const INK = '35, 71, 110';
+		const HOLD = 3500; // ms before a doodle starts to fade
+		const FADE = 1800;
+		type Stroke = { pts: { x: number; y: number }[]; ended: number | null };
+		const strokes: Stroke[] = [];
+		let current: Stroke | null = null;
+		let raf = 0;
+
+		const resize = () => {
+			const dpr = window.devicePixelRatio || 1;
+			canvas.width = innerWidth * dpr;
+			canvas.height = innerHeight * dpr;
+			ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+			kick();
+		};
+
+		// Only start on empty paper: not on text, links, tools, pictures or demos
+		const SKIP =
+			'a, button, input, textarea, select, label, summary, details, iframe, img, picture, svg, canvas, video, audio, figure, pre, code, table, [contenteditable], [role="button"], .no-doodle, [data-cta], nav';
+		const onText = (x: number, y: number) => {
+			const r = document.caretRangeFromPoint?.(x, y);
+			const node = r?.startContainer;
+			if (!node || node.nodeType !== Node.TEXT_NODE || !node.textContent?.trim()) return false;
+			const range = document.createRange();
+			range.selectNodeContents(node);
+			for (const b of range.getClientRects()) {
+				if (x >= b.left - 2 && x <= b.right + 2 && y >= b.top - 2 && y <= b.bottom + 2) return true;
+			}
+			return false;
+		};
+
+		const draw = (now: number) => {
+			ctx.clearRect(0, 0, innerWidth, innerHeight);
+			const sx = scrollX, sy = scrollY;
+			for (let i = strokes.length - 1; i >= 0; i--) {
+				const s = strokes[i];
+				let a = 0.85;
+				if (s.ended !== null) {
+					const t = now - s.ended - HOLD;
+					if (t > FADE) { strokes.splice(i, 1); continue; }
+					if (t > 0) a *= 1 - t / FADE;
+				}
+				const p = s.pts;
+				ctx.strokeStyle = `rgba(${INK}, ${a})`;
+				ctx.lineWidth = 2.2;
+				ctx.lineCap = 'round';
+				ctx.lineJoin = 'round';
+				ctx.beginPath();
+				ctx.moveTo(p[0].x - sx, p[0].y - sy);
+				for (let j = 1; j < p.length - 1; j++) {
+					const mx = (p[j].x + p[j + 1].x) / 2, my = (p[j].y + p[j + 1].y) / 2;
+					ctx.quadraticCurveTo(p[j].x - sx, p[j].y - sy, mx - sx, my - sy);
+				}
+				const last = p[p.length - 1];
+				ctx.lineTo(last.x - sx, last.y - sy);
+				ctx.stroke();
+			}
+			raf = strokes.length ? requestAnimationFrame(draw) : 0;
+		};
+		const kick = () => { if (!raf && strokes.length) raf = requestAnimationFrame(draw); };
+
+		addEventListener('resize', resize);
+		addEventListener('scroll', kick, { passive: true });
+		resize();
+
+		document.addEventListener('mousedown', (e) => {
+			if (e.button !== 0 || e.shiftKey || e.metaKey || e.ctrlKey || e.altKey) return;
+			const t = e.target as Element;
+			if (!(t instanceof Element) || t.closest(SKIP) || onText(e.clientX, e.clientY)) return;
+			e.preventDefault(); // stop it selecting text instead
+			window.getSelection()?.removeAllRanges();
+			current = { pts: [{ x: e.pageX, y: e.pageY }], ended: null };
+			strokes.push(current);
+			kick();
+		});
+		document.addEventListener('mousemove', (e) => {
+			if (!current) return;
+			const p = current.pts[current.pts.length - 1];
+			if (Math.abs(e.pageX - p.x) + Math.abs(e.pageY - p.y) < 2) return;
+			current.pts.push({ x: e.pageX, y: e.pageY });
+			if (current.pts.length > 2000) { current.ended = performance.now(); current = null; }
+			kick();
+		});
+		const end = () => {
+			if (!current) return;
+			if (current.pts.length === 1) current.pts.push({ x: current.pts[0].x + 0.5, y: current.pts[0].y + 0.5 });
+			current.ended = performance.now();
+			current = null;
+			kick();
+		};
+		document.addEventListener('mouseup', end);
+		addEventListener('blur', end);
+	}
+</script>
